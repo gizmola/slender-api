@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Dws": "src/dws"
+            "Dws\\Slender": "src/dws/"
         }
     }
 }
