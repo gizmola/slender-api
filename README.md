@@ -11,7 +11,7 @@ Slender will:
 * Automate controller instantiation and action calls based upon a set of common 
 REST route formats.
 * Set response `content-type` headers to `application/json`.
-* Create `application/json` specific handlers for `error()`, `notAllowed(), `badRequest()` 
+* Create `application/json` specific handlers for `error()`, `notAllowed()`, `badRequest()` 
 that are accessible from controllers.
 
 **Note:** At present, the project and API is highly unstable. Not (yet!) recommended for production.
