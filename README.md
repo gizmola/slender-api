@@ -24,6 +24,7 @@ Composer install
 
 Add to your project's `composer.json`:
 
+```
 {
 	"repositories" : [
 		{
@@ -34,6 +35,8 @@ Add to your project's `composer.json`:
 	"require" : {
 		"dwsla/slender": "dev-master"
 	}
+}
+```
 
 To allow Slender to autoload, instantiate, and call actions on your controllers, you 
 can add an `autoload` entry to your `composer.json`. Assuming your project structure 
