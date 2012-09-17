@@ -135,7 +135,6 @@ httpDelete($id)
 An interface `Dws\Slender\Controller\ControllerInterface` is provided for easy IDE
 consumption.
 
-``
 
 TESTS
 =====
