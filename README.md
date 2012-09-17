@@ -87,7 +87,7 @@ Your `public/index.php` could be as simple as:
 ```
 <?php
 
-require `../vendor/autoload.php`;
+require __DIR__ . '/../vendor/autoload.php;
 $app = new Dws\Slender\Slender(array(
 	'controllerNamespace' => 'My\Controller'
 ));
