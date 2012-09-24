@@ -13,40 +13,13 @@ class Slender extends Slim
 {
 
 	/**
-	 * The namespace for controllers
-	 * 
-	 * @var string
-	 */
-	protected $controllerNamespace = '';
-	
-	/**
-	 * An array of resources to pass to the controller on instantiation
-	 * 
-	 * @var array
-	 */
-	protected $controllerResources = array();
-	
-	/**
 	 * Constructor
 	 * 
 	 * @param array|null $options
 	 */
-	public function __construct($options = null)
+	public function __construct($options = array())
 	{
-		if ($options && is_array($options)){
-			if (array_key_exists('controllerNamespace', $options)){
-				$this->controllerNamespace = $options['controllerNamespace'];
-				unset($options['controllerNamespace']);
-			}
-			
-			if (array_key_exists('controllerResources', $options)){
-				$this->controllerResources = $options['controllerResources'];
-				unset($options['controllerResources']);
-			}
-		}
-		
-		parent::__construct($options);
-		
+		parent::__construct($options);		
 		$this->init();
 	}
 	
@@ -60,8 +33,6 @@ class Slender extends Slim
 
 		// Configure response
 		$app->response()->header('Content-type', 'application/json');
-		// $app->response()->header('Access-Control-Allow-Origin','*');
-		// $app->response()->header('Access-Control-Allow-Headers','X-Requested-With');
 
 		// Configure not-found handler
 		$app->notFound(function () use ($app) {
@@ -74,69 +45,8 @@ class Slender extends Slim
 			$app->haltMessages(500, $messages);
 		});
 
-		// Add routes
-		$app->map('/:controllerName(/(:id(/)))', function($controllerName, $id = null) use ($app){
-			$app->callAction($controllerName, $id);
-		})->via('GET');
-		
-		$app->map('/:controllerName/:id(/)', function($controllerName, $id) use ($app){
-			$app->callAction($controllerName, $id);
-		})->via('PUT', 'DELETE');
-		
-		$app->map('/:controllerName(/)', function($controllerName) use ($app){
-			$app->callAction($controllerName);			
-		})->via('POST');
 	}
 	
-	/**
-	 * Instantiate and call controller
-	 * 
-	 * @param string $controllerName
-	 * @param mixed $id
-	 */
-	public function callAction($controllerName, $id = null)
-	{
-		$app = $this;
-		$controllerClass = $this->controllerNamespace . '\\' . ucfirst($controllerName);
-		$method = 'http' . ucfirst(strtolower($app->request()->getMethod()));		
-		if (class_exists($controllerClass, true)) {
-			$controller = new $controllerClass($app, $this->controllerResources);
-			if (is_callable(array($controller, $method))) {
-				try {
-					call_user_func(array($controller, $method), $id);
-				} catch (\Exception $e){
-					$this->error($e);
-				}
-			} else {
-				$app->notFound();
-			}
-		} else {
-			$app->notFound();
-		}
-	}
-
-	/**
-	 * Handler for unauthorized access
-	 */
-	public function notAuthorized($message = null)
-	{
-		if (null === $message){
-			$message = 'Supplied credentials insufficient to access resource.';
-		}
-		$this->haltMessages(401, $message);
-	}
-
-//	/**
-//	 * Handler for not allowed method
-//	 */
-//	public function notAllowed($message = null)
-//	{
-//		if (null === $message){
-//			$message = 'Method not allowed';
-//		}
-//		$this->haltMessages(405, $message);
-//	}
-
 	/**
 	 * A convenience wrapper for returning messages to the client
 	 *
@@ -155,39 +65,36 @@ class Slender extends Slim
 			'messages' => $messages,
 		));
 		$this->cleanBuffer();
-		$this->response()->status($code);
-		$this->response()->body($response);
+		$this->response->status($code);
+		$this->response->body($response);		
 	}
+	
 	/**
-	 * Handler for invalid API requests
-	 *
-	 * @param mixed $errors Errors to display, tpyically as an array
-	 *	   However, to accommodate flexible usage, we will attempt to
-	 *     wrap the munge the given datatype into an single-dimensional
-	 *     array of messages.
+	 * Instantiate and call controller
+	 * 
+	 * @param string $controllerName
+	 * @param mixed $id
 	 */
-	public function badRequest($errors = null)
-	{
-		if (null === $errors){
-			$errors = array('Generic error');
-		}
-		if (is_scalar($errors)){
-			$errors = array($errors);
-		}
-
-		$errors = self::flattenArray($errors);
-
-		$isStackTrace = (bool) $this->request->params('st');
-		if ($isStackTrace) {
-			ini_set('xdebug.collect_vars', 'on');
-			ini_set('xdebug.collect_params', '4');
-            if (function_exists('xdebug_get_function_stack')){
-    			$errors[] = xdebug_get_function_stack();
-            }
-		}
-
-		$this->haltMessages(400, $errors);
-	}
+//	public function callAction($controllerName, $id = null)
+//	{
+//		$app = $this;
+//		$controllerClass = $this->controllerNamespace . '\\' . ucfirst($controllerName);
+//		$method = 'http' . ucfirst(strtolower($app->request()->getMethod()));		
+//		if (class_exists($controllerClass, true)) {
+//			$controller = new $controllerClass($app, $this->controllerResources);
+//			if (is_callable(array($controller, $method))) {
+//				try {
+//					call_user_func(array($controller, $method), $id);
+//				} catch (\Exception $e){
+//					$this->error($e);
+//				}
+//			} else {
+//				$app->notFound();
+//			}
+//		} else {
+//			$app->notFound();
+//		}
+//	}
 	
 	/**
 	 * Flatten an array to only the leaves
