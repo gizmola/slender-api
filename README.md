@@ -29,7 +29,7 @@ Add to your project's `composer.json`:
 	"repositories" : [
 		{
 			"type" : "vcs",
-			"url" : "git://github.com/dwsla/slender.git"
+			"url" : "git://github.com/dwsla/slender-api.git"
 		}
 	],
 	"require" : {
@@ -44,12 +44,12 @@ is as follows:
 
 ```
 <app>
-<src>
-	<mylib>
-		<My>
-			<Controller>
-				Some.php
-				Other.php
+	<src>
+		<mylib>
+			<My>
+				<Controller>
+					Some.php
+					Other.php
 <vendor>
 	autoload.php
 	// various imported packages
