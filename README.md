@@ -33,7 +33,7 @@ Add to your project's `composer.json`:
 		}
 	],
 	"require" : {
-		"dwsla/slender": "dev-master"
+		"dwsla/slender-api": "dev-master"
 	}
 }
 ```
