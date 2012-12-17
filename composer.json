@@ -1,9 +1,9 @@
 {
-    "name": "dwsla/slender",
+    "name": "dwsla/slender-api",
     "type": "library",
     "description": "Slender, a PHP micro framework for quick, opinionated APIS, built on Slim",
     "keywords": ["microframework", "rest", "slim", "api"],
-    "homepage": "http://github.com/dwsla/slender",
+    "homepage": "http://github.com/dwsla/slender-api",
     "license": "MIT",
     "authors": [
         {
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Dws\\Slender": "src/dws/"
+            "Dws\\Slender": "src/"
         }
     }
 }
