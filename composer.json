@@ -1,25 +1,17 @@
 {
-    "name": "dwsla/slender-api",
-    "type": "library",
-    "description": "Slender, a PHP micro framework for quick, opinionated APIS, built on Slim",
-    "keywords": ["microframework", "rest", "slim", "api"],
-    "homepage": "http://github.com/dwsla/slender-api",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "David Weinraub",
-            "email": "david@papayasoft.com",
-            "homepage": "http://www.papayasoft.com/"
-        }
-    ],
-    "require": {
-        "php": ">=5.3.0",
-        "slim/slim" : "2.*",
-        "slim/extras" : "2.*"
-    },
-    "autoload": {
-        "psr-0": {
-            "Dws\\Slender": "src/"
-        }
-    }
+	"require": {
+		"laravel/framework": "4.0.*",
+		"navruzm/laravel-mongo-auth": "*",
+		"navruzm/lmongo": "*"
+	},
+	"autoload": {
+		"classmap": [
+			"app/commands",
+			"app/controllers",
+			"app/models",
+			"app/database/migrations",
+			"app/tests/TestCase.php"
+		]
+	},
+	"minimum-stability": "dev"
 }
