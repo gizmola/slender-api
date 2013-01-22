@@ -13,7 +13,7 @@ Vagrant::Config.run do |config|
 	chef.add_recipe("tv4::bash")
 	chef.add_recipe("tv4::epel")
 	chef.add_recipe("tv4::scm")
-#	chef.add_recipe("tv4::mongo")
+	chef.add_recipe("tv4::mongo")
 	chef.add_recipe("tv4::php")
 	chef.add_recipe("tv4::apache")
   end

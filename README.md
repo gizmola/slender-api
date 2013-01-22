@@ -1,13 +1,31 @@
-## Laravel 4.x
+Slender API
+===
 
-### A Framework For Web Artisans
+Setup
+=====
 
-[Official Documentation](http://four.laravel.com) (Under Active Development)
+From your terminal
+```
+git clone git@github.com:dwsla/slender-api.git
+cd slender-api
+```
 
-### Contributing To Laravel
+* If needed, download & install virtual box 4.2.x: http://www.virtualbox.org/wiki/Downloads
+* If needed, Download & install vagrant latest: http://downloads.vagrantup.com/
 
-**All issues and pull requests should be filed on the [laravel/framework](http://github.com/laravel/framework) repository.**
+From the terminal (inside slender-api dir):
+* vagrant box add centos-6.3-i386 https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3-i386.box #Only if you havent used this box before.
+* vagrant up
+* vagrant ssh (if on windows: http://vagrantup.com/v1/docs/getting-started/ssh.html)
+* Verify that the storage/views directory is writable.
 
-### License
 
-The Laravel framework is open-sourced software license under the [MIT license](http://opensource.org/licenses/MIT)
+Once you ssh in, cd to /vagrant and run:
+```
+php composer.phar --verbose install
+```
+
+This should give you a working Slender API on http://localhost:4003 from the host, and http://localhost:80 from inside the VM.
+
+
+
