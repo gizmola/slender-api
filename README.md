@@ -1,9 +1,9 @@
 Slender
 =======
 
-Slender is [Slim](http://www.slimframework.com/), with a little more heft. But not too much.
+Slender is an API framework built on top of Laravel 4.
 
-In particular, Slender is an extension of Slim that makes some opinionated choices for 
+In particular, Slender is an extension of Laravel that makes some opinionated choices for 
 quick API development. 
 
 Slender will: 
