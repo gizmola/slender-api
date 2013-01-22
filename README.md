@@ -28,4 +28,10 @@ php composer.phar --verbose install
 This should give you a working Slender API on http://localhost:4003 from the host, and http://localhost:80 from inside the VM.
 
 
+Issues?
+---------------------
 
+Make sure you have right permissions for `storage` directory
+```
+chmod -R 777 app/storage
+```

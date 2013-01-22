@@ -1,5 +1,5 @@
 {
-    "hash": "8c52f9362e4e1835a194b5ec0d466d9c",
+    "hash": "6b45c65a639e42b794e50060b09df803",
     "packages": [
         {
             "name": "ircmaxell/password-compat",
@@ -47,12 +47,12 @@
             "source": {
                 "type": "git",
                 "url": "http://github.com/laravel/framework",
-                "reference": "076e74b4899e87a7d2ab089a7593ead4e5172d86"
+                "reference": "d24bf9fd559a1b75a23285d10fe378f11f32b9d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/laravel/framework/archive/076e74b4899e87a7d2ab089a7593ead4e5172d86.zip",
-                "reference": "076e74b4899e87a7d2ab089a7593ead4e5172d86",
+                "url": "https://github.com/laravel/framework/archive/d24bf9fd559a1b75a23285d10fe378f11f32b9d5.zip",
+                "reference": "d24bf9fd559a1b75a23285d10fe378f11f32b9d5",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +104,7 @@
                 "mockery/mockery": "0.7.2",
                 "iron-io/iron_mq": "1.4.*"
             },
-            "time": "2013-01-18 06:14:40",
+            "time": "2013-01-22 17:00:27",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -145,12 +145,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog",
-                "reference": "1.3.1"
+                "reference": "957ee8d0d62fad0c336797f0fb1ffa63ae6d6c71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/Seldaek/monolog/archive/1.3.1.zip",
-                "reference": "1.3.1",
+                "url": "https://github.com/Seldaek/monolog/archive/957ee8d0d62fad0c336797f0fb1ffa63ae6d6c71.zip",
+                "reference": "957ee8d0d62fad0c336797f0fb1ffa63ae6d6c71",
                 "shasum": ""
             },
             "require": {
@@ -169,11 +169,11 @@
                 "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
                 "raven/raven": "Allow sending log messages to a Sentry server"
             },
-            "time": "2013-01-11 10:23:20",
+            "time": "2013-01-22 15:02:20",
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3.x-dev"
+                    "dev-master": "1.4.x-dev"
                 }
             },
             "installation-source": "source",
@@ -200,6 +200,98 @@
                 "log",
                 "logging",
                 "psr-3"
+            ]
+        },
+        {
+            "name": "navruzm/laravel-mongo-auth",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/navruzm/laravel-mongo-auth",
+                "reference": "v1.0.0-beta"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/navruzm/laravel-mongo-auth/archive/v1.0.0-beta.zip",
+                "reference": "v1.0.0-beta",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "navruzm/lmongo": "master-dev"
+            },
+            "time": "2013-01-17 19:55:56",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "MongoAuth": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mustafa Navruz",
+                    "email": "mustafanavruz@gmail.com"
+                }
+            ],
+            "description": "MongoDB Auth Driver for Laravel 4",
+            "homepage": "http://github.com/navruzm/laravel-mongo-auth/",
+            "keywords": [
+                "mongodb",
+                "laravel",
+                "L4",
+                "Laravel 4"
+            ]
+        },
+        {
+            "name": "navruzm/lmongo",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/navruzm/lmongo",
+                "reference": "v1.0.0-beta"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/navruzm/lmongo/archive/v1.0.0-beta.zip",
+                "reference": "v1.0.0-beta",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "time": "2013-01-15 21:46:26",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "psr-0": {
+                    "LMongo": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mustafa Navruz",
+                    "email": "mustafanavruz@gmail.com"
+                }
+            ],
+            "description": "MongoDB service provider for Laravel 4",
+            "homepage": "http://github.com/navruzm/lmongo/",
+            "keywords": [
+                "mongodb",
+                "laravel",
+                "L4",
+                "Laravel 4"
             ]
         },
         {
@@ -247,18 +339,18 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/swiftmailer/swiftmailer.git",
-                "reference": "fbc0b9302715936724d81d6c5ed1a06692f17e27"
+                "reference": "3aec9a30346ebf54100a38ba7c71fb8aafae3e9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/swiftmailer/swiftmailer/archive/fbc0b9302715936724d81d6c5ed1a06692f17e27.zip",
-                "reference": "fbc0b9302715936724d81d6c5ed1a06692f17e27",
+                "url": "https://github.com/swiftmailer/swiftmailer/archive/3aec9a30346ebf54100a38ba7c71fb8aafae3e9a.zip",
+                "reference": "3aec9a30346ebf54100a38ba7c71fb8aafae3e9a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.4"
             },
-            "time": "2013-01-17 09:45:53",
+            "time": "2013-01-21 16:17:20",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -559,18 +651,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder",
-                "reference": "38c5c02ee21e219febd62438140ee6c95dba861d"
+                "reference": "1da9fdbfd75071a50f4afff9d9710461a94eec01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Finder/archive/38c5c02ee21e219febd62438140ee6c95dba861d.zip",
-                "reference": "38c5c02ee21e219febd62438140ee6c95dba861d",
+                "url": "https://github.com/symfony/Finder/archive/1da9fdbfd75071a50f4afff9d9710461a94eec01.zip",
+                "reference": "1da9fdbfd75071a50f4afff9d9710461a94eec01",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2013-01-17 15:25:59",
+            "time": "2013-01-18 20:36:32",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -607,18 +699,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation",
-                "reference": "237e596d9dbeccd1f19e3b5ee06418c0e6000b21"
+                "reference": "4ab347e5264d460812095eb381a14a93678ae68b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/HttpFoundation/archive/237e596d9dbeccd1f19e3b5ee06418c0e6000b21.zip",
-                "reference": "237e596d9dbeccd1f19e3b5ee06418c0e6000b21",
+                "url": "https://github.com/symfony/HttpFoundation/archive/4ab347e5264d460812095eb381a14a93678ae68b.zip",
+                "reference": "4ab347e5264d460812095eb381a14a93678ae68b",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2013-01-17 15:25:59",
+            "time": "2013-01-21 16:56:55",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -658,12 +750,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel",
-                "reference": "6e615dbed7196102917ed9aecada839ff25577ec"
+                "reference": "8c47ff743c87c02660da8f912fd8dfe36cde46bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/HttpKernel/archive/6e615dbed7196102917ed9aecada839ff25577ec.zip",
-                "reference": "6e615dbed7196102917ed9aecada839ff25577ec",
+                "url": "https://github.com/symfony/HttpKernel/archive/8c47ff743c87c02660da8f912fd8dfe36cde46bc.zip",
+                "reference": "8c47ff743c87c02660da8f912fd8dfe36cde46bc",
                 "shasum": ""
             },
             "require": {
@@ -691,7 +783,7 @@
                 "symfony/dependency-injection": "2.2.*",
                 "symfony/finder": "2.2.*"
             },
-            "time": "2013-01-17 15:25:59",
+            "time": "2013-01-21 21:03:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -776,12 +868,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Routing",
-                "reference": "9ce05861fd9aa6cbb14759a78ab30d07afcf489f"
+                "reference": "7196489720091b5bb70ef1866b7ff9719a98f761"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Routing/archive/9ce05861fd9aa6cbb14759a78ab30d07afcf489f.zip",
-                "reference": "9ce05861fd9aa6cbb14759a78ab30d07afcf489f",
+                "url": "https://github.com/symfony/Routing/archive/7196489720091b5bb70ef1866b7ff9719a98f761.zip",
+                "reference": "7196489720091b5bb70ef1866b7ff9719a98f761",
                 "shasum": ""
             },
             "require": {
@@ -799,7 +891,7 @@
                 "symfony/config": "2.2.*",
                 "symfony/yaml": "2.2.*"
             },
-            "time": "2013-01-17 15:25:59",
+            "time": "2013-01-21 16:57:32",
             "type": "library",
             "extra": {
                 "branch-alias": {
