@@ -48,7 +48,7 @@ template "/etc/php.d/mongo.ini" do
   mode 0744
 end
 
-template "/etc/php.d/tv4.ini" do
+template "/etc/php.d/slender-api.ini" do
   source "php.ini.erb"
   mode 0744
 end

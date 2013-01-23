@@ -1,10 +1,10 @@
-# CHANGELOG for fapi
+# CHANGELOG for slender-api
 
-This file is used to list changes made in each version of fapi.
+This file is used to list changes made in each version of slender-api.
 
 ## 0.1.0:
 
-* Initial release of fapi
+* Initial release of slender-api
 
 - - - 
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
