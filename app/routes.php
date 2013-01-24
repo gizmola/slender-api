@@ -13,6 +13,22 @@
 
 Route::get('/', function()
 {
-	return Response::json(array('status' => 'ok'), 200);
+
+	// some example
+	$role = array(
+	 'role' => 'Test role',
+	 'site1' => array(
+	 		'read'		=> 1,
+	 		'write'		=> 1,
+	 		'delete'	=> 0
+	 	)
+	);
+
+	// Role::insert($role);
+
+	var_dump(Role::all());
+
+
+	// return Response::json(array('status' => 'ok'), 200);
 	// return View::make('hello');
 });

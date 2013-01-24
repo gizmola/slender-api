@@ -1,7 +1,15 @@
 <?php
 
-class Role extends MongoModel{
+class Role extends BaseModel{
 
-	public static $collection = 'articles';
+	public static $collection = 'role';
+
+	public static $schema = array(
+
+        'name' => array('type' => 'string'),
+
+
+	);
+
 
 }
