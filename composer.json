@@ -5,6 +5,7 @@
 		"navruzm/lmongo": "*",
 		"phpunit/phpunit": "3.7.*"
 	},
+	
 	"autoload": {
 		"classmap": [
 			"app/commands",
@@ -12,7 +13,11 @@
 			"app/models",
 			"app/database/migrations",
 			"app/tests/TestCase.php"
-		]
+		],
+		"psr-0": {
+			"Dws\\Slender\\Api": "lib/dws/src"
+		}
+
 	},
 	
 	"minimum-stability": "dev",

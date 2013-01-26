@@ -1,5 +1,7 @@
 <?php
 
+use Dws\Slender\Api\Controller\SomeHelper;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -11,24 +13,12 @@
 |
 */
 
-Route::get('/', function()
-{
+Route::get('/', function(){
+	die('OK');
+});
 
-	// some example
-	$role = array(
-	 'role' => 'Test role',
-	 'site1' => array(
-	 		'read'		=> 1,
-	 		'write'		=> 1,
-	 		'delete'	=> 0
-	 	)
-	);
+Route::get('sample-home', 'SampleHomeController@showWelcome');
 
-	// Role::insert($role);
-
-	var_dump(Role::all());
-
-
-	// return Response::json(array('status' => 'ok'), 200);
-	// return View::make('hello');
+Route::get('help', function(){
+	SomeHelper::help();
 });
