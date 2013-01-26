@@ -22,3 +22,8 @@ Route::get('sample-home', 'SampleHomeController@showWelcome');
 Route::get('help', function(){
 	SomeHelper::help();
 });
+
+App::missing(function($exception)
+{
+    return View::make('errors.missing');
+});
