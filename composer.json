@@ -2,7 +2,8 @@
 	"require": {
 		"laravel/framework": "4.0.*",
 		"navruzm/laravel-mongo-auth": "*",
-		"navruzm/lmongo": "*"
+		"navruzm/lmongo": "*",
+		"phpunit/phpunit": "3.7.*"
 	},
 	"autoload": {
 		"classmap": [
@@ -13,5 +14,10 @@
 			"app/tests/TestCase.php"
 		]
 	},
-	"minimum-stability": "dev"
+	
+	"minimum-stability": "dev",
+	
+    "config": {
+        "bin-dir": "scripts"
+    }
 }
