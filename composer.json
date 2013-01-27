@@ -15,6 +15,7 @@
 			"app/tests/TestCase.php"
 		],
 		"psr-0": {
+			"App\\Controller\\Site": "app/controllers/site",
 			"Dws\\Slender\\Api": "lib/dws/src"
 		}
 
