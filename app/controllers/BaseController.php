@@ -1,18 +1,24 @@
 <?php
 
-class BaseController extends Controller {
+/**
+ * Base controller
+ *
+ * @author David Weinraub <david.weinraub@diamondwebservices.com>
+ */
+abstract class BaseController extends Controller
+{
+	protected $site;
 
-	/**
-	 * Setup the layout used by the controller.
-	 *
-	 * @return void
-	 */
-	protected function setupLayout()
+	public function getSite()
 	{
-		if ( ! is_null($this->layout))
-		{
-			$this->layout = View::make($this->layout);
+		if (null == $this->site) {
+			throw new \Exception('Site must be set in subclasses');
 		}
+		return $site;
 	}
-
+	
+	public function setSite($site)
+	{
+		$this->site = (string) $site;
+	}
 }
