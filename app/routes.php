@@ -13,7 +13,7 @@ App::missing(function($exception)
 });
 
 // simple system-responding route
-// Route::get('/', function(){ return 'OK'; });
+Route::get('/', 'IndexController@httpGetSingular');
 
 
 // simple system-responding route
