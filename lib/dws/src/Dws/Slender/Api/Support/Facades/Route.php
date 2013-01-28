@@ -33,8 +33,8 @@ class Route extends LaravelFacadeRoute
 		static::$app['router']->delete($singularRoute, $controller . '@httpDeleteSingular');
 		
 		// Add OPTIONS routes
+		static::$app['router']->match('options', $singularRoute, $controller . '@' . 'httpOptionsSingular');
 		static::$app['router']->match('options', $pluralRoute, $controller . '@' . 'httpOptionsPlural');
-		static::$app['router']->match('options', $pluralRoute, $controller . '@' . 'httpOptionsSingular');
 	}
 	
 	protected static function buildSingularRoute($site, $resource)
