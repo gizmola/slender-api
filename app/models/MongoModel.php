@@ -4,8 +4,8 @@
  * MongoModel wrapper
  * @TODO: move to Mongo package
  */
-
-class MongoModel{
+class MongoModel
+{
 
 	/**
 	 * Collection for active model
@@ -21,76 +21,88 @@ class MongoModel{
 	 */
 	public $connection = null;
 
-
 	public function __construct($connection = null)
 	{
-		if ($connection !== NULL)
-		{
+		if ($connection !== null) {
 			$this->connection = $connection;
 		}
 
-		if (is_null($this->connection))
-		{
+		if (is_null($this->connection)) {
 			$this->connection = LMongo::connection();
 		}
 
-		if (is_null(static::$collection))
-		{
+		if (is_null(static::$collection)) {
 			static::$collection = strtolower(get_called_class());
 		}
 	}
 
 	/**
-	 * get Connection
+	 * Get Connection
 	 *
 	 * @return LMongo\Database
 	 */
-	private function getConnection(){
+	public function getConnection()
+	{
 		return $this->connection;
 	}
 
 	/**
-	 * get Collection
+	 * Get Collection
 	 *
-     * @param  string     $collection
+	 * @param  string     $collection
 	 * @return MongoCollection
 	 */
-	private function getCollection($collection = null){
-		$collection = $collection?: static::$collection;
+	public function getCollection($collection = null)
+	{
+		$collection = $collection? : static::$collection;
 		return $this->getConnection()->$collection;
 	}
 
-
 	/**
-	 * get All
+	 * Get all
 	 *
 	 * @return array
 	 */
-	private function all(){
+	public function all()
+	{
 		$results = $this->getCollection()->find();
 		$collection = array();
 		foreach ($results as $key => $value) {
-			$collection[]=$value;
+			$collection[] = $value;
 		}
 		return $collection;
 	}
+	
+	public function insert(array $data)
+	{
+		return $this->getCollection()->insert($data);
+	}
+	
+	public function update($id, array $data)
+	{
+		$entity = $this->getCollection()->findOne($id);
+		echo "<pre>" . var_dump($entity) . "</pre>";
+		die(__FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message");
 
-	/****************************************************
-	 *	Magic Methods
-	 ****************************************************/
+
+		if ($entity){
+			foreach ($data as $k => $v) {
+				$entity->$k = $v;
+			}
+		}
+		return $this->getCollection()->update($entity);
+	}
 
 	/**
 	 * Magic Method for handling dynamic method calls.
 	 */
 	public function __call($method, $parameters)
-	{	
-		if(method_exists($this, $method))
-		{
+	{
+		if (method_exists($this, $method)) {
 			return call_user_func_array(array($this, $method), $parameters);
 		}
 
-		if(method_exists($this->getCollection(), $method))
-		{
+		if (method_exists($this->getCollection(), $method)) {
 			return call_user_func_array(array($this->getCollection(), $method), $parameters);
 		}
 		throw new \Exception("Method [$method] is not defined.");
@@ -104,4 +116,5 @@ class MongoModel{
 		$model = get_called_class();
 		return call_user_func_array(array(new $model, $method), $parameters);
 	}
+
 }

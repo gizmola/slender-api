@@ -42,7 +42,10 @@ $app->instance('path.base', __DIR__);
 $env = $app->detectEnvironment(array(
 
 	'local' => array('localhost', 'slender-api'),
-
+	'qa' => array('slender.qa.example.com'),
+	'staging' => array('slender.staging.example.com'),
+	'production' => array('slender.example.com'),
+	
 ));
 
 /*
