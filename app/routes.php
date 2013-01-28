@@ -68,3 +68,4 @@ Route::get('help', function(){
  * 
  */
 Route::addSiteRestResource('ai', 'videos');
+Route::addSiteRestResource('ai', 'pages');
