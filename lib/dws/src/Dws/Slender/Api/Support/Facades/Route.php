@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route as LaravelFacadeRoute;
  */
 class Route extends LaravelFacadeRoute
 {
+
 	public static function addSiteRestResource($site, $resource, $controller = null)
 	{
 		if (null == $controller) {
@@ -32,8 +33,8 @@ class Route extends LaravelFacadeRoute
 		static::$app['router']->delete($pluralRoute, $controller . '@' . 'httpDeleteSingular');
 		
 		// Add OPTIONS routes
-		// static::$app['router']->createRoute('options', $pluralRoute, $controller . '@' . 'httpOptionsPlural');
-		// static::$app['router']->createRoute('options', $pluralRoute, $controller . '@' . 'httpOptionsSingular');		
+		static::$app['router']->match('options', $pluralRoute, $controller . '@' . 'httpOptionsPlural');
+		static::$app['router']->match('options', $pluralRoute, $controller . '@' . 'httpOptionsSingular');
 	}
 	
 	protected static function buildSingularRoute($site, $resource)
@@ -46,4 +47,17 @@ class Route extends LaravelFacadeRoute
 		return $site . '/' . $resource;
 	}
 	
+	/**
+	 * Add a new HTTP OPTIONS route to the collection.
+	 *
+	 * @param  string  $pattern
+	 * @param  mixed   $action
+	 * @return Illuminate\Routing\Route
+	 */
+	public static function options($pattern, $action)
+	{
+		static::$app['router']->match('options', $pattern, $action);
+	}
+
+
 }

@@ -15,6 +15,11 @@ App::missing(function($exception)
 // simple system-responding route
 Route::get('/', function(){ die('OK'); });
 
+
+// simple system-responding route
+Route::options('/', function(){ die('OK OPTIONS'); });
+
+
 // simple route with a view
 Route::get('sample-home', 'SampleHomeController@showWelcome');
 
