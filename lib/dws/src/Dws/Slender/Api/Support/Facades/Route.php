@@ -14,7 +14,7 @@ class Route extends LaravelFacadeRoute
 	public static function addSiteRestResource($site, $resource, $controller = null)
 	{
 		if (null == $controller) {
-			$controller = 'App\\Controller\Site\\' . ucfirst($site) . '\\'
+			$controller = 'App\Controller\Site\\' . ucfirst($site) . '\\'
 				. ucfirst($resource) . 'Controller';
 		}
 		
@@ -22,14 +22,14 @@ class Route extends LaravelFacadeRoute
 		$pluralRoute	= static::buildPluralRoute($site, $resource);
 		
 		// Add GET routes
-		static::$app['router']->get($singularRoute, $controller . '@' . 'httpGetSingular');
-		static::$app['router']->get($pluralRoute, $controller . '@' . 'httpGetPlural');
+		static::$app['router']->get($singularRoute, $controller . '@httpGetSingular');
+		static::$app['router']->get($pluralRoute, $controller . '@httpGetPlural');
 		
 		// Add PUT route
-		static::$app['router']->put($pluralRoute, $controller . '@' . 'httpPutSingular');
+		static::$app['router']->put($pluralRoute, $controller . '@httpPutSingular');
 				
 		// Add DELETE route
-		static::$app['router']->delete($pluralRoute, $controller . '@' . 'httpDeleteSingular');
+		static::$app['router']->delete($pluralRoute, $controller . '@httpDeleteSingular');
 		
 		// Add OPTIONS routes
 		// static::$app['router']->createRoute('options', $pluralRoute, $controller . '@' . 'httpOptionsPlural');
