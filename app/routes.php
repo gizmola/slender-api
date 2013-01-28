@@ -34,32 +34,32 @@ Route::get('help', function(){
  *
  * Simple syntax to add all the standard routes we want in a single call:
  * 
- *	Route::addSiteRestResource('ai', 'videos');
+ *	Route::addSiteRestResource('ai', 'news');
  *
  * This creates a bunch of routes:
  * 
- *	GET /ai/videos
- *	GET /ai/videos/:id
- *	PUT /ai/videos/:id
- *	DELETE /ai/videos/:id
+ *	GET /ai/new
+ *	GET /ai/news/:id
+ *	PUT /ai/news/:id
+ *	DELETE /ai/news/:id
  * 
  *	OPTIONS /ai/videos
  *	OPTIONS /ai/videos/:id
  * 
  * These routes are handled by
  * 
- *	app/controllers/site/ai/VideosController.php
+ *	app/controllers/site/ai/NewsController.php
  *		
  * which extends 
  *
- *	app/controllers/VideosController.php
+ *	app/controllers/NewsController.php
  * 
  * which extends 
  * 
- *	app/controllers/BaseController.php
+ *	app/controllers/NewsController.php
  *		
  * giving us the ability to establish default behaviors at the base and to override 
- * per resource-type (ex: videos) and per site (ex: for ai)
+ * per resource-type (ex: news) and per site (ex: for ai)
  * 
  * To make this method work, I have created a new facade for Route and activated 
  * it in:
@@ -67,5 +67,5 @@ Route::get('help', function(){
  *	app/config/app.php
  * 
  */
-Route::addSiteRestResource('ai', 'videos');
+Route::addSiteRestResource('ai', 'news');
 Route::addSiteRestResource('ai', 'pages');
