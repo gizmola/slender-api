@@ -12,8 +12,17 @@ class ExampleTest extends TestCase {
 		$crawler = $this->client->request('GET', '/');
 
 		$this->assertTrue($this->client->getResponse()->isOk());
-
-		$this->assertCount(1, $crawler->filter('h1:contains("Hello World!")'));
+		// $this->assertCount(1, $crawler->filter('contains("OK")'));
+		$this->assertEquals('OK', $crawler->text());
 	}
+
+
+	public function testRestOptions()
+    {
+        $crawler = $this->client->request('OPTIONS', '/');
+
+		$this->assertTrue($this->client->getResponse()->isOk());
+		$this->assertEquals('OK OPTIONS', $crawler->text());
+    }
 
 }
