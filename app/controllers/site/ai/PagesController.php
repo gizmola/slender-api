@@ -2,6 +2,9 @@
 
 namespace App\Controller\Site\Ai;
 
+use App\Model\Site\Ai\Pages;
+
+
 /**
  * PagesController for the AI site
  *
@@ -10,4 +13,12 @@ namespace App\Controller\Site\Ai;
 class PagesController extends \PagesController
 {
 	protected $site = 'ai';
+
+	public function httpGetSingular($id)
+	{
+
+		var_dump(Pages::$schema);
+		die();
+	}
+
 }
