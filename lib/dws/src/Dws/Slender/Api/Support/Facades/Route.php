@@ -26,10 +26,10 @@ class Route extends LaravelFacadeRoute
 		static::$app['router']->get($pluralRoute, $controller . '@httpGetPlural');
 		
 		// Add PUT route
-		static::$app['router']->put($pluralRoute, $controller . '@httpPutSingular');
+		static::$app['router']->put($singularRoute, $controller . '@httpPutSingular');
 				
 		// Add DELETE route
-		static::$app['router']->delete($pluralRoute, $controller . '@httpDeleteSingular');
+		static::$app['router']->delete($singularRoute, $controller . '@httpDeleteSingular');
 		
 		// Add OPTIONS routes
 		// static::$app['router']->createRoute('options', $pluralRoute, $controller . '@' . 'httpOptionsPlural');
