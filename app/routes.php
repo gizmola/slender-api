@@ -13,11 +13,11 @@ App::missing(function($exception)
 });
 
 // simple system-responding route
-Route::get('/', function(){ die('OK'); });
+Route::get('/', function(){ return 'OK'; });
 
 
 // simple system-responding route
-Route::options('/', function(){ die('OK OPTIONS'); });
+Route::options('/', function(){ return 'OK OPTIONS'; });
 
 
 // simple route with a view
