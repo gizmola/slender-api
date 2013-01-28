@@ -13,11 +13,11 @@ App::missing(function($exception)
 });
 
 // simple system-responding route
-Route::get('/', function(){ return 'OK'; });
+// Route::get('/', function(){ return 'OK'; });
 
 
 // simple system-responding route
-Route::options('/', function(){ return 'OK OPTIONS'; });
+// Route::options('/', function(){ return 'OK OPTIONS'; });
 
 
 // simple route with a view
@@ -43,8 +43,8 @@ Route::get('help', function(){
  *	PUT /ai/videos/:id
  *	DELETE /ai/videos/:id
  * 
- *	OPTIONS /ai/videos		(not yet implemented)
- *	OPTIONS /ai/videos/:id	(not yet implemented)
+ *	OPTIONS /ai/videos
+ *	OPTIONS /ai/videos/:id
  * 
  * These routes are handled by
  * 
