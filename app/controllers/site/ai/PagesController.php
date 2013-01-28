@@ -16,9 +16,7 @@ class PagesController extends \PagesController
 
 	public function httpGetSingular($id)
 	{
-
-		var_dump(Pages::$schema);
-		die();
+		return '{"pages":[{ "_id" : "id", "title" : "page title"}]}';
 	}
 
 }
