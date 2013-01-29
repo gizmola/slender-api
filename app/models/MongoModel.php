@@ -55,7 +55,11 @@ class MongoModel
 	public function getCollection($collection = null)
 	{
 		$collection = $collection? : static::$collection;
-		return $this->getConnection()->$collection;
+		// if(method_exists($this->getConnection(), $collection)){
+			return $this->getConnection()->$collection;
+		// }else{
+			// var_dump($this->getConnection(), $collection);
+		// }
 	}
 
 	/**

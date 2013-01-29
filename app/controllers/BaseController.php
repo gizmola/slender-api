@@ -12,6 +12,13 @@ abstract class BaseController extends Controller
 	protected $modelClass;
 	
 	protected $returnKey;
+	protected $collection;
+	protected $container = 'collection';
+	
+	public function __construct(DbRepository $collection){
+		$cont = $this->container;
+		$this->$cont = $collection->getCollection($this->getConnectionName())->$cont;
+	}
 	
 	public function httpGetSingular($id)
 	{
@@ -48,11 +55,6 @@ abstract class BaseController extends Controller
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
-
-	public function __construct()
-    {
-        // $this-> getSite();
-    }
 
 	public function getSite()
 	{
@@ -94,5 +96,9 @@ abstract class BaseController extends Controller
 	{
 		$this->returnKey = (string) $returnKey;
 		return $this;
+	}
+
+	protected function getConnectionName(){
+		return $this->site?: 'default';
 	}
 }

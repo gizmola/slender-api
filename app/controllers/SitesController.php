@@ -4,8 +4,13 @@ class SitesController extends BaseController
 {
 	protected $returnKey = 'sites';
 
+	protected $container = 'sites';
+
+
 	public function httpGetSingular($id=null)
 	{
+		// access to the $container collection 
+		// var_dump($this->sites->findOne());
 
 		// $site = array('name' => 'ai', 'data' => 1);
 

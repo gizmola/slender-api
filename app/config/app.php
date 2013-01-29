@@ -171,6 +171,7 @@ return array(
 		'View'            => 'Illuminate\Support\Facades\View',
 		'LMongo'		  => 'LMongo\Facades\LMongo',
 
+		'DbRepository'        => 'Dws\Slender\Api\Database\DbRepository',
 	),
 
 );

@@ -2,6 +2,10 @@
 
 use Dws\Slender\Api\Controller\SomeHelper;
 
+
+App::bind('DbRepository', 'Repository');
+
+
 App::error(function($exception)
 {
 	die($exception);
