@@ -4,7 +4,11 @@ use Dws\Slender\Api\Controller\SomeHelper;
 
 App::error(function($exception)
 {
-	die($exception);
+    return Response::json(array(
+		'messages' => array(
+			$exception->getMessage(),
+		),
+	), 500);
 });
 
 App::missing(function($exception)
