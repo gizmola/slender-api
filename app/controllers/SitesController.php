@@ -16,7 +16,7 @@ class SitesController extends BaseController
 
 		// Sites::insert($site);
 
-		$sites = Sites::find();
+		$sites = $this->sites->find();
 		
 		$res = array();
 		foreach ($sites as $key => $value) {
