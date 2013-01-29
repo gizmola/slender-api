@@ -15,7 +15,7 @@ abstract class BaseController extends Controller
 	protected $collection;
 	protected $container = 'collection';
 	
-	public function __construct(DbRepository $collection){
+	public function __construct(Repository $collection){
 		$cont = $this->container;
 		$this->$cont = $collection->getCollection($this->getConnectionName())->$cont;
 	}

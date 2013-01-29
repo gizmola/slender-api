@@ -3,7 +3,7 @@
 use Dws\Slender\Api\Controller\SomeHelper;
 
 
-App::bind('DbRepository', 'Repository');
+App::bind('Repository', 'DbRepository');
 
 
 App::error(function($exception)

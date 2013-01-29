@@ -117,10 +117,5 @@ return array(
 			'port'     => 6379,
 			'database' => 0,
 		),
-		'ai' => array(
-			'host' => '127.0.0.1',
-			'port' => 27017,
-			'database' => 'ai',
-		),
 	),
 );

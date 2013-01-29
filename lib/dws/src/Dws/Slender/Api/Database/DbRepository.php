@@ -11,10 +11,7 @@ use LMongo\Facades\LMongo;
  */
 class DbRepository
 {
-
-
 	public function getCollection($connectionName){
-
 		return LMongo::connection($connectionName);
 	}
 }
