@@ -19,45 +19,45 @@ class Route extends LaravelFacadeRoute
 				. ucfirst($resource) . 'Controller';
 		}
 		
-		$singularRoute	= static::buildSingularRoute($site, $resource);
-		$pluralRoute	= static::buildPluralRoute($site, $resource);
+		$singularRoute	= static::buildRoute($site, $resource, true);
+		$pluralRoute	= static::buildRoute($site, $resource, false);
 		
 		// Add GET routes
-		static::$app['router']->get($singularRoute, $controller . '@httpGetSingular');
-		static::$app['router']->get($pluralRoute, $controller . '@httpGetPlural');
+		static::$app['router']->get($singularRoute, $controller . '@view');
+		static::$app['router']->get($pluralRoute, $controller . '@index');
 		
 		// Add PUT route
-		static::$app['router']->put($singularRoute, $controller . '@httpPutSingular');
+		static::$app['router']->put($singularRoute, $controller . '@update');
+				
+		// Add POST route
+		static::$app['router']->post($pluralRoute, $controller . '@insert');
 				
 		// Add DELETE route
-		static::$app['router']->delete($singularRoute, $controller . '@httpDeleteSingular');
+		static::$app['router']->delete($singularRoute, $controller . '@delete');
 		
 		// Add OPTIONS routes
-		static::$app['router']->match('options', $singularRoute, $controller . '@' . 'httpOptionsSingular');
-		static::$app['router']->match('options', $pluralRoute, $controller . '@' . 'httpOptionsPlural');
+		static::$app['router']->match('options', $pluralRoute, $controller . '@options');
 	}
 	
-	protected static function buildSingularRoute($site, $resource)
+	protected static function buildRoute($site, $resource, $isSingular = false)
 	{
-		return $site . '/' . $resource . '/{id}';
+		$route = $site . '/' . $resource;
+		if ($isSingular) {
+			$route .= '/{id}';
+		}
+		return $route;
 	}
 	
-	protected static function buildPluralRoute($site, $resource)
-	{
-		return $site . '/' . $resource;
-	}
-	
-	/**
-	 * Add a new HTTP OPTIONS route to the collection.
-	 *
-	 * @param  string  $pattern
-	 * @param  mixed   $action
-	 * @return Illuminate\Routing\Route
-	 */
-	public static function options($pattern, $action)
-	{
-		static::$app['router']->match('options', $pattern, $action);
-	}
-
+//	/**
+//	 * Add a new HTTP OPTIONS route to the collection.
+//	 *
+//	 * @param  string  $pattern
+//	 * @param  mixed   $action
+//	 * @return Illuminate\Routing\Route
+//	 */
+//	public function options($pattern, $action)
+//	{
+//		static::$app['router']->match('options', $pattern, $action);
+//	}
 
 }

@@ -19,7 +19,7 @@ class NewsController extends BaseNewsController
 	
 	protected $returnKey = 'news';
 	
-	public function httpGetSingular($id)
+	public function view($id)
 	{
 		// sample
 		return Response::json(array(
@@ -33,7 +33,7 @@ class NewsController extends BaseNewsController
 		));
 	}
 
-	public function httpGetPlural()
+	public function index()
 	{
 		// sample override just
 		return Response::json(array(

@@ -2,32 +2,27 @@
 
 abstract class VideosController extends BaseController
 {
-	public function httpGetSingular($id)
+	public function view($id)
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpGetPlural()
+	public function index()
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpPutSingular($id)
+	public function update($id)
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpDeleteSingular($id)
+	public function delete($id)
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpOptionsSingular($id)
-	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
-	}
-
-	public function httpOptionsPlural()
+	public function options()
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}

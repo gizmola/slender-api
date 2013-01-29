@@ -11,7 +11,7 @@ class VideosController extends \VideosController
 {
 	protected $site = 'ai';
 	
-	public function httpGetSingular($id)
+	public function view($id)
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
