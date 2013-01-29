@@ -9,7 +9,11 @@ App::error(function($exception)
 
 App::missing(function($exception)
 {
-    return View::make('errors.missing');
+    return Response::json(array(
+		'messages' => array(
+			'Resource not found',
+		),
+	), 404);
 });
 
 // simple system-responding route
