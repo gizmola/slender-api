@@ -1,10 +1,13 @@
 <?php
 
+
 class SitesController extends BaseController
 {
 	protected $returnKey = 'sites';
 
 	protected $container = 'sites';
+
+	protected $model = 'App\Models\Sites';
 
 
 	public function httpGetSingular($id=null)
@@ -23,16 +26,44 @@ class SitesController extends BaseController
 			$res[] = $value;
 		}
 		return Response::json(array(
-			$this->getReturnKey() => array(
-				$res
-			),
+			$this->getReturnKey() => $res
 		));
 	}
 
+	// public function httpOptionsSingular()
+	// {
+	// 	// access to the $container collection 
+	// 	// var_dump($this->sites->findOne());
 
-	public function httpOptionsSingular($id)
+	// 	// $site = array('name' => 'ai', 'data' => 1);
+
+	// 	// Sites::insert($site);
+
+		// die('111');
+	// 	$sites = $this->sites->find();
+	// 	$res = array();
+	// 	foreach ($sites as $key => $value) {
+	// 		$res[] = $value;
+	// 	}
+	// 	return Response::json(array(
+	// 		$this->getReturnKey() => $res
+	// 	));
+	// }
+
+
+	public function httpOptionsSingular($id=null)
 	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$model = $this->getModel();
+
+		return Response::json(array(
+			'POST' => array(
+				'description' => '',
+				'parameters' => array(
+					$model::$schema
+				),
+			),
+		));
+
 	}
 
 

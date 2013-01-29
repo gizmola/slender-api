@@ -11,4 +11,10 @@ use \News as BaseNews;
  */
 class News extends BaseNews
 {
+	public static $schema = array(
+
+        'name' => array('type' => 'string'),
+
+
+	);
 }

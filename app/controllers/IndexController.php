@@ -3,5 +3,4 @@
 class IndexController extends SitesController
 {
 
-
 }

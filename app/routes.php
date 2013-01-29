@@ -21,7 +21,7 @@ Route::get('/', 'IndexController@httpGetSingular');
 
 
 // simple system-responding route
-// Route::options('/', function(){ return 'OK OPTIONS'; });
+Route::options('/', 'IndexController@httpOptionsSingular');
 
 
 // simple route with a view
