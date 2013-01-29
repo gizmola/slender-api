@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Site\Ai;
+namespace App\Models\Site\Ai;
 
 use \News as BaseNews;
 

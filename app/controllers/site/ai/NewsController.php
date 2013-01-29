@@ -15,7 +15,7 @@ class NewsController extends BaseNewsController
 {
 	protected $site = 'ai';	
 	
-	protected $model = 'App\Model\Site\Ai\News';
+	protected $model = 'App\Models\Site\Ai\News';
 	
 	protected $returnKey = 'news';
 	
