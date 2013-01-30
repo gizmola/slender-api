@@ -6,6 +6,7 @@ use \NewsController as BaseNewsController;
 use \News;
 use \Response;
 
+use App\Model\Site\Ai;
 /**
  * NewsController for the AI site
  *
@@ -15,12 +16,32 @@ class NewsController extends BaseNewsController
 {
 	protected $site = 'ai';	
 	
-	protected $model = 'App\Model\Site\Ai\News';
+	protected $model = '\App\Model\Site\Ai\News';
 	
 	protected $returnKey = 'news';
 	
 	public function httpGetSingular($id)
 	{
+		
+
+		$news = new $this->model;
+
+		// insert
+		// $news->insert( array('email' => 'john@example.com', 'votes' => 0));
+		
+		// get first
+		$one = $news->where('email', 'john@example.com')->first();
+
+		var_dump($one);
+
+		// get all 
+		$result = $news->get();
+		foreach ($result as $value)
+		{
+		    var_dump($value);
+		}
+		// var_dump(\App::make('mongo')->connection('ai'));
+		
 		// sample
 		return Response::json(array(
 			$this->getReturnKey() => array(

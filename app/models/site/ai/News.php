@@ -11,4 +11,5 @@ use \News as BaseNews;
  */
 class News extends BaseNews
 {
+	protected $site = 'ai';
 }

@@ -2,5 +2,5 @@
 
 class News extends BaseModel
 {
-	public static $collection = 'news';
+	protected $collection = 'news';
 }

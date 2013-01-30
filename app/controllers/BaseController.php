@@ -12,6 +12,7 @@ abstract class BaseController extends Controller
 	protected $modelClass;
 	
 	protected $returnKey;
+
 	
 	public function httpGetSingular($id)
 	{
