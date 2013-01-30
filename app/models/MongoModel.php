@@ -28,7 +28,7 @@ class MongoModel
 		}
 
 		if (is_null($this->connection)) {
-			$this->connection = \App::make('MongoSingleton');
+			$this->connection = \App::make('MongoSiteSingleton');
 		}
 
 		if (is_null($this->collection)) {

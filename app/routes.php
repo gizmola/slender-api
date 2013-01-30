@@ -26,7 +26,7 @@ App::missing(function($exception)
 });
 
 
-App::singleton('MongoSingleton', function(){
+App::singleton('MongoSiteSingleton', function(){
     // inspect Request, get site
 
 	$site = explode("/", \Request::path());
@@ -35,6 +35,10 @@ App::singleton('MongoSingleton', function(){
 	$site = in_array($site, array('users','roles')) ? 'default' : $site;
 
     return App::make('mongo')->connection($site);
+});
+
+App::singleton('MongoCommonSingleton', function(){
+    return App::make('mongo')->connection('default');
 });
 
 
