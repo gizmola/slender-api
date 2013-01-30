@@ -42,5 +42,21 @@ class BaseModel extends MongoModel
 	public function options()
 	{	
 	}
-
+	
+	/**
+	 * @todo
+	 * @param array $data
+	 */
+	protected function embedChildren(array $data)
+	{
+	}
+	
+	/**
+	 * @todo
+	 * @param array $data
+	 * @param boolean $isDelete
+	 */
+	protected function updateParents(array $data, $isDelete = false)
+	{
+	}
 }
