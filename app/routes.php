@@ -25,6 +25,26 @@ App::missing(function($exception)
 	), 404);
 });
 
+
+class Foo {}
+class Bar {}
+
+App::make('foo', function(){
+	return new Foo();
+});
+
+App::singleton('bar', function(){
+	return new Bar();
+});
+
+Route::get('foo', function(){
+	$foo1 = App::make('foo');
+	$foo2 = App::make('foo');
+	$bar1 = App::make('bar');
+	$bar2 = App::make('bar');
+	var_dump($foo1, $foo2, $bar1, $bar2);
+});
+
 // simple system-responding route
 Route::get('/', 'IndexController@index');
 // Route::options('/', function(){ return 'OK OPTIONS'; });
