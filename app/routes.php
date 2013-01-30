@@ -25,6 +25,19 @@ App::missing(function($exception)
 	), 404);
 });
 
+
+App::singleton('MongoSingleton', function(){
+    // inspect Request, get site
+
+	$site = explode("/", \Request::path());
+	$site = $site[0];
+
+	$site = in_array($site, array('users','roles')) ? 'default' : $site;
+
+    return App::make('mongo')->connection($site);
+});
+
+
 // simple system-responding route
 Route::get('/', 'IndexController@index');
 // Route::options('/', function(){ return 'OK OPTIONS'; });
