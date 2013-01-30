@@ -29,7 +29,7 @@ App::missing(function($exception)
 class Foo {}
 class Bar {}
 
-App::make('foo', function(){
+App::bind('foo', function(){
 	return new Foo();
 });
 
