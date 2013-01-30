@@ -6,6 +6,8 @@ use \Pages as BasePages;
 
 class Pages extends BasePages{
 
+	protected $site = 'ai';
+	
 	public static $schema = array(
 
         'title' => array('type' => 'string'),
