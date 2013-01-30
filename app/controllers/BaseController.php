@@ -5,6 +5,7 @@
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
+
 abstract class BaseController extends Controller
 {
 	protected $site;
@@ -36,12 +37,15 @@ abstract class BaseController extends Controller
 
 	public function update($id)
 	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$input = Input::json();
+		var_dump($input);
+		//die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
 	public function insert()
 	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$input = Input::json();
+		var_dump($input);
 	}
 
 	public function delete($id)
