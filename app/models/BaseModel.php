@@ -11,6 +11,5 @@ class BaseModel extends MongoModel
 	public static $schema = array();
 
 
-	
 
 }

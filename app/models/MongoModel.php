@@ -62,6 +62,40 @@ class MongoModel
 
 
 	/**
+	 * Overwriting Execute the query function.
+	 *
+	 * @param  array  $columns
+	 * @return Array
+	 */
+	public function get($columns = array())
+	{
+		$result = $this->getCollection()->get($columns);
+		$return = array();
+		foreach ($result as $value) 
+		{
+			$return[] = $value;
+		}
+		return $return;
+	}
+
+	/**
+	 * Get record by ID
+	 *
+	 * @param  string  $id
+	 * @return mixed 
+	 */
+	public function find($id)
+	{
+		if(!$id instanceof MongoId){
+			$id = new MongoId($id);
+		}
+
+		$collection = $this->collection;
+
+		return $this->getCollection()->where('_id', $id)->first();
+	}
+
+	/**
 	 * Magic Method for handling dynamic method calls.
 	 */
 	public function __call($method, $parameters)

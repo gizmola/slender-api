@@ -17,7 +17,7 @@ abstract class BaseController extends Controller
 	public function view($id)
 	{
 		$model = $this->getModel();
-		$record = $model::where('_id', $id)->first();
+		$record = with(new $model)->find($id);
 		return Response::json(array(
 			$this->getReturnKey() => array(
 				$record
@@ -28,11 +28,9 @@ abstract class BaseController extends Controller
 	public function index()
 	{
 		$model = $this->getModel();
-		$record = $model::get();
+		$records = with(new $model)->get();
 		return Response::json(array(
-			$this->getReturnKey() => array(
-				$record
-			),
+			$this->getReturnKey() => $records
 		));
 	}
 
