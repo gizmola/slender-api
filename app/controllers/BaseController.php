@@ -44,8 +44,10 @@ abstract class BaseController extends Controller
 
 	public function insert()
 	{
-		$input = Input::json();
-		var_dump($input);
+		$input_str = json_encode(Input::json());
+		$input = json_decode($input_str,true);
+		$this->model->insert($input);
+		echo $input_str;
 	}
 
 	public function delete($id)
