@@ -2,7 +2,10 @@
 
 namespace App\Controller\Site\Ai;
 
-use App\Model\Site\Ai\Pages;
+use App\Model\Site\Ai\Pages,
+	Request,
+	Input,
+	PagesController as BasePagesController;
 
 
 /**
@@ -10,7 +13,7 @@ use App\Model\Site\Ai\Pages;
  *
  * @author Juni Samos <juni.samos@diamondwebservices.com>
  */
-class PagesController extends \PagesController
+class PagesController extends BasePagesController
 {
 
 	protected $returnKey = 'pages';
@@ -19,4 +22,5 @@ class PagesController extends \PagesController
 	{
 		$this->model = $model;
 	}
+
 }
