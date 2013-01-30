@@ -14,7 +14,7 @@ class PagesController extends \PagesController
 {
 	protected $site = 'ai';
 
-	public function httpGetSingular($id)
+	public function view($id)
 	{
 		return '{"pages":[{ "_id" : "id", "title" : "page title"}]}';
 	}

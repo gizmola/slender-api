@@ -14,7 +14,7 @@ abstract class BaseController extends Controller
 	protected $returnKey;
 
 	
-	public function httpGetSingular($id)
+	public function view($id)
 	{
 		$model = $this->getModel();
 		$record = $model::find(array( '_id' => $id));
@@ -25,27 +25,27 @@ abstract class BaseController extends Controller
 		));
 	}
 
-	public function httpGetPlural()
+	public function index()
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpPutSingular($id)
+	public function update($id)
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpDeleteSingular($id)
+	public function insert()
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpOptionsSingular($id)
+	public function delete($id)
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function httpOptionsPlural()
+	public function options()
 	{
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
@@ -59,6 +59,7 @@ abstract class BaseController extends Controller
 	{
 		if (null == $this->site) {
 			throw new \Exception('Site must be set in subclasses');
+			// @todo: extract from classame
 		}
 		return $this->site;
 	}
@@ -73,6 +74,7 @@ abstract class BaseController extends Controller
 	{
 		if (null == $this->model) {
 			throw new \Exception('Model not set');
+			// @todo: extract from classame
 		}
 		return $this->model;
 	}
@@ -87,6 +89,7 @@ abstract class BaseController extends Controller
 	{
 		if (null == $this->returnKey) {
 			throw new \Exception('Return key not set');
+			// @todo: extract from classame
 		}
 		return $this->returnKey;
 	}

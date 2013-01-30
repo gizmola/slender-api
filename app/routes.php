@@ -1,22 +1,32 @@
 <?php
 
-use Dws\Slender\Api\Controller\SomeHelper;
-
+/**
+ * 500 handler
+ */
 App::error(function($exception)
 {
-	die($exception);
+	$message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
+	return Response::json(array(
+		'messages' => array(
+			$message,
+		),
+	), 500);
 });
 
+/**
+ * 404 handler
+ */
 App::missing(function($exception)
 {
-    return View::make('errors.missing');
+    return Response::json(array(
+		'messages' => array(
+			'Resource not found',
+		),
+	), 404);
 });
 
 // simple system-responding route
-Route::get('/', 'IndexController@httpGetSingular');
-
-
-// simple system-responding route
+Route::get('/', 'IndexController@index');
 // Route::options('/', function(){ return 'OK OPTIONS'; });
 
 
@@ -26,7 +36,7 @@ Route::get('sample-home', 'SampleHomeController@showWelcome');
 // simple route to demonstate that we can load utilities from
 // an outside namespace
 Route::get('help', function(){
-	SomeHelper::help();
+	Dws\Slender\Api\Controller\SomeHelper::help();
 });
 
 /**
@@ -43,8 +53,8 @@ Route::get('help', function(){
  *	PUT /ai/news/:id
  *	DELETE /ai/news/:id
  * 
- *	OPTIONS /ai/videos
- *	OPTIONS /ai/videos/:id
+ *	OPTIONS /ai/news
+ *	OPTIONS /ai/news/:id
  * 
  * These routes are handled by
  * 
@@ -69,3 +79,4 @@ Route::get('help', function(){
  */
 Route::addSiteRestResource('ai', 'news');
 Route::addSiteRestResource('ai', 'pages');
+Route::addSiteRestResource('ai', 'videos');
