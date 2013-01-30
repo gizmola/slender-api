@@ -12,14 +12,14 @@ class MongoModel
 	 *
 	 * @var null
 	 */
-	public static $collection = null;
+	protected $collection = null;
 
 	/**
 	 * Connection to use for active model
 	 *
 	 * @var null
 	 */
-	public $connection = null;
+	protected $connection = null;
 
 	public function __construct($connection = null)
 	{
@@ -28,11 +28,12 @@ class MongoModel
 		}
 
 		if (is_null($this->connection)) {
-			$this->connection = LMongo::connection();
+			$this->connection = \App::make('mongo')->connection($this->site);
+
 		}
 
-		if (is_null(static::$collection)) {
-			static::$collection = strtolower(get_called_class());
+		if (is_null($this->collection)) {
+			$this->collection = strtolower(get_called_class());
 		}
 	}
 
@@ -54,44 +55,10 @@ class MongoModel
 	 */
 	public function getCollection($collection = null)
 	{
-		$collection = $collection? : static::$collection;
-		return $this->getConnection()->$collection;
+		$collection = $collection? : $this->collection;
+		return $this->connection->collection($this->collection);
 	}
 
-	/**
-	 * Get all
-	 *
-	 * @return array
-	 */
-	public function all()
-	{
-		$results = $this->getCollection()->find();
-		$collection = array();
-		foreach ($results as $key => $value) {
-			$collection[] = $value;
-		}
-		return $collection;
-	}
-	
-	public function insert(array $data)
-	{
-		return $this->getCollection()->insert($data);
-	}
-	
-	public function update($id, array $data)
-	{
-		$entity = $this->getCollection()->findOne($id);
-		echo "<pre>" . var_dump($entity) . "</pre>";
-		die(__FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message");
-
-
-		if ($entity){
-			foreach ($data as $k => $v) {
-				$entity->$k = $v;
-			}
-		}
-		return $this->getCollection()->update($entity);
-	}
 
 	/**
 	 * Magic Method for handling dynamic method calls.
