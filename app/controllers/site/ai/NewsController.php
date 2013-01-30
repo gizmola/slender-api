@@ -30,27 +30,23 @@ class NewsController extends BaseNewsController
 		// $news->insert( array('email' => 'john@example.com', 'votes' => 0));
 		
 		// get first
-		$one = $news->where('email', 'john@example.com')->first();
-
-		var_dump($one);
+		// $one = $news->where('email', 'john@example.com')->first();
+		// var_dump($one);
 
 		// get all 
 		$result = $news->get();
+
+		// @TODO: move result processing (including _id) to the BaseModel
+		$return = array();
 		foreach ($result as $value)
 		{
-		    var_dump($value);
+		    $return[] =$value;
 		}
 		// var_dump(\App::make('mongo')->connection('ai'));
 		
 		// sample
 		return Response::json(array(
-			$this->getReturnKey() => array(
-				array(
-					'id' => $id,
-					'headline' => 'My Headline',
-					'slug' => 'my-slug',
-				),
-			),
+			$this->getReturnKey() => $return
 		));
 	}
 
