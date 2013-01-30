@@ -17,7 +17,7 @@ abstract class BaseController extends Controller
 	public function view($id)
 	{
 		$model = $this->getModel();
-		$record = $model::find(array( '_id' => $id));
+		$record = $model::where('_id', $id)->first();
 		return Response::json(array(
 			$this->getReturnKey() => array(
 				$record
@@ -27,7 +27,13 @@ abstract class BaseController extends Controller
 
 	public function index()
 	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$model = $this->getModel();
+		$record = $model::get();
+		return Response::json(array(
+			$this->getReturnKey() => array(
+				$record
+			),
+		));
 	}
 
 	public function update($id)

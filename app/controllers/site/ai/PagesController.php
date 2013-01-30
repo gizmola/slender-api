@@ -12,11 +12,14 @@ use App\Model\Site\Ai\Pages;
  */
 class PagesController extends \PagesController
 {
-	protected $site = 'ai';
-
-	public function view($id)
-	{
-		return '{"pages":[{ "_id" : "id", "title" : "page title"}]}';
-	}
+	protected $site = 'ai';	
+	
+	protected $model = '\App\Model\Site\Ai\Pages';
+	
+	protected $returnKey = 'pages';
+	// public function view($id)
+	// {
+	// 	return '{"pages":[{ "_id" : "id", "title" : "page title"}]}';
+	// }
 
 }

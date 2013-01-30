@@ -5,8 +5,8 @@ namespace App\Controller\Site\Ai;
 use \NewsController as BaseNewsController;
 use \News;
 use \Response;
-
 use App\Model\Site\Ai;
+
 /**
  * NewsController for the AI site
  *
