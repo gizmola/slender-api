@@ -16,7 +16,7 @@ class MongoModel
 	/**
 	 * Collection for active model
 	 *
-	 * @var \MongoCollection
+	 * @var LMongo\Query\Builder
 	 */
 	protected $collection;
 
@@ -61,12 +61,12 @@ class MongoModel
 	/**
 	 * Get Collection
 	 *
-	 * @param  string     $collection
-	 * @return MongoCollection
+	 * @param  string     $collectionName
+	 * @return LMongo\Query\Builder
 	 */
-	public function getCollection($collection = null)
+	public function getCollection($collectionName = null)
 	{
-		$collection = $collection? : $this->collectionName;
+		$collectionName = $collectionName ?: $this->collectionName;
 		return $this->connection->collection($this->collectionName);
 	}
 
