@@ -3,8 +3,6 @@
 namespace App\Controller\Site\Ai;
 
 use App\Model\Site\Ai\Pages,
-	Request,
-	Input,
 	PagesController as BasePagesController;
 
 
@@ -15,12 +13,29 @@ use App\Model\Site\Ai\Pages,
  */
 class PagesController extends BasePagesController
 {
-
-	protected $returnKey = 'pages';
-
+	
+	/**
+	 * Constructor
+	 * 
+	 * Needed simply for type-hinting so that Laravel can auto-instantiate and
+	 * inject the model
+	 * 
+	 * @param \App\Model\Site\Ai\Pages $model
+	 */
 	public function __construct(Pages $model)
 	{
-		$this->model = $model;
+		parent::__construct($model);
+	}
+	
+	/**
+	 * For demonstration purposes. In principle, this would be missing, handled by
+	 * the general implementation in BaseController. Included here just to demonstrate
+	 * that the connection points to the `slender_ai` db and the `pages` collection.
+	 */
+	public function index()
+	{
+		echo "<pre>" . var_dump($this->model) . "</pre>";
+		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
 }

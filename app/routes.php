@@ -31,7 +31,7 @@ App::singleton('MongoSiteSingleton', function(){
 
 	$site = explode("/", \Request::path());
 	$site = $site[0];
-
+	
 	$site = in_array($site, array('users','roles')) ? 'default' : $site;
 
     return App::make('mongo')->connection($site);
@@ -40,7 +40,6 @@ App::singleton('MongoSiteSingleton', function(){
 App::singleton('MongoCommonSingleton', function(){
     return App::make('mongo')->connection('default');
 });
-
 
 // simple system-responding route
 Route::get('/', 'IndexController@index');

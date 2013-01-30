@@ -8,21 +8,24 @@
 
 abstract class BaseController extends Controller
 {
-	protected $site;
-	
-	protected $modelClass;
+	/**
+	 * @var BaseModel
+	 */
+	protected $model;
 	
 	protected $returnKey;
 
+	public function __construct(BaseModel $model)
+	{
+		$this->model = $model;
+	}
 	
 	public function view($id)
 	{
 		$model = $this->getModel();
 		$record = with(new $model)->find($id);
 		return Response::json(array(
-			$this->getReturnKey() => array(
-				$record
-			),
+			$this->getReturnKey() => ($record ? array($record) : array()),
 		));
 	}
 
@@ -60,11 +63,6 @@ abstract class BaseController extends Controller
 		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
 	}
 
-	public function __construct()
-    {
-        // $this-> getSite();
-    }
-
 	public function getSite()
 	{
 		if (null == $this->site) {
@@ -91,7 +89,7 @@ abstract class BaseController extends Controller
 	
 	public function setModel($model)
 	{
-		$this->model = (string) $model;
+		$this->model = $model;
 		return $model;
 	}
 	

@@ -8,19 +8,30 @@ class MongoModel
 {
 
 	/**
+	 *
+	 * @var string
+	 */
+	protected $collectionName;
+	
+	/**
 	 * Collection for active model
 	 *
-	 * @var null
+	 * @var \MongoCollection
 	 */
-	protected $collection = null;
+	protected $collection;
 
 	/**
 	 * Connection to use for active model
 	 *
-	 * @var null
+	 * @var LMongo\Database
 	 */
-	protected $connection = null;
+	protected $connection;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param LMongo\Database $connection
+	 */
 	public function __construct($connection = null)
 	{
 		if ($connection !== null) {
@@ -33,7 +44,7 @@ class MongoModel
 
 		if (is_null($this->collection)) {
 			$class = array_slice(explode('\\', get_called_class()), -1);
-			$this->collection = strtolower(array_shift($class));
+			$this->collectionName = strtolower(array_shift($class));
 		}
 	}
 
@@ -55,8 +66,8 @@ class MongoModel
 	 */
 	public function getCollection($collection = null)
 	{
-		$collection = $collection? : $this->collection;
-		return $this->connection->collection($this->collection);
+		$collection = $collection? : $this->collectionName;
+		return $this->connection->collection($this->collectionName);
 	}
 
 
@@ -88,8 +99,6 @@ class MongoModel
 		if(!$id instanceof MongoId){
 			$id = new MongoId($id);
 		}
-
-		$collection = $this->collection;
 
 		return $this->getCollection()->where('_id', $id)->first();
 	}
