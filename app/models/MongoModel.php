@@ -33,7 +33,8 @@ class MongoModel
 		}
 
 		if (is_null($this->collection)) {
-			$this->collection = strtolower(get_called_class());
+			$class = array_slice(explode('\\', get_called_class()), -1);
+			$this->collection = strtolower(array_shift($class));
 		}
 	}
 
