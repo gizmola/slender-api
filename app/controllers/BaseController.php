@@ -81,7 +81,12 @@ abstract class BaseController extends Controller
 
 	public function options()
 	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$options = $this->model->options();
+		return Response::json(array(
+			'PUT' => array(
+				$options,
+			),
+		), self::HTTP_OPTIONS_OK);
 	}
 
 	public function getSite()
