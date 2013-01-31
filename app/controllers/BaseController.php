@@ -14,6 +14,7 @@ abstract class BaseController extends Controller
 	const HTTP_POST_OK = 201;
 	const HTTP_PUT_OK = 201;
 	const HTTP_DELETE_OK = 200;
+	const HTTP_UPDATE_OK = 204;
 	// const HTTP_DELETE_OK = 204;
 	const HTTP_OPTIONS_OK = 200;
 	
@@ -40,8 +41,7 @@ abstract class BaseController extends Controller
 
 	public function index()
 	{
-		$model = $this->getModel();
-		$records = with(new $model)->get();
+		$records = $this->model->get();
 		return Response::json(array(
 			$this->getReturnKey() => $records
 		));
@@ -49,9 +49,13 @@ abstract class BaseController extends Controller
 
 	public function update($id)
 	{
-		$input = Input::json();
-		var_dump($input);
-		//die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$input = Input::json(true);
+		$entity = $this->model->update($id, $input);
+		return Response::json(array(
+			$this->getReturnKey() => array(
+				$entity,
+			),
+		), self::HTTP_PUT_OK);
 	}
 
 	public function insert()

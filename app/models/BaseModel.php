@@ -29,6 +29,7 @@ class BaseModel extends MongoModel
 	 */
 	public function findMany(array $conditions, array $orders, $limit = null, $offset = null)
 	{
+		//for many find all
 	}
 	
 	public function insert(array $data)
@@ -39,8 +40,11 @@ class BaseModel extends MongoModel
 		return $entity;
 	}
 	
-	public function update(array $data)
-	{	
+	public function update($id, array $data)
+	{
+		$this->getCollection()->where('_id', $id)->update($data);
+		$entity = $this->findById($id);
+		return $entity;
 	}
 	
 	public function delete($id)
