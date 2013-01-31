@@ -8,6 +8,13 @@
 
 abstract class BaseController extends Controller
 {
+	const HTTP_GET_OK = 200;
+	const HTTP_POST_OK = 201;
+	const HTTP_PUT_OK = 201;
+	const HTTP_DELETE_OK = 200;
+	// const HTTP_DELETE_OK = 204;
+	const HTTP_OPTIONS_OK = 200;
+	
 	/**
 	 * @var BaseModel
 	 */
@@ -55,7 +62,12 @@ abstract class BaseController extends Controller
 
 	public function delete($id)
 	{
-		die("<p>Debug :: " . __FILE__ . "(" . __LINE__ . ") :: " . __FUNCTION__ . " :: message</p>");
+		$this->getModel()->delete($id);
+		return Response::json(array(
+			'messages' => array(
+				'ok',
+			),
+		), self::HTTP_DELETE_OK);
 	}
 
 	public function options()

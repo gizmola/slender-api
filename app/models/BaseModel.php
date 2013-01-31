@@ -39,6 +39,13 @@ class BaseModel extends MongoModel
 	{	
 	}
 	
+	public function delete($id)
+	{
+		$this->getCollection()->where('_id', $id)->delete();
+		$this->updateParents($id, true);
+		return true;
+	}
+	
 	public function options()
 	{	
 	}
@@ -56,7 +63,7 @@ class BaseModel extends MongoModel
 	 * @param array $data
 	 * @param boolean $isDelete
 	 */
-	protected function updateParents(array $data, $isDelete = false)
+	protected function updateParents($id, $isDelete = false)
 	{
 	}
 }
