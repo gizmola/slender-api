@@ -37,6 +37,12 @@ class BaseModel extends MongoModel
 		return $entities;
 	}
 	
+	/**
+	 * Insert data into the collection
+	 * 
+	 * @param array $data
+	 * @return array
+	 */
 	public function insert(array $data)
 	{
 		$id = $this->getCollection()->insert($data);
@@ -45,6 +51,13 @@ class BaseModel extends MongoModel
 		return $entity;
 	}
 	
+	/**
+	 * Update data of the record
+	 *
+	 * @param string $id 
+	 * @param array $data
+	 * @return array
+	 */
 	public function update($id, array $data)
 	{
 		$this->getCollection()->where('_id', $id)->update($data);
@@ -52,6 +65,12 @@ class BaseModel extends MongoModel
 		return $entity;
 	}
 	
+	/**
+	 * Delete record
+	 *
+	 * @param string $id 
+	 * @return array
+	 */
 	public function delete($id)
 	{
 		$this->getCollection()->where('_id', $id)->delete();
@@ -59,8 +78,19 @@ class BaseModel extends MongoModel
 		return true;
 	}
 	
+	/**
+	 * Return information about abstract record including 
+	 * representation of the fields to help to pass correct data
+	 * for insert and update methods
+	 *
+	 * @return array
+	 */
 	public function options()
 	{	
+		// @TODO clean up $this->schema before passing up
+		return array(
+				'fields' => $this->schema,
+			);
 	}
 	
 	/**
