@@ -32,8 +32,7 @@ abstract class BaseController extends Controller
 	
 	public function view($id)
 	{
-		$model = $this->getModel();
-		$record = with(new $model)->find($id);
+		$record = $this->model->findById($id);
 		return Response::json(array(
 			$this->getReturnKey() => ($record ? array($record) : array()),
 		));
@@ -41,7 +40,7 @@ abstract class BaseController extends Controller
 
 	public function index()
 	{
-		$records = $this->model->get();
+		$records = $this->model->findMany(array(),array());
 		return Response::json(array(
 			$this->getReturnKey() => $records
 		));

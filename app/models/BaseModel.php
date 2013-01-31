@@ -29,7 +29,12 @@ class BaseModel extends MongoModel
 	 */
 	public function findMany(array $conditions, array $orders, $limit = null, $offset = null)
 	{
-		//for many find all
+		$result = $this->getCollection()->get();
+		$entities = array();
+		foreach ($result as $entity) {
+			$entities[] = $entity;
+		}
+		return $entities;
 	}
 	
 	public function insert(array $data)
