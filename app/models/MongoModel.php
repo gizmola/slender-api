@@ -96,9 +96,9 @@ class MongoModel
 	 */
 	public function find($id)
 	{
-		if(!$id instanceof MongoId){
-			$id = new MongoId($id);
-		}
+//		if(!$id instanceof MongoId){
+//			$id = new MongoId($id);
+//		}
 
 		return $this->getCollection()->where('_id', $id)->first();
 	}

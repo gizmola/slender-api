@@ -32,7 +32,11 @@ class BaseModel extends MongoModel
 	}
 	
 	public function insert(array $data)
-	{	
+	{
+		$id = $this->getCollection()->insert($data);
+		$entity = $this->findById($id);
+		$this->updateParents($id, $entity);
+		return $entity;
 	}
 	
 	public function update(array $data)

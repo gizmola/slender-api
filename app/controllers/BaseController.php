@@ -6,6 +6,8 @@
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
 
+use Dws\Slender\Api\Support\Util\UUID;
+
 abstract class BaseController extends Controller
 {
 	const HTTP_GET_OK = 200;
@@ -54,10 +56,14 @@ abstract class BaseController extends Controller
 
 	public function insert()
 	{
-		$input_str = json_encode(Input::json());
-		$input = json_decode($input_str,true);
-		$this->model->insert($input);
-		echo $input_str;
+		$input = Input::json(true);
+		$input['_id'] = UUID::v4();		
+		$entity = $this->model->insert($input);
+		return Response::json(array(
+			$this->getReturnKey() => array(
+				$entity,
+			),
+		), self::HTTP_POST_OK);
 	}
 
 	public function delete($id)
