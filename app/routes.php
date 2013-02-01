@@ -93,8 +93,6 @@ Route::get('help', function(){
  *	app/config/app.php
  * 
  */
-Route::addSiteRestResource('ai', 'albums');
 Route::addSiteRestResource('ai', 'news');
 Route::addSiteRestResource('ai', 'pages');
-Route::addSiteRestResource('ai', 'photos');
 Route::addSiteRestResource('ai', 'videos');
