@@ -39,9 +39,19 @@ class Route extends LaravelFacadeRoute
 		static::$app['router']->match('options', $pluralRoute, $controller . '@options');
 	}
 	
+	public static function addRestResource($resource, $controller = null)
+	{
+		if (null == $controller) {
+			$controller = //'App\Controller\\'. 
+				ucfirst($resource) . 'Controller';
+		}
+		$site = '';
+		self::addSiteRestResource($site, $resource, $controller);
+	}
+
 	protected static function buildRoute($site, $resource, $isSingular = false)
 	{
-		$route = $site . '/' . $resource;
+		$route = ($site ? $site . '/' : '') . $resource;
 		if ($isSingular) {
 			$route .= '/{id}';
 		}
