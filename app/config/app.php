@@ -105,7 +105,8 @@ return array(
 		'Illuminate\Session\SessionServiceProvider',
 		'Illuminate\Foundation\Providers\TinkerServiceProvider',
 		'Illuminate\Translation\TranslationServiceProvider',
-		'Illuminate\Validation\ValidationServiceProvider',
+		// 'Illuminate\Validation\ValidationServiceProvider',
+		'Dws\Slender\Api\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
@@ -167,10 +168,12 @@ return array(
 		'Schema'          => 'Illuminate\Support\Facades\Schema',
 		'Session'         => 'Illuminate\Support\Facades\Session',
 		'URL'             => 'Illuminate\Support\Facades\URL',
-		'Validator'       => 'Illuminate\Support\Facades\Validator',
+		// 'Validator'       => 'Illuminate\Support\Facades\Validator',
+		'Validator'       => 'Dws\Slender\Api\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
 		'LMongo'		  => 'LMongo\Facades\LMongo',
 
+		'ValidationException' => 'Dws\Slender\Api\Validation\ValidationException'
 	),
 
 );

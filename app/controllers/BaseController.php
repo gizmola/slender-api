@@ -8,6 +8,7 @@
 
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
+use Dws\Slender\Api\Validation\ValidationException;
 
 abstract class BaseController extends Controller
 {

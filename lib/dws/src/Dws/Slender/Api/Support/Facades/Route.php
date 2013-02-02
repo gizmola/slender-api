@@ -42,8 +42,7 @@ class Route extends LaravelFacadeRoute
 	public static function addRestResource($resource, $controller = null)
 	{
 		if (null == $controller) {
-			$controller = //'App\Controller\\'. 
-				ucfirst($resource) . 'Controller';
+			$controller = ucfirst($resource) . 'Controller';
 		}
 		$site = '';
 		self::addSiteRestResource($site, $resource, $controller);
@@ -57,17 +56,5 @@ class Route extends LaravelFacadeRoute
 		}
 		return $route;
 	}
-	
-//	/**
-//	 * Add a new HTTP OPTIONS route to the collection.
-//	 *
-//	 * @param  string  $pattern
-//	 * @param  mixed   $action
-//	 * @return Illuminate\Routing\Route
-//	 */
-//	public function options($pattern, $action)
-//	{
-//		static::$app['router']->match('options', $pattern, $action);
-//	}
 
 }

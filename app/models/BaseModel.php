@@ -134,4 +134,9 @@ class BaseModel extends MongoModel
 	protected function updateParents($id, $isDelete = false)
 	{
 	}
+
+
+	public function getSchemaValidation(){
+		return $this->schema;
+	}
 }
