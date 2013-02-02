@@ -12,30 +12,37 @@ class Params{
 
 		$input = Input::get($name);
 
-		if (is_array($input)) {
-			
-			if (!$delim) {
-				throw new \InvalidArgumentException ('No delimiter provided for array input');
-			}
+		if (!$delim || !$input) {
+
+			return $input;
+	
+		} elseif (!is_array($input)) {
+
+			$array = explode($delim, $input);
+			array_walk_recursive($array, array(new Params,'floatize'));
+
+			return $array; 
+	
+		} else {
 
 			$array = array();
 
 			foreach ($input as $v) {
-				$arr = explode($delim,$v);
-				$array[$arr[0]] = $arr[1];
+				$array[] = explode($delim,$v);
 			}
 
+			array_walk_recursive($array, array(new Params,'floatize'));
+
 			return $array;
-
-		} elseif($delim) {
-
-			return explode($delim,$input);
-		
-		} else {
-		
-			return $input;
-		
 		}
+
+	}
+
+	public static function floatize(&$item,$key){
+	   	
+	   	if (is_numeric($item)) {
+	   		$item = (float)$item;
+	   	}
 
 	}
 
@@ -46,12 +53,37 @@ class Params{
 
 	public static function getOrders()
 	{
-		return self::parse('order', ",");
+		
+		$orders = self::parse('order', ",");
+
+		if (!$orders) {
+			return;
+		}
+
+		$array = array();
+	
+		foreach ($orders as $o) {
+			$array[] = explode(':', $o);	
+		}
+
+		return $array;
+
 	}
 
 	public static function getFields()
 	{
-		return self::parse('fields');
+		return self::parse('fields', ",");
 	}
+
+	public static function getTake()
+	{
+		return (is_numeric(Input::get('take'))) ? (int)Input::get('take') : false;
+	}
+
+	public static function getSkip()
+	{
+		return (is_numeric(Input::get('skip'))) ? (int)Input::get('skip') : false;
+	}
+
 
 }

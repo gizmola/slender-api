@@ -1,5 +1,7 @@
 <?php
 
+use Dws\Slender\Api\Support\Query\FromArrayBuilder;
+
 /**
  * Base Model
  */
@@ -27,9 +29,32 @@ class BaseModel extends MongoModel
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $conditions, array $orders, $limit = null, $offset = null)
+	public function findMany(array $conditions, array $fields, array $orders, $take = null, $skip = null)
 	{
-		$result = $this->getCollection()->get();
+		
+		$builder = $this->getCollection();
+		$builder = FromArrayBuilder::buildWhere($builder, $conditions);
+
+		if ($orders) {
+			FromArrayBuilder::buildOrders($builder,$orders);
+		}
+
+		if ($take) {
+			$builder = $builder->take($take);	
+		}
+
+		if ($skip) {
+			$builder = $builder->skip($skip);	
+		}
+
+		if ($fields) {
+			$result = $builder->get($fields);	
+		} else {
+			$result = $builder->get();	
+		}
+
+		$result = $builder->get();		
+
 		$entities = array();
 		foreach ($result as $entity) {
 			$entities[] = $entity;

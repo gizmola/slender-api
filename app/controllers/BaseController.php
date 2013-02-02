@@ -7,6 +7,7 @@
  */
 
 use Dws\Slender\Api\Support\Util\UUID;
+use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 
 abstract class BaseController extends Controller
 {
@@ -40,7 +41,15 @@ abstract class BaseController extends Controller
 
 	public function index()
 	{
-		$records = $this->model->findMany(array(),array());
+		
+		$filters = (ParamsHelper::getFilters()) ? ParamsHelper::getFilters() : array();
+		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : array();
+		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : array();
+		$take = ParamsHelper::getTake();
+		$skip = ParamsHelper::getSkip();
+
+		$records = $this->model->findMany($filters, $fields, $orders, $take, $skip);
+		
 		return Response::json(array(
 			$this->getReturnKey() => $records
 		));
@@ -133,4 +142,5 @@ abstract class BaseController extends Controller
 		$this->returnKey = (string) $returnKey;
 		return $this;
 	}
+
 }
