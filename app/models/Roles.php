@@ -4,10 +4,14 @@ class Roles extends BaseModel{
 
     protected $collectionName = 'roles';
 
+
+    /**
+    * To test validation call: curl -X POST -d '{"name": "Admin Role", "permissions": {"global": {"roles": {"delete": 1, "read": 1, "write": 0}, "users": {"delete": 1, "read": 1, "write": 0}, "sites": {"delete": 1, "read": 1, "write": 0}}}}'  http://localhost:4003/roles 
+    */
     protected $schema = [
         'name' => [
             //'type:string', 
-            'required', 'min:50'],
+            'required', 'min:5'],
         'permissions' => [
             'global' => [
                 'users' => [
@@ -16,14 +20,14 @@ class Roles extends BaseModel{
                     'delete'    => ['required', 'boolean'],
                 ], 
                 'roles' => [
-                    'read'      => ['required'],
-                    'write'     => ['required'], 
-                    'delete'    => ['required'],
+                    'read'      => ['required', 'boolean'],
+                    'write'     => ['required', 'boolean'], 
+                    'delete'    => ['required', 'boolean'],
                 ], 
                 'sites' => [
-                    'read'      => ['required'],
-                    'write'     => ['required'], 
-                    'delete'    => ['required'],
+                    'read'      => ['required', 'boolean'],
+                    'write'     => ['required', 'boolean'], 
+                    'delete'    => ['required', 'boolean'],
                 ],                 
             ]
         ]
