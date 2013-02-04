@@ -11,9 +11,9 @@ class Roles extends BaseModel{
         'permissions' => [
             'global' => [
                 'users' => [
-                    'read'      => ['required', 'min:2'],
-                    'write'     => ['required'], 
-                    'delete'    => ['required'],
+                    'read'      => ['required', 'boolean'],
+                    'write'     => ['required', 'boolean'], 
+                    'delete'    => ['required', 'boolean'],
                 ], 
                 'roles' => [
                     'read'      => ['required'],
