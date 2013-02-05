@@ -4,9 +4,7 @@ class Users extends BaseModel{
 
     protected $collectionName = 'users';
 
-    // Add
-    // - created
-    // - updated
+    protected $timestamp = true;
 
     protected $schema = [
         'first_name'    => ['required'],

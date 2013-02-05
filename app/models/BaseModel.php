@@ -9,6 +9,8 @@ class BaseModel extends MongoModel
 {
 	protected $site = 'default';
 
+	protected $timestamp = false;
+
 	protected $schema = array();
 	
 	protected $relations = array(
@@ -70,6 +72,10 @@ class BaseModel extends MongoModel
 	 */
 	public function insert(array $data)
 	{
+		if($this->timestamp){
+			$data['created_at'] = new MongoDate();
+			$data['updated_at'] = new MongoDate();
+		}
 		$id = $this->getCollection()->insert($data);
 		$entity = $this->findById($id);
 		$this->updateParents($id, $entity);
@@ -85,6 +91,9 @@ class BaseModel extends MongoModel
 	 */
 	public function update($id, array $data)
 	{
+		if($this->timestamp){
+			$data['updated_at'] = new MongoDate();
+		}
 		$this->getCollection()->where('_id', $id)->update($data);
 		$entity = $this->findById($id);
 		return $entity;
