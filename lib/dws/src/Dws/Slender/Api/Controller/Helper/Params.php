@@ -13,18 +13,26 @@ class Params{
 
 	/**
 	 * Parse the named query param into an array.
-	 * @param  string  $name
+	 * @param  string | array $input
 	 * @param  string  $delim
 	 * @return array
 	 */
-	public static function parse($name, $delim=false)
+	public static function parse($input, $delim=false)
 	{
 
-		$input = Input::get($name);
 
-		if (!$delim || !$input) {
+		if (!$input) {
 
 			return $input;
+		
+		} elseif (!$delim) {
+			
+			if (is_array($input)) {
+				array_walk_recursive($input, array(new Params,'floatize'));
+				return $input;
+			} else {
+				return (is_numeric($input)) ? (float)$input : $input;
+			}
 	
 		} elseif (!is_array($input)) {
 
@@ -65,19 +73,22 @@ class Params{
 	 * arrays containing 2 or 3 elements
 	 * @return array
 	 */
-	public static function getFilters()
+	public static function getFilters(Array $filters = null)
 	{
-		return self::parse('filter', ":");
+		$input = ($filters) ? $filters : Input::get('filter');
+		return self::parse($input, ":");
 	}
 	/**
 	 * Parse the orders query param 
 	 * to an array of arrays containg 2 elements
+	 * @param string $order
 	 * @return array
 	 */
-	public static function getOrders()
+	public static function getOrders($order = null)
 	{
 		
-		$orders = self::parse('order', ",");
+		$input = ($order) ? $order : Input::get('order');
+		$orders = self::parse($input, ",");
 
 		if (!$orders) {
 			return;
@@ -99,7 +110,8 @@ class Params{
 	 */
 	public static function getFields()
 	{
-		return self::parse('fields', ",");
+		$input = Input::get('fields');
+		return self::parse($input, ",");
 	}
 	/**
 	 * Parse the take query param 
