@@ -5,6 +5,7 @@ use Illuminate\Validation\Validator as LaravelValidator;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
+ * @TODO: Add dynamic rules support
  * A class to make custom validations in Laravel
  *
  * @author Vadim Engoyan <vadim.engoyan@diamondwebservices.com>

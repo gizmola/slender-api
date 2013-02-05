@@ -14,7 +14,7 @@ class ValidationException extends GenericException{
             $this->messages = $message->getMessages();
         }
 
-        parent::__construct("Validation Error", $code, $previous);
+        // parent::__construct("Validation Error", $code, $previous);
     }
 
     public function getMessages(){

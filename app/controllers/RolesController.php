@@ -1,8 +1,5 @@
 <?php
 
-use Dws\Slender\Api\Validation\ValidationException;
-
-
 class RolesController extends BaseController
 {
 	protected $returnKey = 'roles';
@@ -11,4 +8,6 @@ class RolesController extends BaseController
     {
         parent::__construct($model);
     }
+
+
 }
