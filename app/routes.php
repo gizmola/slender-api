@@ -1,27 +1,16 @@
 <?php
 
-use Dws\Slender\Api\Validation\ValidationException;
-
 /**
  * 500 handler
  */
 App::error(function(Exception $exception)
 {
-	if($exception instanceof ValidationException){
-        return Response::json(array(
-            'messages' => array(
-                $exception->getMessages(),
-            ),
-        ), 400);
-    }else{
-
-        $message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
-        return Response::json(array(
-            'messages' => array(
-                $message,
-            ),
-        ), 500);
-    }
+    $message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
+    return Response::json(array(
+        'messages' => array(
+            $message,
+        ),
+    ), 500);
 });
 
 /**
@@ -52,10 +41,15 @@ App::singleton('MongoCommonSingleton', function(){
     return App::make('mongo')->connection('default');
 });
 
+Route::get('/', function(){
+    return "OK";
+});
+
 /**
 * Add non-site dependant resource  
 */
 Route::addRestResource('roles');
+Route::addRestResource('users');
 
 // simple route with a view
 Route::get('sample-home', 'SampleHomeController@showWelcome');

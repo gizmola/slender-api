@@ -9,6 +9,7 @@
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Dws\Slender\Api\Validation\ValidationException;
+use Illuminate\Support\MessageBag;
 
 abstract class BaseController extends Controller
 {
@@ -64,9 +65,8 @@ abstract class BaseController extends Controller
             $input,
             $this->model->getSchemaValidation()
         );
-
         if($validator->fails()){
-            throw new ValidationException($validator->messages());
+            return $this->badRequest($validator->messages());
         }
 
 		$entity = $this->model->update($id, $input);
@@ -87,7 +87,7 @@ abstract class BaseController extends Controller
         );
 
         if($validator->fails()){
-            throw new ValidationException($validator->messages());
+            return $this->badRequest($validator->messages());
         }
 
 		$input['_id'] = UUID::v4();		
@@ -163,5 +163,18 @@ abstract class BaseController extends Controller
 		$this->returnKey = (string) $returnKey;
 		return $this;
 	}
+
+	// @TODO: try to find better way which works for App and PHPUnit
+	public function badRequest($messages){
+		if($messages instanceof MessageBag){
+            $messages->setFormat(':message');
+            $messages = $messages->getMessages();
+        }
+		return Response::json(array(
+	            'messages' => array(
+	                $messages,
+	            ),
+	        ), 400);
+	} 
 
 }
