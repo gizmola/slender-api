@@ -59,6 +59,16 @@ abstract class BaseController extends Controller
 	public function update($id)
 	{
 		$input = Input::json(true);
+
+		$validator = Validator::make(
+            $input,
+            $this->model->getSchemaValidation()
+        );
+
+        if($validator->fails()){
+            throw new ValidationException($validator->messages());
+        }
+
 		$entity = $this->model->update($id, $input);
 		return Response::json(array(
 			$this->getReturnKey() => array(
@@ -70,6 +80,16 @@ abstract class BaseController extends Controller
 	public function insert()
 	{
 		$input = Input::json(true);
+
+		$validator = Validator::make(
+            $input,
+            $this->model->getSchemaValidation()
+        );
+
+        if($validator->fails()){
+            throw new ValidationException($validator->messages());
+        }
+
 		$input['_id'] = UUID::v4();		
 		$entity = $this->model->insert($input);
 		return Response::json(array(

@@ -2,6 +2,7 @@
 namespace Dws\Slender\Api\Validation;
 
 use Illuminate\Validation\Validator as LaravelValidator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * A class to make custom validations in Laravel
@@ -11,6 +12,34 @@ use Illuminate\Validation\Validator as LaravelValidator;
 class Validator extends LaravelValidator
 {
 
+
+    /**
+     * Create a new Validator instance.
+     *
+     * @param  Symfony\Component\Translation\TranslatorInterface  $translator
+     * @param  array  $data
+     * @param  array  $rules
+     * @param  array  $messages
+     * @return void
+     */
+    public function __construct(TranslatorInterface $translator, $data, $rules, $messages = array())
+    {
+        // Addming custom messages
+        if(!isset($messages['boolean'])){
+            $messages['boolean'] = 'The :attribute must be exactly 1 or 0.';
+        }
+        parent::__construct($translator, $data, $rules, $messages);
+    }
+
+    /**
+     * Transform multi-domentional array to the flat
+     *
+     * @param  array  $data
+     * @param  integer  $skip
+     * @param  string  $path
+     * @param  array  $return
+     * @return array
+     */
     private function flatIt($data, $skip = 0, $path='', &$return = array()){
 
         foreach ($data as $key => $value)
@@ -56,6 +85,18 @@ class Validator extends LaravelValidator
     {
         $rules = $this->flatIt($rules, 1);
         return parent::explodeRules($rules);
+    }
+
+    /**
+     * Validate boolean value.
+     *
+     * @param  string  $attribute
+     * @param  mixed   $value
+     * @return bool
+     */
+    protected function validateBoolean($attribute, $value)
+    {
+        return ($value == '1' || $value == '0' ? true : false);
     }
 
 

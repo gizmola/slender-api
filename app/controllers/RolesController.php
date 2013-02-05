@@ -11,7 +11,4 @@ class RolesController extends BaseController
     {
         parent::__construct($model);
     }
-
-
-   
 }
