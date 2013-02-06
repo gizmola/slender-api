@@ -23,20 +23,7 @@
 
     <target name="phpunit">
         <echo msg="Running unit-tests with PHPUnit" />
-        <coverage-setup database="build/data/coverage.db">
-            <fileset dir="app">
-                <include name="controller/*"/>
-                <include name="models/*"/>
-            </fileset>
-        </coverage-setup>
-        <phpunit codecoverage="true" bootstrap="vendor/autoload.php">
-            <formatter todir="build/data" type="xml"/>
-            <batchtest>
-                <fileset dir="app/tests">
-                    <include name="*Test.php"/>
-                </fileset>
-            </batchtest>
-        </phpunit>
+        <exec passthru="true" command="./phpunit" />
         <echo msg="Unit-tests done!" />
     </target>
 
