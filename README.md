@@ -35,3 +35,9 @@ Make sure you have right permissions for `storage` directory
 ```
 chmod -R 777 app/storage
 ```
+
+If you get Class 'MongoClient' not found
+```
+try: sudo pecl install mongo
+```
+from inside of vagrant
