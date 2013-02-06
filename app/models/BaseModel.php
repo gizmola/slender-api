@@ -29,14 +29,38 @@ class BaseModel extends MongoModel
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $conditions, array $fields, array $orders, $take = null, $skip = null)
+	public function findMany(array $conditions, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null)
 	{
 		
 		$builder = $this->getCollection();
-		$builder = FromArrayBuilder::buildWhere($builder, $conditions);
+
+		if ($conditions) {
+			$builder = FromArrayBuilder::buildWhere($builder, $conditions);
+		}
+
+		if ($aggregate) {
+
+			/*
+			determine the type of aggregate function
+			end run the correct execution
+			return the aggregate data via ref $meta
+			*/
+
+			if ($aggregate[0] == 'count') {
+				$results = $builder->count();
+			} else {
+				$results = $builder->$aggregate[0]($aggregate[1]); 
+				$meta['count'] = null;
+			}
+
+
+			$meta[$aggregate[0]] = $results; 
+
+			return [];
+		}
 
 		if ($orders) {
-			FromArrayBuilder::buildOrders($builder,$orders);
+			$builder = FromArrayBuilder::buildOrders($builder,$orders);
 		}
 
 		if ($take) {
@@ -51,14 +75,16 @@ class BaseModel extends MongoModel
 			$result = $builder->get($fields);	
 		} else {
 			$result = $builder->get();	
-		}
-
-		$result = $builder->get();		
+		}	
 
 		$entities = array();
+
 		foreach ($result as $entity) {
 			$entities[] = $entity;
 		}
+
+		$meta['count'] = count($entities);
+
 		return $entities;
 	}
 	

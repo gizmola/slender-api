@@ -12,10 +12,18 @@ class ParamHelperTest extends TestCase
 		$this->assertEquals($input,$params);
 	}
 
+	public function testParseReturnsNullFromNull()
+	{
+		$input = null;
+		$params = null;
+		$params = ParamsHelper::parse($input);
+		$this->assertEquals($input,$params);
+	}
+
 	public function testParseReturnsSameArray()
 	{
 		$input = array('1','2');
-		$output = array((float)1,(float)2);
+		$output = array((float)1, (float)2);
 		$params = ParamsHelper::parse($input);
 		$this->assertEquals($output,$params);
 	}	
@@ -44,12 +52,42 @@ class ParamHelperTest extends TestCase
 		$this->assertEquals($output,$params);
 	}
 
+	public function testCanParseFieldsParamIntoArray()
+	{
+		$input = 'field1,field2';
+		$output = array('field1', 'field2');
+		$params = ParamsHelper::getFields($input);
+		$this->assertEquals($output,$params);
+	}
+
 	public function testCanParseOrdersIntoArray()
 	{
 		$input = 'season:desc,lastname:asc';
 		$output = array(array('season','desc'),array('lastname','asc'));
 		$params = ParamsHelper::getOrders($input);
 		$this->assertEquals($output,$params);
+	}
+
+	public function testCanParseCount()
+	{
+		$input = 1;
+		$params = ParamsHelper::getCount($input);
+		$this->assertEquals(1,$params);
+	}
+
+	public function testCanParseAggregateToArray()
+	{
+
+		$input = 'sum:orders';
+		$output = ['sum','orders'];
+		$params = ParamsHelper::getAggregate($input);
+		$this->assertEquals($output,$params);
+
+		$input = 'count';
+		$output = ['count'];
+		$params = ParamsHelper::getAggregate($input);
+		$this->assertEquals($output,$params);
+
 	}
 
 }

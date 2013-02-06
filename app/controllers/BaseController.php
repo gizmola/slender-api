@@ -44,15 +44,19 @@ abstract class BaseController extends Controller
 	public function index()
 	{
 		
-		$filters = (ParamsHelper::getFilters()) ? ParamsHelper::getFilters() : array();
-		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : array();
-		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : array();
+		$filters = (ParamsHelper::getFilters()) ? ParamsHelper::getFilters() : [];
+		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : [];
+		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : [];
+		$aggregate = (ParamsHelper::getAggregate()) ? ParamsHelper::getAggregate() : [];
 		$take = ParamsHelper::getTake();
 		$skip = ParamsHelper::getSkip();
 
-		$records = $this->model->findMany($filters, $fields, $orders, $take, $skip);
-		
+		$meta = [];
+
+		$records = $this->model->findMany($filters, $fields, $orders, $meta, $aggregate, $take, $skip);
+
 		return Response::json(array(
+			'meta' => $meta,
 			$this->getReturnKey() => $records
 		));
 	}
