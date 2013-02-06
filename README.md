@@ -1,6 +1,9 @@
 Slender API
 ===
+Build staus
+=====
 
+Master: [![Build Status](http://potterskolen.dk/buildstatus.php?job=Slender-API)](http://ci.diamondwebservices.com:8080/job/Slender-API/)
 Setup
 =====
 
