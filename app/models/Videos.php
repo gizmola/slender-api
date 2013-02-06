@@ -9,9 +9,9 @@ class Videos extends BaseModel
         'description' => array('type' => 'string'),
         'slug' => array('type' => 'string'),
         'premiere_date' 	=> array('type' => 'DateTime'),
-        'rating' 	=> array('type' => 'string'),
+        'rating' 	=> array('type' => 'Integer'),
         'genre' 	=> array('type' => 'string'),
-        'episode_number' 	=> array('type' => 'string'),
+        'episode_number' 	=> array('type' => 'Integer'),
         'season' 	=> array('type' => 'string'),
         'urls'	=> array (
             'source' 	=> array('type' => 'string'),
