@@ -30,11 +30,14 @@ class Config
         if ($this->isSiteResourceDefined($site, $resource)){
             $attemptedClass = 'App\\Controller\Site\\' . ucfirst($site) 
                 . '\\' . ucfirst($resource) . 'Controller';
-            if (class_exists($attemptedClass, true)){
+            $file = app_path() . '/controllers/site/' . $site . '/' . ucfirst($resource) . 'Controller.php';
+            
+            if (file_exists($file)){
                 $class = $attemptedClass;
             } else {
                 $attemptedClass = ucfirst($resource) . 'Controller';
-                if (class_exists($attemptedClass, true)){
+                $file = app_path() . '/controllers/' . ucfirst($resource) . 'Controller.php';
+                if (@class_exists($attemptedClass, true)){
                     $class = $attemptedClass;
                 }
             }
@@ -50,11 +53,15 @@ class Config
         if ($this->isSiteResourceDefined($site, $resource)){
             $attemptedClass = 'App\\Model\Site\\' . ucfirst($site) 
                 . '\\' . ucfirst($resource);
-            if (class_exists($attemptedClass, true)){
+            $file = app_path() . '/models/site/' . $site . '/' . ucfirst($resource) . '.php';
+            
+            if (file_exists($file)) {
                 $class = $attemptedClass;
             } else {
                 $attemptedClass = ucfirst($resource);
-                if (class_exists($attemptedClass, true)){
+                $file = app_path() . '/models/' . ucfirst($resource) . '.php';
+                
+                if (file_exists($file)){
                     $class = $attemptedClass;
                 }
             }

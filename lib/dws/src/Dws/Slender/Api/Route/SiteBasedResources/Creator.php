@@ -154,13 +154,12 @@ class Creator
             throw new RouteException($msg);
         }
         
-        $controllerClass = $config->getControllerClass($site, $resource);
+        $controllerClass = $config->getControllerClass($site, $resource);        
         if (!$controllerClass) {
             $msg = sprintf('Unable to resolve controller for resource %s and site %s',
                         $resource, $site);
             throw new RouteException($msg);
-        }
-
+        }        
         $connection = $creator->app['MongoSiteSingleton'];
         $modelInstance = new $modelClass($connection);			
         $controller = new $controllerClass($modelInstance);
