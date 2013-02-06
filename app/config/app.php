@@ -109,7 +109,9 @@ return array(
 		'Dws\Slender\Api\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
-
+		
+		// Site-based resource routing
+		'Dws\Slender\Api\Route\SiteBasedResources\ServiceProvider',
 	),
 
 	/*

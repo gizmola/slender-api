@@ -31,7 +31,7 @@ class BaseModel extends MongoModel
 	 */
 	public function findMany(array $conditions, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null)
 	{
-		
+	
 		$builder = $this->getCollection();
 
 		if ($conditions) {
@@ -82,7 +82,7 @@ class BaseModel extends MongoModel
 		foreach ($result as $entity) {
 			$entities[] = $entity;
 		}
-
+        
 		$meta['count'] = count($entities);
 
 		return $entities;

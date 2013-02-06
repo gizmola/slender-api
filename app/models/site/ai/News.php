@@ -4,12 +4,13 @@ namespace App\Model\Site\Ai;
 
 use \News as BaseNews;
 
-/**
- * A News model for the AI site
- *
- * @author David Weinraub <david.weinraub@diamondwebservices.com>
- */
 class News extends BaseNews
 {
-	protected $site = 'ai';
+	public function findById($id)
+	{
+		return [
+            'id' => $id,
+            'title' => 'My title via overriden model',
+        ];
+	}
 }
