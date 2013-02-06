@@ -18,8 +18,8 @@ class Pages extends BaseModel
             'sunrise' => ['date'],
             'sunset'  => ['date'],
         ],
-        'created' => [],
-        'updated' => [],
+        'created' => ['date'],
+        'updated' => ['date'],
 
 	];
 
