@@ -108,9 +108,9 @@ class Params{
 	 * to an array of strings
 	 * @return array
 	 */
-	public static function getFields()
+	public static function getFields($fields = null)
 	{
-		$input = Input::get('fields');
+		$input = ($fields) ? $fields : Input::get('fields');
 		return self::parse($input, ",");
 	}
 	/**
@@ -130,6 +130,18 @@ class Params{
 	public static function getSkip()
 	{
 		return (is_numeric(Input::get('skip'))) ? (int)Input::get('skip') : false;
+	}
+
+	public static function getCount($count = 0)
+	{
+		$input = ($count) ? $count : Input::get('count');
+		return (is_numeric($input)) ? (int)$input : 0;
+	}
+
+	public static function getAggregate($aggregate = null)
+	{
+		$input = ($aggregate) ? $aggregate : Input::get('aggregate');
+		return self::parse($input, ":");
 	}
 
 
