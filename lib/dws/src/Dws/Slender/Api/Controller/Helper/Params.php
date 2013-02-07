@@ -73,9 +73,9 @@ class Params{
 	 * arrays containing 2 or 3 elements
 	 * @return array
 	 */
-	public static function getFilters(Array $filters = null)
+	public static function getWhere(Array $filters = null)
 	{
-		$input = ($filters) ? $filters : Input::get('filter');
+		$input = ($filters) ? $filters : Input::get('where');
 		return self::parse($input, ":");
 	}
 	/**

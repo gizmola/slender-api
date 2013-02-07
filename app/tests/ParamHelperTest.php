@@ -44,11 +44,11 @@ class ParamHelperTest extends TestCase
 		$this->assertEquals($output,$params);	
 	}
 
-	public function testCanParseFilterParamIntoArray()
+	public function testCanParseWhereParamIntoArray()
 	{
 		$input = array('season:gte:10', 'lastname:doe');
 		$output = array(array('season', 'gte', (float)10), array('lastname','doe'));
-		$params = ParamsHelper::getFilters($input);
+		$params = ParamsHelper::getWhere($input);
 		$this->assertEquals($output,$params);
 	}
 

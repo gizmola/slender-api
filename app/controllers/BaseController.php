@@ -44,7 +44,7 @@ abstract class BaseController extends Controller
 	public function index()
 	{
 		
-		$filters = (ParamsHelper::getFilters()) ? ParamsHelper::getFilters() : [];
+		$where = (ParamsHelper::getWhere()) ? ParamsHelper::getWhere() : [];
 		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : [];
 		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : [];
 		$aggregate = (ParamsHelper::getAggregate()) ? ParamsHelper::getAggregate() : [];
@@ -53,7 +53,7 @@ abstract class BaseController extends Controller
 
 		$meta = [];
 
-		$records = $this->model->findMany($filters, $fields, $orders, $meta, $aggregate, $take, $skip);
+		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip);
 
 		return Response::json(array(
 			'meta' => $meta,
