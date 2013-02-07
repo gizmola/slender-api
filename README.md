@@ -1,6 +1,9 @@
 Slender API
 ===
+Build staus
+=====
 
+Master: [![Build Status](http://potterskolen.dk/buildstatus.php?job=Slender-API)](http://ci.diamondwebservices.com:8080/job/Slender-API/)
 Setup
 =====
 
@@ -35,3 +38,9 @@ Make sure you have right permissions for `storage` directory
 ```
 chmod -R 777 app/storage
 ```
+
+If you get Class 'MongoClient' not found
+```
+try: sudo pecl install mongo
+```
+from inside of vagrant

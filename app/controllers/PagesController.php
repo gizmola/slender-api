@@ -1,6 +1,12 @@
 <?php
 
-abstract class PagesController extends BaseController
+class PagesController extends BaseController
 {
 	protected $returnKey = 'pages';
+
+    public function __construct(Pages $model)
+    {
+        parent::__construct($model);
+    }
+
 }

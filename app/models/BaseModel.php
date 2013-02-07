@@ -24,18 +24,18 @@ class BaseModel extends MongoModel
 	/**
 	 * Get a collection of documents in this collection
 	 * 
-	 * @param array $conditions
+	 * @param array $where
 	 * @param array $orders
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $conditions, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null)
+	public function findMany(array $where, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null)
 	{
 	
 		$builder = $this->getCollection();
 
-		if ($conditions) {
-			$builder = FromArrayBuilder::buildWhere($builder, $conditions);
+		if ($where) {
+			$builder = FromArrayBuilder::buildWhere($builder, $where);
 		}
 
 		if ($aggregate) {
