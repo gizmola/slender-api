@@ -101,7 +101,6 @@ class Creator
 
 		// OPTIONS routes
 		$router->match('options', $pluralUrl, $pluralCallback);
-		
 	}
 	
 	protected function buildPluralUrl($site, $resource)
@@ -173,21 +172,6 @@ class Creator
         return $method;                
     }
     
-    public function confirmModelAndClass($modelClass, $controllerClass)
-    {
-        if (!$modelClass) {
-            throw new RouteException(
-                sprintf('Unable to create model',
-                        $resource, $site));
-        }
-
-        if (!$controllerClass) {
-            throw new RouteException(
-                sprintf('Unable to resolve controller for resource %s and site %s',
-                        $resource, $site));
-        }
-    }	
-	
 	public function getMethod($type, $httpMethod)
 	{
 		$type = strtolower($type);        

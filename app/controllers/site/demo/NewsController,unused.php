@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controller\Site\Ai;
+namespace App\Controller\Site\Demo;
 
 use \NewsController as BaseNewsController;
 use \Response;
 
 /**
- * NewsController for the AI site
+ * NewsController for the Demo site
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
