@@ -9,14 +9,15 @@ class BaseModel extends MongoModel
 {
 	protected $site = 'default';
 
+
 	protected $timestamp = false;
 
-	protected $schema = array();
+	protected $schema = [];
 	
-	protected $relations = array(
-		'children' => array(),
-		'parents' => array(),
-	);
+	protected $relations = [
+		'children' => [],
+		'parents' => [],
+	];
 
 	public function findById($id)
 	{
@@ -26,19 +27,43 @@ class BaseModel extends MongoModel
 	/**
 	 * Get a collection of documents in this collection
 	 * 
-	 * @param array $conditions
+	 * @param array $where
 	 * @param array $orders
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $conditions, array $fields, array $orders, $take = null, $skip = null)
+	public function findMany(array $where, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null)
 	{
-		
+	
 		$builder = $this->getCollection();
-		$builder = FromArrayBuilder::buildWhere($builder, $conditions);
+
+		if ($where) {
+			$builder = FromArrayBuilder::buildWhere($builder, $where);
+		}
+
+		if ($aggregate) {
+
+			/*
+			determine the type of aggregate function
+			end run the correct execution
+			return the aggregate data via ref $meta
+			*/
+
+			if ($aggregate[0] == 'count') {
+				$results = $builder->count();
+			} else {
+				$results = $builder->$aggregate[0]($aggregate[1]); 
+				$meta['count'] = null;
+			}
+
+
+			$meta[$aggregate[0]] = $results; 
+
+			return [];
+		}
 
 		if ($orders) {
-			FromArrayBuilder::buildOrders($builder,$orders);
+			$builder = FromArrayBuilder::buildOrders($builder,$orders);
 		}
 
 		if ($take) {
@@ -53,14 +78,16 @@ class BaseModel extends MongoModel
 			$result = $builder->get($fields);	
 		} else {
 			$result = $builder->get();	
-		}
-
-		$result = $builder->get();		
+		}	
 
 		$entities = array();
+
 		foreach ($result as $entity) {
 			$entities[] = $entity;
 		}
+        
+		$meta['count'] = count($entities);
+
 		return $entities;
 	}
 	
@@ -76,6 +103,19 @@ class BaseModel extends MongoModel
 			$data['created_at'] = new MongoDate();
 			$data['updated_at'] = new MongoDate();
 		}
+		
+		//embed child data
+		$embeddedRelations = $this->getEmbeddedRelations();
+
+
+		foreach ($embeddedRelations as $relation) {
+
+			$class = ucfirst($relation);
+			$childIntsance = new $class;
+			$this->embedChildData($data[$relation],$childIntsance);
+	
+		}
+				
 		$id = $this->getCollection()->insert($data);
 		$entity = $this->findById($id);
 		$this->updateParents($id, $entity);
@@ -130,14 +170,6 @@ class BaseModel extends MongoModel
 	/**
 	 * @todo
 	 * @param array $data
-	 */
-	protected function embedChildren(array $data)
-	{
-	}
-	
-	/**
-	 * @todo
-	 * @param array $data
 	 * @param boolean $isDelete
 	 */
 	protected function updateParents($id, $isDelete = false)
@@ -148,4 +180,50 @@ class BaseModel extends MongoModel
 	public function getSchemaValidation(){
 		return $this->schema;
 	}
+
+	public function addChildRelations(Array $relations) 
+	{
+		foreach ($relations as $k => $v) {
+			$this->relations['children'][$k] = $v;	
+		}
+	}
+
+	public function getRelations()
+	{
+		return $this->relations;
+	}
+
+	public function getEmbeddedRelations()
+	{
+		$embedded = [];
+
+		foreach ($this->relations['children'] as $k => $v) {
+			if ($v) {
+				$embedded[] = $k; 	
+			}
+		}
+
+		return $embedded;
+	}
+	/**
+	 * Replaces a child ids with an embeded objects
+	 * in the passed array
+	 * @param array $childIds
+	 * @param ChildClassInstance $childIntsance
+	 * @return void
+	 */
+	public function embedChildData(&$childIds,$childIntsance)
+	{
+
+		for ($i = 0; $i < count($childIds); $i++) {
+
+			$child = $childIntsance->findById($childIds[$i]);	
+			
+			if ($child) {
+				$childIds[$i] = $child;	
+			}
+
+		}
+	}
+	
 }

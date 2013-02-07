@@ -1,5 +1,7 @@
 <?php
 
+use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Laravel Class Loader
@@ -44,9 +46,35 @@ Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
 |
 */
 
-App::error(function(Exception $exception, $code)
+/**
+ * 500 handler
+ */
+App::error(function(\Exception $exception)
 {
-	Log::error($exception);
+    $message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
+    return Response::json(array(
+        'messages' => array(
+            $message,
+        ),
+    ), 500);
+});
+
+App::error(function(RouteException $exception)
+{
+    return Response::json(array(
+		'messages' => array(
+			$exception->getMessage(),
+		),
+	), 404);
+});
+
+App::missing(function(\Exception $exception)
+{
+    return Response::json(array(
+		'messages' => array(
+			'Resource not found',
+		),
+	), 404);
 });
 
 /*

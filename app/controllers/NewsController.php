@@ -1,6 +1,6 @@
 <?php
 
-abstract class NewsController extends BaseController
+class NewsController extends BaseController
 {
-	protected $model = 'News';
+    protected $returnKey = 'news';
 }
