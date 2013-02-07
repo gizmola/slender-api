@@ -25,7 +25,7 @@ class Creator
 		'getSingular' => 'view',
 		'getPlural' => 'index',
 		'putSingular' => 'update',
-		'postSingular' => 'insert',
+		'postPlural' => 'insert',
 		'deleteSingular' => 'delete',
 		'options' => 'options',
 	];
