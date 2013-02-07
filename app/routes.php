@@ -50,6 +50,7 @@ Route::get('/', function(){
 */
 Route::addRestResource('roles');
 Route::addRestResource('users');
+Route::addRestResource('pages');
 
 // simple route with a view
 Route::get('sample-home', 'SampleHomeController@showWelcome');

@@ -11,8 +11,8 @@ class Users extends BaseModel{
         'last_name'     => ['required'],
         'email'         => ['required', 'email'],
         'password'      => ['required'],
-        'key'           => [],
-        'roles'         => [],
+        'key'           => ['required'],
+        'roles'         => ['required'],
         'permissions'   => [],
     ];
 }
