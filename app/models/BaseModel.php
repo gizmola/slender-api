@@ -9,12 +9,12 @@ class BaseModel extends MongoModel
 {
 	protected $site = 'default';
 
-	protected $schema = array();
+	protected $schema = [];
 	
-	protected $relations = array(
-		'children' => array(),
-		'parents' => array(),
-	);
+	protected $relations = [
+		'children' => [],
+		'parents' => [],
+	];
 
 	public function findById($id)
 	{
@@ -96,6 +96,19 @@ class BaseModel extends MongoModel
 	 */
 	public function insert(array $data)
 	{
+		
+		//embed child data
+		$embeddedRelations = $this->getEmbeddedRelations();
+
+
+		foreach ($embeddedRelations as $relation) {
+
+			$class = ucfirst($relation);
+			$childIntsance = new $class;
+			$this->embedChildData($data[$relation],$childIntsance);
+	
+		}
+				
 		$id = $this->getCollection()->insert($data);
 		$entity = $this->findById($id);
 		$this->updateParents($id, $entity);
@@ -147,14 +160,6 @@ class BaseModel extends MongoModel
 	/**
 	 * @todo
 	 * @param array $data
-	 */
-	protected function embedChildren(array $data)
-	{
-	}
-	
-	/**
-	 * @todo
-	 * @param array $data
 	 * @param boolean $isDelete
 	 */
 	protected function updateParents($id, $isDelete = false)
@@ -165,4 +170,50 @@ class BaseModel extends MongoModel
 	public function getSchemaValidation(){
 		return $this->schema;
 	}
+
+	public function addChildRelations(Array $relations) 
+	{
+		foreach ($relations as $k => $v) {
+			$this->relations['children'][$k] = $v;	
+		}
+	}
+
+	public function getRelations()
+	{
+		return $this->relations;
+	}
+
+	public function getEmbeddedRelations()
+	{
+		$embedded = [];
+
+		foreach ($this->relations['children'] as $k => $v) {
+			if ($v) {
+				$embedded[] = $k; 	
+			}
+		}
+
+		return $embedded;
+	}
+	/**
+	 * Replaces a child ids with an embeded objects
+	 * in the passed array
+	 * @param array $childIds
+	 * @param ChildClassInstance $childIntsance
+	 * @return void
+	 */
+	public function embedChildData(&$childIds,$childIntsance)
+	{
+
+		for ($i = 0; $i < count($childIds); $i++) {
+
+			$child = $childIntsance->findById($childIds[$i]);	
+			
+			if ($child) {
+				$childIds[$i] = $child;	
+			}
+
+		}
+	}
+	
 }
