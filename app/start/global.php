@@ -33,21 +33,6 @@ ClassLoader::register(new ClassLoader(array(
 
 Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
 
-App::singleton('MongoSiteSingleton', function(){
-    // inspect Request, get site
-
-	$site = explode('/', Request::path());
-	$site = $site[0];
-	
-	$site = in_array($site, array('users','roles')) ? 'default' : $site;
-
-    return App::make('mongo')->connection($site);
-});
-
-App::singleton('MongoCommonSingleton', function(){
-    return App::make('mongo')->connection('default');
-});
-
 /*
 |--------------------------------------------------------------------------
 | Application Error Handler
