@@ -1,13 +1,13 @@
 <?php
 
-namespace Dws\Slender\Api\Route\SiteBasedResources;
+namespace Dws\Slender\Api\Route;
 
 /**
  * Inspects a site-based resource config array
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
-class Config
+class SitesConfig
 {
     /**
      * @var array The config array

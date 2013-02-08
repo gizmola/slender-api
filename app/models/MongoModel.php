@@ -32,17 +32,15 @@ class MongoModel
 	 * 
 	 * @param LMongo\Database $connection
 	 */
-	public function __construct($connection = null)
+	public function __construct(LMongo\Database $connection)
 	{
-		if ($connection !== null) {
-			$this->connection = $connection;
-		}
+        $this->connection = $connection;
 
-		if (is_null($this->connection)) {
-			$this->connection = \App::make('MongoSiteSingleton');
-		}
-
-		if (is_null($this->collection)) {
+//		if (is_null($this->connection)) {
+//			$this->connection = \App::make('MongoSiteSingleton');
+//		}
+//
+		if (is_null($this->collectionName)) {
 			$class = array_slice(explode('\\', get_called_class()), -1);
 			$this->collectionName = strtolower(array_shift($class));
 		}

@@ -1,6 +1,6 @@
 <?php
 
-use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
+use Dws\Slender\Api\Route\RouteException;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ ClassLoader::register(new ClassLoader(array(
 |
 */
 
-Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
+// Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +51,7 @@ Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
  */
 App::error(function(\Exception $exception)
 {
+    // Log::error($exception);
     $message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
     return Response::json(array(
         'messages' => array(
@@ -61,6 +62,7 @@ App::error(function(\Exception $exception)
 
 App::error(function(RouteException $exception)
 {
+    // Log::error($exception);
     return Response::json(array(
 		'messages' => array(
 			$exception->getMessage(),
