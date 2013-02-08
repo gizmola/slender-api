@@ -75,4 +75,8 @@ class SitesConfig
             && is_array($this->config[$site])
             && in_array($resource, $this->config[$site]);
     }
+
+    public function getConfig(){
+        return $this->config;
+    }
 }

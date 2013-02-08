@@ -30,7 +30,7 @@ abstract class BaseController extends Controller
 	protected $returnKey;
 
 	public function __construct(BaseModel $model)
-	{
+	{		
 		$this->model = $model;
 	}
 	
@@ -58,15 +58,22 @@ abstract class BaseController extends Controller
 		$aggregate = (ParamsHelper::getAggregate()) ? ParamsHelper::getAggregate() : [];
 		$take = ParamsHelper::getTake();
 		$skip = ParamsHelper::getSkip();
+		$count = ParamsHelper::getCount();
 
 		$meta = [];
 
-		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip);
+		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $count);
 
-		return Response::json(array(
-			'meta' => $meta,
+		$result = [
 			$this->getReturnKey() => $records
-		));
+		];
+
+		if($meta)
+		{
+			$result['meta'] = $meta;
+		}
+
+		return Response::json($result);
 	}
 
 	public function update($id)

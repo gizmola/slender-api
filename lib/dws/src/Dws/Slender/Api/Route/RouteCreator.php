@@ -4,6 +4,7 @@ namespace Dws\Slender\Api\Route;
 
 use Illuminate\Foundation\Application;
 use LMongo\LMongoManager;
+use Illuminate\Support\Facades\Request;
 
 /**
  * An object to create REST routes for site-based resources
@@ -16,6 +17,12 @@ class RouteCreator
 	 * @var Application
 	 */
 	protected $app;
+
+
+    /**
+     * @var Auth method
+     */
+    protected $auth = 'auth';    
     
 	/**
 	 * A mapping of HTTP request methods to controller methods
@@ -37,6 +44,19 @@ class RouteCreator
      */
     protected $mongoManager;
 	
+
+    /**
+     *
+     * @var SitesConfig
+     */
+    protected $sitesConfig = null;
+
+    /**
+     *
+     * @var array
+     */
+    protected $coreResources = [];
+
 	/**
 	 * Constructor
 	 * 
@@ -86,13 +106,12 @@ class RouteCreator
 	 */
 	public function addSiteRoutes(array $config)
 	{
-        $config = new SitesConfig($config);
-        
+        $this->sitesConfig = new SitesConfig($config);
 		$singularUrl = '{site}/{resource}/{id}';
-		$singularCallback = $this->buildSiteSingularCallback($config);
+		$singularCallback = $this->buildSiteSingularCallback($this->sitesConfig);
 		
 		$pluralUrl = '{site}/{resource}';
-		$pluralCallback = $this->buildSitePluralCallback($config);
+		$pluralCallback = $this->buildSitePluralCallback($this->sitesConfig);
         
         $this->addRoutesToRouter($this->app['router'], 
                 $singularUrl, $singularCallback, 
@@ -126,7 +145,7 @@ class RouteCreator
             $method = $creator->buildControllerMethod('plural');
             return $controller->$method();
 		};		
-		return $callback;		
+		return array('before' => $this->auth, $callback);		
 	}
 	
 	public function buildSiteSingularCallback(SitesConfig $config)
@@ -137,7 +156,7 @@ class RouteCreator
             $method = $creator->buildControllerMethod('singular');
 			return $controller->$method($id);
 		};		
-		return $callback;		
+		return array('before' => $this->auth, $callback);   
 	}
     
     public function buildSiteController($site, $resource, SitesConfig $config)
@@ -207,9 +226,9 @@ class RouteCreator
      */
     public function addCoreRoutes()
     {
-        $coreResources = $this->app['config']['app.core-resources'];
+        $this->coreResources = $this->app['config']['app.core-resources'];
         $connection = $this->getMongoManager()->connection('default');
-        foreach ($coreResources as $resource) {
+        foreach ($this->coreResources as $resource) {
             $this->addCoreRoute($resource, $connection);
         }
     }
@@ -253,7 +272,12 @@ class RouteCreator
             return $controller->$method($id);
         };
         
-        $this->addRoutesToRouter($this->app['router'], $singularUrl, $singularCallback, $pluralUrl, $pluralCallback);
+        $this->addRoutesToRouter($this->app['router'], 
+                                    $singularUrl, 
+                                    array('before' => $this->auth, $singularCallback), 
+                                    $pluralUrl, 
+                                    array('before' => $this->auth, $pluralCallback)
+                                );
         
         return $this;
     }
@@ -281,5 +305,51 @@ class RouteCreator
     {
         $this->mongoManager = $mongoManager;
         return $this;
+    }
+
+    /**
+     * Returns Request Path
+     * 
+     * @param string $delimiter
+     * @return string
+     */
+    public function getRequestPath($delimiter = null)
+    {
+
+        $return = [];
+
+        // subject?
+        if(array_key_exists(Request::segment(1), $this->sitesConfig->getConfig()))
+        {
+            $return[] = Request::segment(1);
+            $site =  Request::segment(1);
+            if(in_array(Request::segment(2), $this->sitesConfig->getConfig()[$site]))
+            {
+                $return[] = Request::segment(2);
+            }
+        }elseif(in_array(Request::segment(1), $this->coreResources)){
+            $return[] = 'global';
+            $return[] = Request::segment(1);
+        }
+
+        // to do what?                 
+        switch (Request::getMethod()) {
+            case 'GET':
+            case 'OPTIONS':
+                $return[] = 'read';
+                break;
+            case 'POST':
+            case 'PUT':
+                $return[] = 'write';
+                break;   
+            case 'DELETE':
+                $return[] = 'delete';
+                break;                         
+        }
+
+        if($delimiter){
+            return implode($delimiter, $return);
+        }
+        return $return;
     }
 }

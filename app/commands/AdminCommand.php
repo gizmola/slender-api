@@ -42,16 +42,20 @@ class AdminCommand extends Command {
         $confirmed = false;
         $password = null;
 
+
         //Get email from console
-        $email = $this->ask('Enter email:');
+        $first_name = $this->ask('Enter First Name:');
+        $last_name = $this->ask('Enter Last Name:');
+        $email = $this->ask('Enter Email:');
+
 
         //Get password from console
         while (!$confirmed) {
             if (!$password) {
-                $password = $this->ask('Enter password:');
+                $password = $this->ask('Enter Password:');
             }
 
-            $password2 = $this->ask('Confirm password:');
+            $password2 = $this->ask('Confirm Password:');
             if ($password == $password2) {
                 $confirmed = true;
             }
@@ -87,21 +91,34 @@ class AdminCommand extends Command {
             'permissions' => $adminPermissions
         ];
 
-        $rolesModel = new Roles();
-        $entity = $rolesModel->insert($roleData);
-        $this->info(var_dump($entity));
+        $roles = new Roles();
+
+        $entity = $roles->getCollection()->where('name', $roleData['name'])->first();
+        
+        if(!$entity)
+        {
+            $entity = $roles->insert($roleData);
+        }
 
         $userData = [
-            'first_name'    => 'Admin',
-            'last_name'     => '',
+            'first_name'    => $first_name,
+            'last_name'     => $last_name,
             'email'         => $email,
             'password'      => $password,
-            'roles'         => [$roleResponse['_id']],
-            'permissions'   => $adminPermissions
+            'roles'         => [(string)$entity['_id']]
         ];
 
+        $users = new Users();
+        $entity = $users->insert($userData);
 
-        $this->info('Storing in db');
+        if($entity['key']){
+            $this->info('*---------------------------------------------------------------------------*');
+            $this->info('');
+            $this->info('User has been successfully created!');
+            $this->info('Your Auth Key is: '. $entity['key']);
+            $this->info('');
+            $this->info('*---------------------------------------------------------------------------*');
+        }
 	}
 
 	/**
