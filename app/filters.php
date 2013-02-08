@@ -35,7 +35,22 @@ App::after(function($request, $response)
 
 Route::filter('auth', function()
 {
-	if (Auth::guest()) return Redirect::route('login');
+    $key = Request::header('AUTHENTICATION');
+
+    $requestPath  = App::make('route-creator')->getRequestPath('.');
+
+    $users = new Users;
+    $user = $users->getCollection()
+                            ->where('key', $key)
+                            ->where("permissions.{$requestPath}", 1)
+                            ->first();
+    if(!$user){
+        return Response::json(array(
+            'messages' => array(
+                'Unauthorized',
+            ),
+        ), 401);
+    }
 });
 
 

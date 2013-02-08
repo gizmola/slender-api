@@ -30,7 +30,7 @@ abstract class BaseController extends Controller
 	protected $returnKey;
 
 	public function __construct(BaseModel $model)
-	{
+	{		
 		$this->model = $model;
 	}
 	
