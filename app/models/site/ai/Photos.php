@@ -8,7 +8,9 @@ class Photos extends BasePhotos
 {
 
 	protected $relations = [
-		'parents' => ['albums'],
+		'parents' => [
+			'albums' => 'photos'
+		],
 		'children' => [],
 	];
 

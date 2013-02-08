@@ -18,6 +18,14 @@ class ResolverTest extends TestCase {
       $this->assertEquals('ClassName',$class);
   }
 
+  public function testCanParseNamespaceFromFullyQualifiedNamespace()
+  {
+      $namespacedName = '\Some\Fully\Qualified\ClassName';
+      $resolver = new ClassResolver(); 
+      $namespace = $resolver->parseNameSpace($namespacedName); 
+      $this->assertEquals('\Some\Fully\Qualified',$namespace);  
+  }
+
   public function testCanCreateFallbackBaseClass()
   {
       $fakeClass = '\Some\Fully\Qualified\ClassName\stdClass';
@@ -25,5 +33,6 @@ class ResolverTest extends TestCase {
       $class = $resolver->create($fakeClass);
       $this->assertInstanceOf('stdClass', $class);
   }
+
  
 }

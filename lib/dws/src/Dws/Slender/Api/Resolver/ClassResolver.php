@@ -34,13 +34,13 @@ class ClassResolver
 	
 	public function parseClassName($fullyNameSpacedClass)
 	{
-		preg_match("/[a-zA-Z]+$/", $fullyNameSpacedClass, $matches);
+		$class = explode('\\', $fullyNameSpacedClass); 
+    	return end($class);
+	}
 
-		if (!isset($matches[0])) {
-			throw new ClassResolverException("Provided namespaced class invalid");
-		}
-
-		return $matches[0];
-
+	public function parseNameSpace($fullyNameSpacedClass)
+	{
+		$class = explode('\\', $fullyNameSpacedClass); 
+    	return join("\\", array_slice($class, 0, -1));
 	}
 }

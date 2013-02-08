@@ -13,6 +13,8 @@ class BaseModel extends MongoModel
 	protected $timestamp = false;
 
 	protected $schema = [];
+
+	protected $resolver;
 	
 	protected $relations = [
 		'children' => [],
@@ -84,7 +86,7 @@ class BaseModel extends MongoModel
 			$result = $builder->get();	
 		}	
 
-		$entities = array();
+		$entities = [];
 
 		foreach ($result as $entity) {
 			$entities[] = $entity;
@@ -122,8 +124,8 @@ class BaseModel extends MongoModel
 				
 		$id = $this->getCollection()->insert($data);
 		$entity = $this->findById($id);
-		$this->updateParents($id, $entity);
 		return $entity;
+
 	}
 	
 	/**
@@ -135,12 +137,49 @@ class BaseModel extends MongoModel
 	 */
 	public function update($id, array $data)
 	{
+
 		if($this->timestamp){
 			$data['updated_at'] = new MongoDate();
 		}
+
 		$this->getCollection()->where('_id', $id)->update($data);
 		$entity = $this->findById($id);
+
+		$myName = $this->getName();
+		$myNameSpace = $this->getNameSpace();
+		$myLcName = strtolower($myName);
+		$parents = $this->getRelations()['parents'];
+
+		foreach ($parents as $p => $c) {
+
+			$parentClassName =  "\\" . $myNameSpace . "\\" .  ucfirst($p);
+			$parentClass = $this->resolver->create($parentClassName, $this->getConnection());
+			
+			if (in_array($myLcName, $parentClass->getEmbeddedRelations())) {
+				
+				$results = $parentClass->getCollection()->where("{$myLcName}._id",$id)->get();
+
+				foreach ($results as $res) {
+					$this->updateParentData($entity, $res[$myLcName]);
+					$parentId = $this->shiftId($res);
+					$parentClass->getCollection()->where('_id', $parentId)->update($res);
+				}
+
+			}
+		
+		}
+
 		return $entity;
+	}
+
+	public function getName()
+	{
+		return $this->resolver->parseClassName(get_class($this));
+	}
+
+	public function getNameSpace()
+	{
+		return $this->resolver->parseNameSpace(get_class($this));
 	}
 	
 	/**
@@ -170,25 +209,16 @@ class BaseModel extends MongoModel
 				'fields' => $this->schema,
 			);
 	}
-	
-	/**
-	 * @todo
-	 * @param array $data
-	 * @param boolean $isDelete
-	 */
-	protected function updateParents($id, $isDelete = false)
+
+	public function getSchemaValidation()
 	{
-	}
-
-
-	public function getSchemaValidation(){
 		return $this->schema;
 	}
 
-	public function addChildRelations(Array $relations) 
+	public function addRelations($type, $relations)
 	{
 		foreach ($relations as $k => $v) {
-			$this->relations['children'][$k] = $v;	
+			$this->relations[$type][$k] = $v;	
 		}
 	}
 
@@ -209,6 +239,7 @@ class BaseModel extends MongoModel
 
 		return $embedded;
 	}
+
 	/**
 	 * Replaces a child ids with an embeded objects
 	 * in the passed array
@@ -228,6 +259,53 @@ class BaseModel extends MongoModel
 			}
 
 		}
+	}
+
+	public function isEmbedded($child) {
+		return in_array($child, $this->getEmbeddedRelations());
+	}
+
+	public function updateParentData($childData, &$children, $isDelete=false)
+	{
+
+		$index = null;
+
+		for ($i=0; $i < count($children); $i++) {
+			
+			if ($childData['_id'] == $children[$i]["_id"]) {
+				$index = $i;
+				break;
+			}
+
+		}
+
+		if ($index !== null) {
+			if ($isDelete) {
+				unset($children[$i]);	
+			} else {
+				$children[$i] = $childData;
+			}
+		}
+
+		return $index;
+	
+	}
+
+	public function getResolver()
+	{
+		return $this->resolver;
+	}
+
+	public function setResolver($resolver)
+	{
+		$this->resolver = $resolver;
+	}
+
+	public function shiftId(&$data)
+	{
+		$id = $data['_id'];
+		unset($data['_id']);
+		return $id;
 	}
 	
 }
