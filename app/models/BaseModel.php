@@ -32,7 +32,7 @@ class BaseModel extends MongoModel
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $where, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null)
+	public function findMany(array $where, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null, $count = null)
 	{
 	
 		$builder = $this->getCollection();
@@ -66,6 +66,10 @@ class BaseModel extends MongoModel
 			$builder = FromArrayBuilder::buildOrders($builder,$orders);
 		}
 
+		if($count){
+			$meta['count'] = $builder->count();
+		}
+
 		if ($take) {
 			$builder = $builder->take($take);	
 		}
@@ -86,7 +90,7 @@ class BaseModel extends MongoModel
 			$entities[] = $entity;
 		}
         
-		$meta['count'] = count($entities);
+
 
 		return $entities;
 	}
