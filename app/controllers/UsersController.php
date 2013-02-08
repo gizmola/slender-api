@@ -14,31 +14,14 @@ class UsersController extends BaseController
     {
         $input = Input::json(true);
 
-        if(isset($input['roles'])){
-            if(!is_array($input['roles'])){
-                $input['roles'] = (array) $input['roles'];
-            }
-            $roles = new Roles();
-            $user_roles = $roles->whereIn('_id', $input['roles'])->get();
-            $input['roles'] = array();
-            $input['permissions'] = array();
-
-            foreach ($user_roles as $key => $value) {
-                $input['roles'][] = $value['_id'];
-                array_walk_recursive($value['permissions'], function($item, $key)
-                {
-                    if($item == 0){
-                        unset($key);
-                    }
-                });
-                $input['permissions'] = array_replace_recursive($input['permissions'], $value['permissions']);
-            }
-        }
-
+// var_dump('-->>', $input);
         $validator = Validator::make(
             $input,
             $this->model->getSchemaValidation()
         );
+
+        // var_dump($input, $this->model->getSchemaValidation(), $validator->fails());
+        // die;
 
         if($validator->fails()){
             return $this->badRequest($validator->messages());
