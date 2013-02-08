@@ -27,9 +27,10 @@ class ServiceProvider extends BaseServiceProvider
 	{
 		$this->app['MongoSiteSingleton'] = $this->app->share(function($app){
             // Inspect Request, get site
+            // temp hack
             $site = explode('/', \Request::path());
             $site = $site[0];
-            $site = in_array($site, array('users','roles')) ? 'default' : $site;
+            $site = in_array($site, array('users','roles', 'sites')) ? 'default' : $site;
             return $app->make('mongo')->connection($site);
 		});
         
