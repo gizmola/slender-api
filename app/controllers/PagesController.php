@@ -8,5 +8,4 @@ class PagesController extends BaseController
     {
         parent::__construct($model);
     }
-
 }

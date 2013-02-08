@@ -10,6 +10,7 @@ use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Dws\Slender\Api\Validation\ValidationException;
 use Illuminate\Support\MessageBag;
+use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
 
 abstract class BaseController extends Controller
 {
@@ -36,9 +37,16 @@ abstract class BaseController extends Controller
 	public function view($id)
 	{
 		$record = $this->model->findById($id);
-		return Response::json(array(
-			$this->getReturnKey() => ($record ? array($record) : array()),
-		));
+		// @TODO: make it work with unit test
+		// if($record)
+		// {
+			return Response::json(array(
+				$this->getReturnKey() => ($record ? array($record) : array()),
+			));
+		// }else{
+		// 	$msg = sprintf('Unable to find record %s for %s', $id, $this->getReturnKey());
+		// 	throw new RouteException($msg);
+		// }
 	}
 
 	public function index()
