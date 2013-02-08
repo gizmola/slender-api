@@ -130,6 +130,7 @@ return array(
 		
 		// Site-based resource routing
 		'Dws\Slender\Api\Route\RouteServiceProvider',
+		'Dws\Slender\Api\Resolver\ServiceProvider',
 	),
 
 	/*
