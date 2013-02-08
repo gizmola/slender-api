@@ -3,6 +3,7 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\HttpKernel\Client as BaseClient;
 
 class AdminCommand extends Command {
 
@@ -86,11 +87,9 @@ class AdminCommand extends Command {
             'permissions' => $adminPermissions
         ];
 
-        //Store role in db
-        $response = $this->call('POST', '/roles', array(), array(), array(), json_encode($roleData));
-        $response = json_decode($response->getContent(), true);
-
-        $roleResponse = $response['roles'][0];
+        $rolesModel = new Roles();
+        $entity = $rolesModel->insert($roleData);
+        $this->info(var_dump($entity));
 
         $userData = [
             'first_name'    => 'Admin',
@@ -101,10 +100,6 @@ class AdminCommand extends Command {
             'permissions'   => $adminPermissions
         ];
 
-        //Store user in db
-        $response = $this->call('POST', '/users', array(), array(), array(), json_encode($userData));
-        /*$response = json_decode($response->getContent(), true);
-        $userResponse = $response['users'][0];*/
 
         $this->info('Storing in db');
 	}
