@@ -54,7 +54,13 @@ class Validator extends LaravelValidator
                         break;
                     case 0:
                     default:
-                        $return[($path ? "{$path}.{$key}" : $key)] = $value;   
+                        if(is_int($key))
+                        {
+                            $return[($path ? "{$path}" : $key)] = $data;
+                        }else{
+                            $return[($path ? "{$path}.{$key}" : $key)] = $value;   
+                            
+                        }
                         break;
                 }
             }
@@ -101,5 +107,23 @@ class Validator extends LaravelValidator
     }
 
 
+    /**
+     * Validate that a required attribute exists.
+     *
+     * @param  string  $attribute
+     * @param  mixed   $value
+     * @return bool
+     */
+    protected function validateRequired($attribute, $value, $parameters=null)
+    {   
+
+        if($parameters){
+            if(in_array('array', $parameters))
+            {
+                return is_array($value);
+            }
+        }
+        return parent::validateRequired($attribute, $value);
+    }
 
 }

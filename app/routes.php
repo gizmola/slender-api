@@ -10,6 +10,7 @@ Route::get('/', function(){
  */
 Route::addRestResource('roles');
 Route::addRestResource('users');
+Route::addRestResource('pages');
 
 // Is this really non-site dependent?
 Route::addRestResource('pages');
