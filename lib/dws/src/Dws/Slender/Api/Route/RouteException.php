@@ -1,6 +1,6 @@
 <?php
 
-namespace Dws\Slender\Api\Route\SiteBasedResources;
+namespace Dws\Slender\Api\Route;
 
 /**
  * A custom exception representing a failed route

@@ -6,6 +6,7 @@ use \News as BaseNews;
 
 class News extends BaseNews
 {
+    
 	public function findById($id)
 	{
 		return [

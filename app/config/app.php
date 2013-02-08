@@ -65,7 +65,25 @@ return array(
 	|
 	*/
 
-	'key' => '',
+	'key' => 'slender-heidy-heidy-ho',
+    
+	/*
+	|--------------------------------------------------------------------------
+	| Core resources
+	|--------------------------------------------------------------------------
+    |
+    | The core resources listed here will be used to generate the top-level
+    | routes which are managed using the site-independent db connection.
+    |
+    | Defining them here in config makes them available in the IoC container.
+    |
+	*/
+    
+    'core-resources' => array(
+        // 'sites',
+        'users',
+        'roles',
+    ),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -110,11 +128,8 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		
-        // Database connections
-		'Dws\Slender\Api\Database\ServiceProvider',
-        
 		// Site-based resource routing
-		'Dws\Slender\Api\Route\SiteBasedResources\ServiceProvider',
+		'Dws\Slender\Api\Route\RouteServiceProvider',
 	),
 
 	/*
@@ -168,8 +183,7 @@ return array(
 		'Redis'           => 'Illuminate\Support\Facades\Redis',
 		'Request'         => 'Illuminate\Support\Facades\Request',
 		'Response'        => 'Illuminate\Support\Facades\Response',
-		// 'Route'           => 'Illuminate\Support\Facades\Route',
-		'Route'           => 'Dws\Slender\Api\Support\Facades\Route',
+		'Route'           => 'Illuminate\Support\Facades\Route',
 		'Schema'          => 'Illuminate\Support\Facades\Schema',
 		'Session'         => 'Illuminate\Support\Facades\Session',
 		'URL'             => 'Illuminate\Support\Facades\URL',

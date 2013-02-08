@@ -1,6 +1,6 @@
 <?php
 
-namespace Dws\Slender\Api\Route\SiteBasedResources;
+namespace Dws\Slender\Api\Route;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -9,7 +9,7 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
-class ServiceProvider extends BaseServiceProvider
+class RouteServiceProvider extends BaseServiceProvider
 {
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -25,9 +25,9 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function register()
 	{
-		$this->app['site-based-resource-route-creator'] = $this->app->share(function($app)
+		$this->app['route-creator'] = $this->app->share(function($app)
 		{
-			return new Creator($app);
+			return new RouteCreator($app);
 		});
 	}
 
@@ -38,6 +38,6 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function provides()
 	{
-		return array('site-based-resource-route-creator');
+		return array('route-creator');
 	}
 }
