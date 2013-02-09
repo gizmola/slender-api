@@ -3,7 +3,7 @@
 		"laravel/framework": "4.0.*",
 		"navruzm/laravel-mongo-auth": "*",
 		"navruzm/lmongo": "*",
-		"phpunit/phpunit": "3.7.*"
+		"kevinlebrun/slug.php": "0.*"
 	},
 	
 	"autoload": {
@@ -22,6 +22,10 @@
 	
 	"minimum-stability": "dev",
 	
+	"require-dev": {
+		"phpunit/phpunit": "3.7.*"
+	},
+
     "config": {
         "bin-dir": "scripts"
     }
