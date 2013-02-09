@@ -80,9 +80,10 @@ return array(
 	*/
     
     'core-resources' => array(
-        // 'sites',
+        'sites',
         'users',
         'roles',
+        'pages', //@TODO: remove (and form unit tests)
     ),
 
 	/*
