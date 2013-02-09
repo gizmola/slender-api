@@ -83,7 +83,6 @@ return array(
         'sites',
         'users',
         'roles',
-        'pages', //@TODO: remove (and form unit tests)
     ),
 
 	/*
