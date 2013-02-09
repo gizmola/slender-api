@@ -181,6 +181,11 @@ class RouteCreator
         }
 
         $modelInstance = new $modelClass($connection);
+        //juni.samos@diamondwebservices.com
+        //inject a class resolver for instatiating relations
+        //from multiple namespaces
+        $resolver = $this->app->make('class-resolver');
+        $modelInstance->setResolver($resolver);
         
         $controller = new $controllerClass($modelInstance);
         
