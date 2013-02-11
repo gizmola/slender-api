@@ -46,6 +46,7 @@ App::after(function($request, $response)
                             ->where('key', $key)
                             ->where("permissions.{$requestPath}", 1)
                             ->first();
+
     if(!$user){
         return \Response::json(array(
             'messages' => array(

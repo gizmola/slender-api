@@ -63,25 +63,27 @@ class AdminCommand extends Command
         }
 
         $adminPermissions = [
-            'users' => [
-                'read'      => 1,
-                'write'     => 1,
-                'delete'    => 1,
-            ],
-            'roles' => [
-                'read'      => 1,
-                'write'     => 1,
-                'delete'    => 1,
-            ],
-            'sites' => [
-                'read'      => 1,
-                'write'     => 1,
-                'delete'    => 1,
-            ],
+            'global' => [
+                'users' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+                'roles' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+                'sites' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+            ]
         ];
 
         $roleData = [
-            'name' => 'Admin Role',
+            'name' => 'Global Admin Role',
             'permissions' => $adminPermissions
         ];
 
