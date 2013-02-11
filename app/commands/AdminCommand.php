@@ -1,5 +1,8 @@
 <?php
 
+use App\Model\Roles;
+use App\Model\Users;
+
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
