@@ -16,6 +16,6 @@ class TestCase extends BaseTestCase
     {
     	$unitTesting = true;
         $testEnvironment = 'testing';
-    	return require __DIR__.'/../../../../start.php';
+    	return require __DIR__.'/../../../../bootstrap/start.php';
     }
 }

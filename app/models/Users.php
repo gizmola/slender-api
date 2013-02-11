@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use \MongoId;
+
 class Users extends BaseModel
 {
 
