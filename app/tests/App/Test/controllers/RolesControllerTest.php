@@ -1,6 +1,11 @@
 <?php
 
-class RolesControllerTest extends TestCase {
+namespace App\Test\Controller;
+
+use App\Test\TestCase;
+
+class RolesControllerTest extends TestCase
+{
 
 
     public function testGetSingular()

@@ -1,6 +1,9 @@
 <?php
 
+namespace App\Test\Model;
+
 use App\Model\BaseModel;
+use App\Test\TestCase;
 
 class BaseModelTest extends TestCase 
 {

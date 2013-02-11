@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Test;
+
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 use LMongo\Query\Builder;
 use LMongo\Database;
