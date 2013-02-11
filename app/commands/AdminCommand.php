@@ -26,16 +26,6 @@ class AdminCommand extends Command
 	protected $description = 'Setup cli key script to insert admin user and role.';
 
 	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
-	/**
 	 * Execute the console command.
 	 *
 	 * @return void
