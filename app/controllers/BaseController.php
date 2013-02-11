@@ -1,17 +1,16 @@
 <?php
 
-/**
- * Base controller
- *
- * @author David Weinraub <david.weinraub@diamondwebservices.com>
- */
-
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Dws\Slender\Api\Validation\ValidationException;
 use Illuminate\Support\MessageBag;
 use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
 
+/**
+ * Base controller
+ *
+ * @author David Weinraub <david.weinraub@diamondwebservices.com>
+ */
 abstract class BaseController extends Controller
 {
 	const HTTP_GET_OK = 200;
@@ -27,13 +26,28 @@ abstract class BaseController extends Controller
 	 */
 	protected $model;
 	
+    /**
+     *
+     * @var string
+     */
 	protected $returnKey;
 
+    /**
+     * Constructor
+     * 
+     * @param \App\Controller\BaseModel $model
+     */
 	public function __construct(BaseModel $model)
 	{		
 		$this->model = $model;
 	}
 	
+    /**
+     * Handles HTTP GET method on a singular endpoint
+     * 
+     * @param string $id
+     * @return mixed
+     */
 	public function view($id)
 	{
 		$record = $this->model->findById($id);
@@ -49,6 +63,11 @@ abstract class BaseController extends Controller
 		// }
 	}
 
+    /**
+     * Handles HTTP GET method on a plural-endpoint
+     * 
+     * @return mixed
+     */
 	public function index()
 	{
 		
@@ -76,6 +95,12 @@ abstract class BaseController extends Controller
 		return Response::json($result);
 	}
 
+    /**
+     * Handles HTTP PUT method in a singular endpoint
+     * 
+     * @param string $id
+     * @return mixed
+     */
 	public function update($id)
 	{
 		$input = Input::json(true);
@@ -96,6 +121,11 @@ abstract class BaseController extends Controller
 		), self::HTTP_PUT_OK);
 	}
 
+    /**
+     * Handles HTTP POST method on a plual endpoint
+     * 
+     * @return mixed
+     */
 	public function insert()
 	{
 		$input = Input::json(true);
@@ -118,6 +148,12 @@ abstract class BaseController extends Controller
 		), self::HTTP_POST_OK);
 	}
 
+    /**
+     * Handles HTTP DELETE method on a singular endpoint
+     * 
+     * @param string $id
+     * @return type mixed
+     */
 	public function delete($id)
 	{
 		$this->getModel()->delete($id);
@@ -128,6 +164,11 @@ abstract class BaseController extends Controller
 		), self::HTTP_DELETE_OK);
 	}
 
+    /**
+     * Handles HTTP OPTIONS method on plural endpoint
+     * 
+     * @return mixed
+     */
 	public function options()
 	{
 		$options = $this->model->options();
@@ -138,21 +179,21 @@ abstract class BaseController extends Controller
 		), self::HTTP_OPTIONS_OK);
 	}
 
-	public function getSite()
-	{
-		if (null == $this->site) {
-			throw new \Exception('Site must be set in subclasses');
-			// @todo: extract from classame
-		}
-		return $this->site;
-	}
-	
-	public function setSite($site)
-	{
-		$this->site = (string) $site;
-		return $this;
-	}
-	
+//	public function getSite()
+//	{
+//		if (null == $this->site) {
+//			throw new \Exception('Site must be set in subclasses');
+//			// @todo: extract from classame
+//		}
+//		return $this->site;
+//	}
+//	
+//	public function setSite($site)
+//	{
+//		$this->site = (string) $site;
+//		return $this;
+//	}
+//	
 	public function getModel()
 	{
 		if (null == $this->model) {
@@ -184,16 +225,17 @@ abstract class BaseController extends Controller
 	}
 
 	// @TODO: try to find better way which works for App and PHPUnit
-	public function badRequest($messages){
-		if($messages instanceof MessageBag){
+	public function badRequest($messages)
+    {
+		if ($messages instanceof MessageBag) {
             $messages->setFormat(':message');
             $messages = $messages->getMessages();
         }
 		return Response::json(array(
-	            'messages' => array(
-	                $messages,
-	            ),
-	        ), 400);
+            'messages' => array(
+                $messages,
+            ),
+        ), 400);
 	} 
 
 }
