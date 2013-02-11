@@ -156,6 +156,7 @@ class BaseModel extends MongoModel
 
 			$parentClassName =  "\\" . $myNameSpace . "\\" .  ucfirst($p);
 			$parentClass = $this->resolver->create($parentClassName, $this->getConnection());
+			$parentClass->setResolver($this->resolver);
 			
 			if (in_array($myLcName, $parentClass->getEmbeddedRelations())) {
 				
