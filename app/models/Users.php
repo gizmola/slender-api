@@ -1,6 +1,9 @@
 <?php
 
-class Users extends BaseModel{
+namespace App\Model;
+
+class Users extends BaseModel
+{
 
     protected $collectionName = 'users';
 

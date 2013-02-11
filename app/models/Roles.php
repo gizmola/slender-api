@@ -1,6 +1,9 @@
 <?php
 
-class Roles extends BaseModel{
+namespace App\Model;
+
+class Roles extends BaseModel
+{
 
     protected $collectionName = 'roles';
 

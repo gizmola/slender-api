@@ -35,7 +35,7 @@ class SitesConfig
             if (file_exists($file)){
                 $class = $attemptedClass;
             } else {
-                $attemptedClass = ucfirst($resource) . 'Controller';
+                $attemptedClass = 'App\Controller\\' . ucfirst($resource) . 'Controller';
                 $file = app_path() . '/controllers/' . ucfirst($resource) . 'Controller.php';
                 if (@class_exists($attemptedClass, true)){
                     $class = $attemptedClass;
@@ -58,7 +58,7 @@ class SitesConfig
             if (file_exists($file)) {
                 $class = $attemptedClass;
             } else {
-                $attemptedClass = ucfirst($resource);
+                $attemptedClass = 'App\Model\\' . ucfirst($resource);
                 $file = app_path() . '/models/' . ucfirst($resource) . '.php';
                 
                 if (file_exists($file)){

@@ -1,17 +1,23 @@
 <?php
 
+namespace App\Controller;
+
+use App\Model\BaseModel;
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Dws\Slender\Api\Validation\ValidationException;
-use Illuminate\Support\MessageBag;
 use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
+use Illuminate\Support\MessageBag;
+use \Input;
+use \Response;
+use \Validator;
 
 /**
  * Base controller
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
-abstract class BaseController extends Controller
+abstract class BaseController extends \Controller
 {
 	const HTTP_GET_OK = 200;
 	const HTTP_POST_OK = 201;

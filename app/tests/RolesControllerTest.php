@@ -41,6 +41,7 @@ class RolesControllerTest extends TestCase {
         ];
 
         $response = $this->call('POST', '/roles', array(), array(), array(), json_encode($input));
+        
         $response = json_decode($response->getContent(), true);
         $this->assertInternalType('array', $response);
         $this->assertArrayHasKey('messages', $response);

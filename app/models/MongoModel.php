@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Model;
+
+use LMongo\Database as Connection;
+
 /**
  * MongoModel wrapper
  * @TODO: move to Mongo package
@@ -32,7 +36,7 @@ class MongoModel
 	 * 
 	 * @param LMongo\Database $connection
 	 */
-	public function __construct(LMongo\Database $connection = null)
+	public function __construct(Connection $connection = null)
 	{
 		if (is_null($connection)) {
 			$connection = \App::make('mongo')->connection('default');

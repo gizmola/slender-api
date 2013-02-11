@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Episodes extends BaseModel
 {
 	protected $collectionName = 'episodes';

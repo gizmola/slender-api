@@ -2,7 +2,7 @@
 
 namespace App\Model\Site\Ai;
 
-use \Photos as BasePhotos;
+use App\Model\Photos as BasePhotos;
 
 class Photos extends BasePhotos
 {
