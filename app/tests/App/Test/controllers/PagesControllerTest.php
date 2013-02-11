@@ -1,22 +1,22 @@
 <?php
 
-class PagesControllerTest extends TestCase {
+namespace App\Test\Controller;
 
-	/**
-	 * A basic functional test example.
-	 *
-	 * @return void
-	 */
+use App\Test\TestCase;
 
-	public function setup()
-	{
-		
-		parent::setup();
-		App::singleton('MongoSiteSingleton', function(){
+class PagesControllerTest extends TestCase
+{
+
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+        
+        // override site-based mongo connection for tests
+		\App::singleton('MongoSiteSingleton', function(){
 			return App::make('mongo')->connection('unit-tests');
-		});
-	}
-
+		});        
+    }
+    
 	public function testGetSingular()
 	{
         $response = $this->call('GET', '/ai/pages/some-slug');

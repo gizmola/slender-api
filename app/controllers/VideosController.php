@@ -1,8 +1,8 @@
 <?php
 
-abstract class VideosController extends BaseController
+namespace App\Controller;
+
+class VideosController extends BaseController
 {
     protected $returnKey = 'videos';
-
-    protected $model = 'Videos';
 }

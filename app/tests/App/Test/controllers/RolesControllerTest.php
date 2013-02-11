@@ -1,6 +1,11 @@
 <?php
 
-class RolesControllerTest extends TestCase {
+namespace App\Test\Controller;
+
+use App\Test\TestCase;
+
+class RolesControllerTest extends TestCase
+{
 
 
     public function testGetSingular()
@@ -41,6 +46,7 @@ class RolesControllerTest extends TestCase {
         ];
 
         $response = $this->call('POST', '/roles', array(), array(), array(), json_encode($input));
+        
         $response = json_decode($response->getContent(), true);
         $this->assertInternalType('array', $response);
         $this->assertArrayHasKey('messages', $response);

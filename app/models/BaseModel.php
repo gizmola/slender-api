@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 
 /**
@@ -106,8 +108,8 @@ class BaseModel extends MongoModel
 	public function insert(array $data)
 	{
 		if($this->timestamp){
-			$data['created_at'] = new MongoDate();
-			$data['updated_at'] = new MongoDate();
+			$data['created_at'] = new \MongoDate();
+			$data['updated_at'] = new \MongoDate();
 		}
 		
 		//embed child data

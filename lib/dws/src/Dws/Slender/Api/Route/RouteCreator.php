@@ -247,10 +247,10 @@ class RouteCreator
         $pluralUrl = $resource;
         $pluralCallback = function() use ($connection, $resource, $creator) {
             
-            $modelClass = ucfirst($resource);            
+            $modelClass = 'App\Model\\' . ucfirst($resource);            
             $model = new $modelClass($connection);
             
-            $controllerClass = ucfirst($resource) . 'Controller';
+            $controllerClass = 'App\\Controller\\' . ucfirst($resource) . 'Controller';
             $controller = new $controllerClass($model);
             
             $method = $creator->buildControllerMethod('plural');
@@ -260,11 +260,11 @@ class RouteCreator
         
         $singularUrl = $resource . '/{id}';
         $singularCallback = function($id) use ($connection, $resource, $creator) {
-                        
-            $modelClass = ucfirst($resource);
+
+            $modelClass = 'App\Model\\' . ucfirst($resource);
             $model = new $modelClass($connection);
             
-            $controllerClass = ucfirst($resource) . 'Controller';
+            $controllerClass = 'App\Controller\\' . ucfirst($resource) . 'Controller';            
             $controller = new $controllerClass($model);
             
             $method = $creator->buildControllerMethod('singular');

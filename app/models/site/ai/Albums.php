@@ -2,7 +2,7 @@
 
 namespace App\Model\Site\Ai;
 
-use \Albums as BaseAlbums;
+use App\Model\Albums as BaseAlbums;
 
 class Albums extends BaseAlbums
 {

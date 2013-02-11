@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Photos extends BaseModel
 {
 	protected $collectionName = 'photos';

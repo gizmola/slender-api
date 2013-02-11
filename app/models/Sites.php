@@ -1,8 +1,11 @@
 <?php
 
+namespace App\Model;
+
 use Slug\Slugifier;
 
-class Sites extends BaseModel{
+class Sites extends BaseModel
+{
 
     protected $collectionName = 'sites';
 

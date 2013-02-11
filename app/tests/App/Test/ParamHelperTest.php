@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Test;
+
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 
 class ParamHelperTest extends TestCase 

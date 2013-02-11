@@ -1,3 +1,4 @@
 <?php
-Artisan::add(new AdminCommand);
+
+Artisan::add(new AdminCommand());
 

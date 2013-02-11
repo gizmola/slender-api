@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Channels extends BaseModel
 {
 	protected $collectionName = 'channels';

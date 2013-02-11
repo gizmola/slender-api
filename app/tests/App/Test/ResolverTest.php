@@ -1,8 +1,12 @@
 <?php
 
+namespace App\Test;
+
+use App\Test\TestCase;
 use Dws\Slender\Api\Resolver\ClassResolver;
 
-class ResolverTest extends TestCase {
+class ResolverTest extends TestCase
+{
 
 
 	public function testCanCreateResolver()

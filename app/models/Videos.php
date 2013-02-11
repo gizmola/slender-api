@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Videos extends BaseModel
 {
 	protected $collectionName = 'videos';

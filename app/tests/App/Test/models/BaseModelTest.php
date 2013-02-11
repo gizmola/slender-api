@@ -1,11 +1,13 @@
 <?php
 
-use \BaseModel;
+namespace App\Test\Model;
+
+use App\Model\BaseModel;
+use App\Test\TestCase;
 
 class BaseModelTest extends TestCase 
 {
-
-	public function testCanAddChildRelation()
+ 	public function testCanAddChildRelation()
 	{
 
 		$model = new BaseModel;	
@@ -36,7 +38,7 @@ class BaseModelTest extends TestCase
 			'photos' => [1],
 		];
 
-		$modelSpy = $this->getMock('BaseModel');
+		$modelSpy = $this->getMock('App\Model\BaseModel');
 		$modelSpy->expects($this->exactly(1))
 			->method('findById')
 			->with(1)

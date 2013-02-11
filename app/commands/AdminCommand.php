@@ -1,18 +1,22 @@
 <?php
 
-use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\HttpKernel\Client as BaseClient;
+use App\Model\Roles;
+use App\Model\Users;
 
-class AdminCommand extends Command {
+use Illuminate\Console\Command;
+//use Symfony\Component\Console\Input\InputOption;
+//use Symfony\Component\Console\Input\InputArgument;
+//use Symfony\Component\HttpKernel\Client as BaseClient;
+
+class AdminCommand extends Command
+{
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'admin';
+	protected $name = 'add-admin-user';
 
 	/**
 	 * The console command description.
@@ -20,16 +24,6 @@ class AdminCommand extends Command {
 	 * @var string
 	 */
 	protected $description = 'Setup cli key script to insert admin user and role.';
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
 
 	/**
 	 * Execute the console command.

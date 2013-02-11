@@ -11,10 +11,10 @@
 			"app/commands",
 			"app/controllers",
 			"app/models",
-			"app/database/migrations",
-			"app/tests/TestCase.php"
+			"app/database/migrations"
 		],
 		"psr-0": {
+            "App\\Test" : "app/tests",
 			"Dws\\Slender\\Api": "lib/dws/src"
 		}
 

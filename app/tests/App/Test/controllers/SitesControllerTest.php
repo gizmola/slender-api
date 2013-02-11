@@ -1,7 +1,11 @@
 <?php
 
-class SitesControllerTest extends TestCase {
+namespace App\Test\Controller;
 
+use App\Test\TestCase;
+
+class SitesControllerTest extends TestCase
+{
 
     public function testGetSingular()
     {

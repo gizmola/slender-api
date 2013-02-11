@@ -2,7 +2,7 @@
 
 namespace App\Model\Site\Ai;
 
-use \Pages as BasePages;
+use App\Model\Pages as BasePages;
 
 class Pages extends BasePages
 {

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Model;
+
 class Pages extends BaseModel
 {
 	protected $collectionName = 'pages';
