@@ -19,12 +19,20 @@ class Users extends BaseModel{
 
     public function insert(array $data)
     {
+
         if(isset($data['roles'])){
             if(!is_array($data['roles']))
             {
                 $data['roles'] = (array) $data['roles'];
             }
             $roles = new Roles();
+            foreach ($data['roles'] as $id => $role) 
+            {
+                if(!$role instanceof MongoId)
+                {
+                    $data['roles'][$id] = new MongoId($role);
+                }
+            }
             $user_roles = $roles->whereIn('_id', $data['roles'])->get();
             $data['roles'] = array();
             $data['permissions'] = array();
@@ -37,7 +45,6 @@ class Users extends BaseModel{
                 $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
             }
         }
-
 
         $data['key'] = sha1(time() . str_shuffle($data['email']));
 
