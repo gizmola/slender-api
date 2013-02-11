@@ -8,7 +8,8 @@ use Illuminate\Console\Command;
 //use Symfony\Component\Console\Input\InputArgument;
 //use Symfony\Component\HttpKernel\Client as BaseClient;
 
-class AdminCommand extends Command {
+class AdminCommand extends Command
+{
 
 	/**
 	 * The console command name.
