@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use \MongoId;
+
 class Users extends BaseModel
 {
 
@@ -22,13 +24,16 @@ class Users extends BaseModel
 
     public function insert(array $data)
     {
+
         if(isset($data['roles'])){
             if(!is_array($data['roles']))
             {
                 $data['roles'] = (array) $data['roles'];
             }
             $roles = new Roles();
+
             $user_roles = $roles->whereIn('_id', $data['roles'])->get();
+
             $data['roles'] = array();
             $data['permissions'] = array();
 
@@ -40,7 +45,6 @@ class Users extends BaseModel
                 $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
             }
         }
-
 
         $data['key'] = sha1(time() . str_shuffle($data['email']));
 

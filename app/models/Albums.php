@@ -6,21 +6,22 @@ class Albums extends BaseModel
 {
 	protected $collectionName = 'albums';
 	
-	protected $schema = array(
+	protected $schema = [
+    
+        'title' => ['required'],
+        'meta' => [
+            'title' => [],
+            'keywords' => [],
+        ],
+        'slug' => ['alpha_dash','required'],
+        'photos' => [],
+        'availability'  => [
+            'sunrise' => ['date'],
+            'sunset'  => ['date'],
+        ],
+        'created' => ['date'],
+        'updated' => ['date'],
 
-        'title' => array('type' => 'string'),
-        'meta'	=> array (
-    		'title' 	=> array('type' => 'string'),
-    		'keywords'	=> array('type' => 'string'),
-        ),
-		'slug' => array('type' => 'string'),
-		'photos' => array('type' => 'array'),
-        'availability'	=> array (
-    		'sunrise' 	=> array('type' => 'DateTime'),
-    		'sunset'	=> array('type' => 'DateTime'),
-        ),
-		// created
-		// updated
-	);
+    ];
 
 }

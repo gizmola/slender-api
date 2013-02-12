@@ -37,6 +37,7 @@ class AdminCommand extends Command
         $password = null;
 
 
+
         //Get email from console
         $first_name = $this->ask('Enter First Name:');
         $last_name = $this->ask('Enter Last Name:');
@@ -62,26 +63,33 @@ class AdminCommand extends Command
             }
         }
 
+        // $first_name = "John";
+        // $last_name = "Doe";
+        // $email = "email@example.com";
+        // $password = "password";
+        
         $adminPermissions = [
-            'users' => [
-                'read'      => 1,
-                'write'     => 1,
-                'delete'    => 1,
-            ],
-            'roles' => [
-                'read'      => 1,
-                'write'     => 1,
-                'delete'    => 1,
-            ],
-            'sites' => [
-                'read'      => 1,
-                'write'     => 1,
-                'delete'    => 1,
-            ],
+            'global' => [
+                'users' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+                'roles' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+                'sites' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+            ]
         ];
 
         $roleData = [
-            'name' => 'Admin Role',
+            'name' => 'Global Admin Role',
             'permissions' => $adminPermissions
         ];
 

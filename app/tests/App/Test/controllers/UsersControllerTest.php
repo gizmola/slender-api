@@ -101,7 +101,7 @@ class UsersControllerTest extends TestCase
             'last_name'     => 'Doe',
             'email'         => 'john@doe.no',
             'password'      => 'required',
-            'roles'         => [$role1['_id'], $role2['_id']] 
+            'roles'         => [(string)$role1['_id'], (string)$role2['_id']] 
         ];
 
         $response = $this->call('POST', '/users', array(), array(), array(), json_encode($input));
