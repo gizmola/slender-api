@@ -1,7 +1,9 @@
 <?php
 
-use App\Model\Roles;
-use App\Model\Users;
+namespace Slender\API\Command;
+
+use Slender\API\Model\Roles;
+use Slender\API\Model\Users;
 
 use Illuminate\Console\Command;
 //use Symfony\Component\Console\Input\InputOption;

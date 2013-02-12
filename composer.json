@@ -8,13 +8,15 @@
 	
 	"autoload": {
 		"classmap": [
-			"app/commands",
+			
 			"app/database/migrations"
 		],
 		"psr-0": {
             "App\\Test" : "app/tests",
             "Slender\\API\\Controller": "app",
             "Slender\\API\\Model": "app",
+            "Slender\\API\\Command": "app",
+            "Slender\\API\\Database\\Migration": "app",
 			"Dws\\Slender\\Api": "lib/dws/src"
 		}
 
