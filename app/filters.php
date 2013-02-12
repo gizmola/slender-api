@@ -41,10 +41,10 @@ App::after(function($request, $response)
 
     $requestPath  = \App::make('route-creator')->getRequestPath('.');
 
-    $users = new Users;
+    $users = new Slender\API\Model\Users;
     $user = $users->getCollection()
                             ->where('key', $key)
-                            ->where("permissions.{$requestPath}", 1)
+                            //->where("permissions.{$requestPath}", 1)
                             ->first();
 
     if(!$user){
