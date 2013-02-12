@@ -37,6 +37,7 @@ class AdminCommand extends Command
         $password = null;
 
 
+
         //Get email from console
         $first_name = $this->ask('Enter First Name:');
         $last_name = $this->ask('Enter Last Name:');
@@ -62,6 +63,11 @@ class AdminCommand extends Command
             }
         }
 
+        // $first_name = "John";
+        // $last_name = "Doe";
+        // $email = "email@example.com";
+        // $password = "password";
+        
         $adminPermissions = [
             'global' => [
                 'users' => [

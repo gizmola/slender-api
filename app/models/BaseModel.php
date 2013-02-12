@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 
 /**
@@ -110,6 +111,10 @@ class BaseModel extends MongoModel
 		if($this->timestamp){
 			$data['created_at'] = new \MongoDate();
 			$data['updated_at'] = new \MongoDate();
+		}
+
+		if(!isset($data['_id'])){
+			$data['_id'] = UUID::v4();	
 		}
 		
 		//embed child data

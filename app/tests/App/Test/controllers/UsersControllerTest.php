@@ -110,6 +110,7 @@ class UsersControllerTest extends TestCase
         $this->assertArrayHasKey('users', $response);
 
         $user = $response['users'][0];
+        var_dump($user);
         $this->assertContains($role1['_id'], $user['roles']);
         $this->assertContains($role2['_id'], $user['roles']);
 

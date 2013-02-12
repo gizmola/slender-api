@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Model\BaseModel;
-use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Dws\Slender\Api\Validation\ValidationException;
 use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
@@ -144,8 +143,7 @@ abstract class BaseController extends \Controller
         if($validator->fails()){
             return $this->badRequest($validator->messages());
         }
-
-		$input['_id'] = UUID::v4();		
+	
 		$entity = $this->model->insert($input);
 		return Response::json(array(
 			$this->getReturnKey() => array(

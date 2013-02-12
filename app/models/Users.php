@@ -31,14 +31,9 @@ class Users extends BaseModel
                 $data['roles'] = (array) $data['roles'];
             }
             $roles = new Roles();
-            foreach ($data['roles'] as $id => $role) 
-            {
-                if(!$role instanceof MongoId)
-                {
-                    $data['roles'][$id] = new MongoId($role);
-                }
-            }
+
             $user_roles = $roles->whereIn('_id', $data['roles'])->get();
+
             $data['roles'] = array();
             $data['permissions'] = array();
 
