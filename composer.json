@@ -7,10 +7,6 @@
 	},
 	
 	"autoload": {
-		"classmap": [
-			
-			"app/database/migrations"
-		],
 		"psr-0": {
             "App\\Test" : "app/tests",
             "Slender\\API\\Controller": "app",
