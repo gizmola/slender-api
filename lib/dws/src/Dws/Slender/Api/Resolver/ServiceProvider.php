@@ -26,7 +26,8 @@ class ServiceProvider extends BaseServiceProvider
 	public function register()
 	{
 		$this->app['class-resolver'] = $this->app->share(function($app){
-			return new ClassResolver();
+			$fallBackNamespace = $app['config']['app.fallback-namespaces']['models'];
+			return new ClassResolver($fallBackNamespace);
 		});
 	}
 

@@ -4,6 +4,24 @@ namespace Dws\Slender\Api\Resolver;
 
 class ClassResolver
 {
+
+	protected $fallBackNamespace;
+
+	public function __construct($namespace)
+	{
+		$this->fallBackNamespace = $namespace; 
+	}
+
+	public function getFallBackNamespace()
+	{
+		return $this->fallBackNamespace;
+	}
+
+	public function setFallbackNamespace($namespace)
+	{
+		$this->fallBackNamespace = $namespace;
+	}
+
 	public function create($fullyNameSpacedClass, $dependancy = false)
 	{
 
@@ -13,7 +31,7 @@ class ClassResolver
 		
 		} else {
 
-			$baseClass = "\\" . $this->parseClassName($fullyNameSpacedClass);
+			$baseClass = $this->fallBackNamespace . $this->parseClassName($fullyNameSpacedClass);
 
 			if (!class_exists($baseClass)) {
 				throw new ClassResolverException("Requested classes $fullyNameSpacedClass and $baseClass do not exist");	

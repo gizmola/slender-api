@@ -196,4 +196,8 @@ return array(
 		'ValidationException' => 'Dws\Slender\Api\Validation\ValidationException'
 	),
 
+	'fallback-namespaces' => [
+		'models' => '\Slender\API\Model',
+	],
+
 );
