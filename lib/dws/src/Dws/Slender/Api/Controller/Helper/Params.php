@@ -144,5 +144,11 @@ class Params{
 		return self::parse($input, ":");
 	}
 
+	public static function getWith($embed =null)
+	{
+		$input = ($embed) ? $embed : Input::get('with');
+		return self::parse($input, ":");	
+	}
+
 
 }
