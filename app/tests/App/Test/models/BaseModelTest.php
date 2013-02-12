@@ -2,7 +2,7 @@
 
 namespace App\Test\Model;
 
-use App\Model\BaseModel;
+use Slender\API\Model\BaseModel;
 use App\Test\TestCase;
 
 class BaseModelTest extends TestCase 
@@ -38,7 +38,7 @@ class BaseModelTest extends TestCase
 			'photos' => [1],
 		];
 
-		$modelSpy = $this->getMock('App\Model\BaseModel');
+		$modelSpy = $this->getMock('Slender\API\Model\BaseModel');
 		$modelSpy->expects($this->exactly(1))
 			->method('findById')
 			->with(1)
