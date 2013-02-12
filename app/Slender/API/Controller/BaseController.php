@@ -83,10 +83,11 @@ abstract class BaseController extends \Controller
 		$take = ParamsHelper::getTake();
 		$skip = ParamsHelper::getSkip();
 		$count = ParamsHelper::getCount();
+		$with = ParamsHelper::getWith();
 
 		$meta = [];
 
-		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $count);
+		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $count, $with);
 
 		$result = [
 			$this->getReturnKey() => $records
