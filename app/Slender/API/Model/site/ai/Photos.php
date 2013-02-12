@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\Site\Ai;
+namespace Slender\API\Model\Site\Ai;
 
-use App\Model\Photos as BasePhotos;
+use Slender\API\Model\Photos as BasePhotos;
 
 class Photos extends BasePhotos
 {

@@ -28,15 +28,15 @@ class SitesConfig
     {
         $class = null;
         if ($this->isSiteResourceDefined($site, $resource)){
-            $attemptedClass = 'App\\Controller\Site\\' . ucfirst($site) 
+            $attemptedClass = 'Slender\\API\\Controller\Site\\' . ucfirst($site) 
                 . '\\' . ucfirst($resource) . 'Controller';
-            $file = app_path() . '/controllers/site/' . $site . '/' . ucfirst($resource) . 'Controller.php';
+            $file = app_path() . '/Slender/API/Controller/Site/' . ucfirst($site) . '/' . ucfirst($resource) . 'Controller.php';
             
             if (file_exists($file)){
                 $class = $attemptedClass;
             } else {
-                $attemptedClass = 'App\Controller\\' . ucfirst($resource) . 'Controller';
-                $file = app_path() . '/controllers/' . ucfirst($resource) . 'Controller.php';
+                $attemptedClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
+                $file = app_path() . '/Slender/API/Controller/' . ucfirst($resource) . 'Controller.php';
                 if (@class_exists($attemptedClass, true)){
                     $class = $attemptedClass;
                 }
@@ -51,15 +51,15 @@ class SitesConfig
         $class = null;
         
         if ($this->isSiteResourceDefined($site, $resource)){
-            $attemptedClass = 'App\\Model\Site\\' . ucfirst($site) 
+            $attemptedClass = 'Slender\\API\\Model\Site\\' . ucfirst($site) 
                 . '\\' . ucfirst($resource);
-            $file = app_path() . '/models/site/' . $site . '/' . ucfirst($resource) . '.php';
+            $file = app_path() . '/Slender/API/Model/Site/' . ucfirst($site) . '/' . ucfirst($resource) . '.php';
             
             if (file_exists($file)) {
                 $class = $attemptedClass;
             } else {
-                $attemptedClass = 'App\Model\\' . ucfirst($resource);
-                $file = app_path() . '/models/' . ucfirst($resource) . '.php';
+                $attemptedClass = 'Slender\\API\\Model\\' . ucfirst($resource);
+                $file = app_path() . '/Slender/API/Model/' . ucfirst($resource) . '.php';
                 
                 if (file_exists($file)){
                     $class = $attemptedClass;

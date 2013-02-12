@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Site\Demo;
+namespace Slender\API\Controller\Site\Demo;
 
 use Slender\API\Controller\NewsController as BaseNewsController;
 use \Response;

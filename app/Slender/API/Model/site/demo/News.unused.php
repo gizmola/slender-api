@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\Site\Demo;
+namespace Slender\API\Model\Site\Demo;
 
-use App\Model\News as BaseNews;
+use Slender\API\Model\News as BaseNews;
 
 class News extends BaseNews
 {
