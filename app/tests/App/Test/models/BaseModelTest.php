@@ -20,12 +20,17 @@ class BaseModelTest extends TestCase
 	public function testCanGetEmbeddedChildRelations()
 	{
 		$model = new BaseModel;	
-		$relations = ['embeddedChild'=> true, 'otherchild' => false];
+		$relations = ['embeddedChild'=> true, 'notembeddedchild' => false];
 		$model->addRelations('children',$relations);
 
 		$embeddedChildren = $model->getEmbeddedRelations();
 		$this->assertEquals(1,count($embeddedChildren));
 		$this->assertEquals(true, in_array('embeddedChild', $embeddedChildren));
+
+		$notEmbeddedChildren = $model->getEmbeddedRelations(false);
+		$this->assertEquals(1,count($notEmbeddedChildren));
+		$this->assertEquals(true, in_array('notembeddedchild', $notEmbeddedChildren));
+
 	}
 
 	public function testEmbedChildArray()

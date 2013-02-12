@@ -108,6 +108,7 @@ class BaseModel extends MongoModel
 	 */
 	public function insert(array $data)
 	{
+		
 		if($this->timestamp){
 			$data['created_at'] = new \MongoDate();
 			$data['updated_at'] = new \MongoDate();
@@ -123,8 +124,7 @@ class BaseModel extends MongoModel
 
 		foreach ($embeddedRelations as $relation) {
 
-			$class = ucfirst($relation);
-			$childIntsance = new $class;
+			$childIntsance = $this->createRelatedClass($relation);
 			$this->embedChildData($data[$relation],$childIntsance);
 	
 		}
@@ -152,44 +152,12 @@ class BaseModel extends MongoModel
 		$this->getCollection()->where('_id', $id)->update($data);
 		$entity = $this->findById($id);
 
-		$myName = $this->getName();
-		$myNameSpace = $this->getNameSpace();
-		$myLcName = strtolower($myName);
-		$parents = $this->getRelations()['parents'];
-
-		foreach ($parents as $p => $c) {
-
-			$parentClassName =  "\\" . $myNameSpace . "\\" .  ucfirst($p);
-			$parentClass = $this->resolver->create($parentClassName, $this->getConnection());
-			$parentClass->setResolver($this->resolver);
-			
-			if (in_array($myLcName, $parentClass->getEmbeddedRelations())) {
-				
-				$results = $parentClass->getCollection()->where("{$myLcName}._id",$id)->get();
-
-				foreach ($results as $res) {
-					$this->updateParentData($entity, $res[$myLcName]);
-					$parentId = $this->shiftId($res);
-					$parentClass->getCollection()->where('_id', $parentId)->update($res);
-				}
-
-			}
-		
+		if (!$this->updateParents($entity)) {
+			throw new \Exception("Error updating parent data");
 		}
 
 		return $entity;
-	}
-
-	public function getName()
-	{
-		return $this->resolver->parseClassName(get_class($this));
-	}
-
-	public function getNameSpace()
-	{
-		return $this->resolver->parseNameSpace(get_class($this));
-	}
-	
+	}	
 	/**
 	 * Delete record
 	 *
@@ -218,6 +186,16 @@ class BaseModel extends MongoModel
 			);
 	}
 
+	public function getName()
+	{
+		return $this->resolver->parseClassName(get_class($this));
+	}
+
+	public function getNameSpace()
+	{
+		return $this->resolver->parseNameSpace(get_class($this));
+	}
+
 	public function getSchemaValidation()
 	{
 		return $this->schema;
@@ -235,13 +213,15 @@ class BaseModel extends MongoModel
 		return $this->relations;
 	}
 
-	public function getEmbeddedRelations()
+	public function getEmbeddedRelations($reverse=true)
 	{
 		$embedded = [];
 
 		foreach ($this->relations['children'] as $k => $v) {
-			if ($v) {
+			if ($v && $reverse) {
 				$embedded[] = $k; 	
+			} elseif (!$v && !$reverse) {
+				$embedded[] = $k;
 			}
 		}
 
@@ -271,6 +251,50 @@ class BaseModel extends MongoModel
 
 	public function isEmbedded($child) {
 		return in_array($child, $this->getEmbeddedRelations());
+	}
+
+	private function createRelatedClass($name)
+	{
+		$namespacedName = "\\" . $this->getNameSpace() . "\\" .  ucfirst($name);
+		$newClass = $this->resolver->create($namespacedName, $this->getConnection());
+		$newClass->setResolver($this->resolver);
+		return $newClass;
+	}
+
+	public function updateParents($entity)
+	{
+
+		try{
+
+			$myLcName = strtolower($this->getName());
+
+			$parents = $this->getRelations()['parents'];
+
+			foreach ($parents as $p => $c) {
+				
+				$parentClassName =  ucfirst($p);
+				$parentClass = $this->createRelatedClass(ucfirst($p));
+				
+				if (in_array($myLcName, $parentClass->getEmbeddedRelations())) {
+					
+					$results = $parentClass->getCollection()->where("{$myLcName}._id",$entity['_id'])->get();
+
+					foreach ($results as $res) {
+						$this->updateParentData($entity, $res[$myLcName]);
+						$parentId = $this->shiftId($res);
+						$parentClass->getCollection()->where('_id', $parentId)->update($res);
+					}
+
+				}
+
+			}
+
+		} catch (\Exception $e) {
+			return false;
+		}
+
+		return true;
+
 	}
 
 	public function updateParentData($childData, &$children, $isDelete=false)
