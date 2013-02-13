@@ -343,5 +343,4 @@ class BaseModel extends MongoModel
         unset($data['_id']);
         return $id;
     }
-
 }

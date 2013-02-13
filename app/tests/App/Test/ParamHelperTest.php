@@ -94,8 +94,8 @@ class ParamHelperTest extends TestCase
 
 	public function testCanParseEmbedParamIntoArray()
 	{
-		$input = array('parents:1', 'children:0');
-		$output = array(array('parents', (float)1), array('children',(float)0));
+		$input = ['parents:1', 'children:0'];
+		$output = [['parents',(float)1],['children',(float)0]];
 		$params = ParamsHelper::getWith($input);
 		$this->assertEquals($output,$params);
 	}
