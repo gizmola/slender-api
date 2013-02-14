@@ -1,5 +1,7 @@
 <?php
 
+use App\Model\Users;
+
 /*
 |--------------------------------------------------------------------------
 | Application & Route Filters
@@ -33,15 +35,31 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
+\Route::filter('auth', function()
 {
-	if (Auth::guest()) return Redirect::route('login');
+    $key = \Request::header('AUTHENTICATION');
+
+    $requestPath  = \App::make('route-creator')->getRequestPath('.');
+
+    $users = new Slender\API\Model\Users;
+    $user = $users->getCollection()
+                            ->where('key', $key)
+                            //->where("permissions.{$requestPath}", 1)
+                            ->first();
+
+    if(!$user){
+        return \Response::json(array(
+            'messages' => array(
+                'Unauthorized',
+            ),
+        ), 401);
+    }
 });
 
 
-Route::filter('guest', function()
+\Route::filter('guest', function()
 {
-	if (Auth::check()) return Redirect::to('/');
+	if (\Auth::check()) return \Redirect::to('/');
 });
 
 /*
@@ -55,9 +73,9 @@ Route::filter('guest', function()
 |
 */
 
-Route::filter('csrf', function()
+\Route::filter('csrf', function()
 {
-	if (Session::getToken() != Input::get('csrf_token'))
+	if (\Session::getToken() != \Input::get('csrf_token'))
 	{
 		throw new Illuminate\Session\TokenMismatchException;
 	}

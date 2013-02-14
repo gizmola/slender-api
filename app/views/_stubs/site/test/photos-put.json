@@ -1,0 +1,14 @@
+{
+	"title" : "My Title",
+
+	"meta"	: {
+		"title" 	: "My Title",
+		"keywords"	: "my,title"
+	},
+	"slug" : "my-title",
+	"url" : "http://example.com/test/photo.jpg",
+	"availability"	: {
+		"sunrise" 	: "2012-01-01",
+		"sunset" 	: "2020-01-01"
+	}
+}

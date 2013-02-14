@@ -1,5 +1,7 @@
 <?php
 
+use Dws\Slender\Api\Route\RouteException;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Laravel Class Loader
@@ -9,14 +11,15 @@
 | load your controllers and models. This is useful for keeping all of
 | your classes in the "global" namespace without Composer updating.
 |
+|
+| ClassLoader::addDirectories(array(
+|
+|    app_path().'/controllers',
+|    app_path().'/models',
+|
+| ));
+| 
 */
-
-ClassLoader::register(new ClassLoader(array(
-
-	app_path().'/controllers',
-	app_path().'/models',
-
-)));
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +32,7 @@ ClassLoader::register(new ClassLoader(array(
 |
 */
 
-Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
+// Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +47,37 @@ Log::useDailyFiles(__DIR__.'/../storage/logs/log.txt');
 |
 */
 
-App::error(function(Exception $exception, $code)
+/**
+ * 500 handler
+ */
+App::error(function(\Exception $exception)
 {
-	Log::error($exception);
+    // Log::error($exception);
+    $message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
+    return Response::json(array(
+        'messages' => array(
+            $message,
+        ),
+    ), 500);
+});
+
+App::error(function(RouteException $exception)
+{
+    // Log::error($exception);
+    return Response::json(array(
+		'messages' => array(
+			$exception->getMessage(),
+		),
+	), 404);
+});
+
+App::missing(function(\Exception $exception)
+{
+    return Response::json(array(
+		'messages' => array(
+			'Resource not found',
+		),
+	), 404);
 });
 
 /*
