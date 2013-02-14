@@ -38,7 +38,7 @@ class BaseModel extends MongoModel
 	 * @param type $offset
 	 */
 	public function findMany(array $where, array $fields, array $orders, &$meta, 
-							array $aggregate = null, $take = null, $skip = null, $count = null, $with = null)
+							array $aggregate = null, $take = null, $skip = null, $with = null)
 	{
 	
 		$builder = $this->getCollection();
