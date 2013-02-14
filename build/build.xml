@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Slender-API" default="dist" basedir=".">
+
+    <target name="dist">
+        <echo msg="Starting build" />
+        <exec command="pwd" />
+        <mkdir dir="build/data" mode="0777"/>
+
+        <phingcall target="composer" />
+        <phingcall target="phpunit" />
+        <phingcall target="codesniffer" />
+        <phingcall target="phpdepend" />
+        <phingcall target="phpmd" />
+
+        <echo msg="Build finished!" />
+    </target>
+
+    <target name="composer">
+        <echo msg="Installing dependencies via Composer" />
+        <exec passthru="true" checkreturn="true" command="php composer.phar install" />
+        <echo msg="Install finished!" />
+    </target>
+
+    <target name="phpunit">
+        <echo msg="Running unit-tests with PHPUnit" />
+        <exec passthru="true" command="./phpunit" />
+        <echo msg="Unit-tests done!" />
+    </target>
+
+    <target name="codesniffer" unless="PR">
+        <echo msg="Checking coding standards" />
+        <phpcodesniffer
+                standard="PSR2"
+                allowedFileExtensions="php">
+            <formatter type="checkstyle" outfile="build/data/codesniffer.report.xml"/>
+            <fileset dir="app/controllers">
+                <include name="**/*.php"/>
+            </fileset>
+            <fileset dir="app/models">
+                <include name="**/*.php"/>
+            </fileset>
+        </phpcodesniffer>
+        <echo msg="Codestandard tests done!" />
+    </target>
+
+    <target name="phpdepend" unless="PR">
+        <echo msg="Checking dependencies" />
+        <phpdepend file="app" excludeDirectories="database, commands, lang, start, storage, tests, views">
+            <logger type="jdepend-xml" outfile="build/data/phpdepend.report.xml"/>
+        </phpdepend>
+        <echo msg="Dependencies checks done!" />
+    </target>
+
+    <target name="phpmd" unless="PR">
+        <echo msg="Checking mass" />
+        <phpmd>
+            <formatter type="xml" outfile="build/data/pmd.report.xml"/>
+            <fileset dir="./">
+                <include name="app/controllers/*.php" />
+                <include name="app/models/*.php" />
+                <include name="app/views/*" />
+            </fileset>
+        </phpmd>
+        <echo msg="Mass checks done!" />
+    </target>
+</project>
