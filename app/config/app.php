@@ -193,7 +193,8 @@ return array(
 		'View'            => 'Illuminate\Support\Facades\View',
 		'LMongo'		  => 'LMongo\Facades\LMongo',
 
-		'ValidationException' => 'Dws\Slender\Api\Validation\ValidationException'
+		'ValidationException' => 'Dws\Slender\Api\Validation\ValidationException',
+		'ParamsHelper' => 'Dws\Slender\Api\Controller\Helper\Params',
 	),
 
 	'fallback-namespaces' => [
