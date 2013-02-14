@@ -49,7 +49,7 @@ class BaseModel extends MongoModel
             unset($query['purge_cache']);
             unset($query['no_cache']);
             asort($query);
-            $query = http_build_query($query);
+            $query = \Request::path() . http_build_query($query);
             
             if(\Input::get('purge_cache')) {
                 \Cache::forget($query);
