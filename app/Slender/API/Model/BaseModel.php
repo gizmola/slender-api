@@ -25,7 +25,11 @@ class BaseModel extends MongoModel
 
     public function findById($id)
     {
-        return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){parent::find($id);});
+        if (\Config::get('cache.enabled')) {
+            return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){parent::find($id);});
+        } else {
+            return parent::find($id);
+        }
     }
 
     /**
