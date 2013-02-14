@@ -85,6 +85,9 @@ return array(
 	'prefix' => 'laravel',
     
     // Cache time in minutes
-    'cache_time' => 1,
+    'cache_time' => 5,
+    
+    // Cache enabled?
+    'enabled' => true,
 
 );

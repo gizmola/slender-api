@@ -38,65 +38,86 @@ class BaseModel extends MongoModel
      */
     public function findMany(array $where, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null, $count = null)
     {
-        return $users = \Cache::remember('count', \Config::get('cache.cache_time'), function() use($where, $fields,$orders, $meta, $aggregate, $take, $skip, $count) {
-
-            $builder = $this->getCollection();
-
-            if ($where) {
-                $builder = FromArrayBuilder::buildWhere($builder, $where);
+        if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
+            return $this->findManyQuery($where, $fields,$orders, $meta, $aggregate, $take, $skip, $count);
+        } else {
+            /*
+            * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
+            * we get the params as array, remove unused params, sort it and make it into a string again
+            */
+            $query = \Input::all();
+            unset($query['purge_cache']);
+            unset($query['no_cache']);
+            asort($query);
+            $query = http_build_query($query);
+            
+            if(\Input::get('purge_cache')) {
+                \Cache::forget($query);
             }
+            //@TODO: Below line is not pretty
+            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields,$orders, $meta, $aggregate, $take, $skip, $count){ return $this->findManyQuery($where, $fields,$orders, $meta, $aggregate, $take, $skip, $count);});
+        }
+        
+    }
 
-            if ($aggregate) {
+    protected function findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $count) {
 
-                /*
-                determine the type of aggregate function
-                end run the correct execution
-                return the aggregate data via ref $meta
-                */
+        $builder = $this->getCollection();
 
-                if ($aggregate[0] == 'count') {
-                    $results = $builder->count();
-                } else {
-                    $results = $builder->$aggregate[0]($aggregate[1]);
-                    $meta['count'] = null;
-                }
+        if ($where) {
+            $builder = FromArrayBuilder::buildWhere($builder, $where);
+        }
 
+        if ($aggregate) {
 
-                $meta[$aggregate[0]] = $results;
+            /*
+            determine the type of aggregate function
+            end run the correct execution
+            return the aggregate data via ref $meta
+            */
 
-                return [];
-            }
-
-            if ($orders) {
-                $builder = FromArrayBuilder::buildOrders($builder,$orders);
-            }
-
-            if($count){
-                $meta['count'] = $builder->count();
-            }
-
-            if ($take) {
-                $builder = $builder->take($take);
-            }
-
-            if ($skip) {
-                $builder = $builder->skip($skip);
-            }
-
-            if ($fields) {
-                $result = $builder->get($fields);
+            if ($aggregate[0] == 'count') {
+                $results = $builder->count();
             } else {
-                $result = $builder->get();
+                $results = $builder->$aggregate[0]($aggregate[1]);
+                $meta['count'] = null;
             }
 
-            $entities = [];
 
-            foreach ($result as $entity) {
-                $entities[] = $entity;
-            }
+            $meta[$aggregate[0]] = $results;
 
-            return $entities;
-        });
+            return [];
+        }
+
+        if ($orders) {
+            $builder = FromArrayBuilder::buildOrders($builder,$orders);
+        }
+
+        if($count){
+            $meta['count'] = $builder->count();
+        }
+
+        if ($take) {
+            $builder = $builder->take($take);
+        }
+
+        if ($skip) {
+            $builder = $builder->skip($skip);
+        }
+
+        if ($fields) {
+            $result = $builder->get($fields);
+        } else {
+            $result = $builder->get();
+        }
+
+        $entities = [];
+
+        foreach ($result as $entity) {
+            $entities[] = $entity;
+        }
+
+        return $entities;
     }
 
     /**
