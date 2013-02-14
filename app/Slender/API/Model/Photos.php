@@ -6,21 +6,22 @@ class Photos extends \Slender\API\Model\BaseModel
 {
 	protected $collectionName = 'photos';
 	
-	protected $schema = array(
+	protected $schema = [
+    
+        'title' => ['required'],
+        'meta' => [
+            'title' => [],
+            'keywords' => [],
+        ],
+        'slug' => ['alpha_dash','required'],
+        'photos' => [],
+        'availability'  => [
+            'sunrise' => ['date'],
+            'sunset'  => ['date'],
+        ],
+        'created' => ['date'],
+        'updated' => ['date'],
 
-        'title' => array('type' => 'string'),
-        'meta'	=> array (
-    		'title' 	=> array('type' => 'string'),
-    		'keywords'	=> array('type' => 'string'),
-        ),
-		'slug' => array('type' => 'string'),
-		'images' => array('type' => 'array'),
-        'availability'	=> array (
-    		'sunrise' 	=> array('type' => 'DateTime'),
-    		'sunset'	=> array('type' => 'DateTime'),
-        ),
-		// created
-		// updated
-	);
+    ];
 
 }
