@@ -26,7 +26,7 @@ class BaseModel extends MongoModel
     public function findById($id)
     {
         if (\Config::get('cache.enabled')) {
-            return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){parent::find($id);});
+            return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){return parent::find($id);});
         } else {
             return parent::find($id);
         }
@@ -155,9 +155,9 @@ class BaseModel extends MongoModel
 
         $id = $this->getCollection()->insert($data);
         $entity = $this->findById($id);
-        \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
+        if (\Config::get('cache.enabled')) 
+            \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
         return $entity;
-
     }
 
     /**
@@ -177,7 +177,8 @@ class BaseModel extends MongoModel
         $this->getCollection()->where('_id', $id)->update($data);
         $entity = $this->findById($id);
 
-        \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
+        if (\Config::get('cache.enabled'))
+            \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
 
         if (!$this->updateParents($entity)) {
             throw new \Exception("Error updating parent data");
@@ -195,7 +196,8 @@ class BaseModel extends MongoModel
     {
         $this->getCollection()->where('_id', $id)->delete();
         $this->updateParents($id, true);
-        \Cache::forget($this->collectionName . "_" . $id);
+        if (\Config::get('cache.enabled'))
+            \Cache::forget($this->collectionName . "_" . $id);
         return true;
     }
 
