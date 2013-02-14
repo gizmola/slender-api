@@ -100,4 +100,12 @@ class ParamHelperTest extends TestCase
 		$this->assertEquals($output,$params);
 	}
 
+	public function testCanSetStaticDontCast()
+	{
+		$dontCast = ['zipcode','phone'];
+		ParamsHelper::setDontCast($dontCast);
+		$output = ParamsHelper::getDontCast();
+		$this->assertEquals($dontCast,$output);
+	}
+
 }

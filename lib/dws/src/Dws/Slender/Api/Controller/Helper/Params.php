@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Input;
  */
 class Params{
 
+	protected static $dontCast;
+
 	/**
 	 * Parse the named query param into an array.
 	 * @param  string | array $input
@@ -148,6 +150,16 @@ class Params{
 	{
 		$input = ($embed) ? $embed : Input::get('with');
 		return self::parse($input, ":");	
+	}
+
+	public static function setDontCast(Array $array)
+	{
+		self::$dontCast = $array;
+	}
+
+	public static function getDontCast()
+	{
+		return self::$dontCast;
 	}
 
 
