@@ -6,6 +6,12 @@ bash "install_mongo" do
     iptables -I INPUT -p tcp --dport 27017 -j ACCEPT
     service iptables save
     service mongod start
+        pear channel-discover pear.phing.info
+        pear install --alldeps phing/phing 
+        pear channel-discover pear.pdepend.org
+        pear install pdepend/PHP_Depend
+        pear channel-discover pear.phpmd.org
+        pear install phpmd/PHP_PMD
   EOH
   action :nothing
 end
