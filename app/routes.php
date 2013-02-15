@@ -5,7 +5,7 @@ Route::get('/', function(){
     return "OK";
 });
 
-
+Route::post('auth', 'Slender\API\Controller\AuthController@post');
 
 // Get our generic route-creator from the IoC container
 $creator = App::make('route-creator');

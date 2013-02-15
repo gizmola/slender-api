@@ -46,6 +46,9 @@ class Users extends \Slender\API\Model\BaseModel
             }
         }
 
+
+
+        $data['password'] = \Hash::make($data['password']);
         $data['key'] = sha1(time() . str_shuffle($data['email']));
 
         return parent::insert($data);

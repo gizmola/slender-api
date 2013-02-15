@@ -80,6 +80,7 @@ return array(
 	*/
     
     'core-resources' => array(
+    	// 'auth',
         'sites',
         'users',
         'roles',
