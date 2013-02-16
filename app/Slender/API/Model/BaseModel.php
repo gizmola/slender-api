@@ -147,7 +147,7 @@ class BaseModel extends MongoModel
 	{
 
 		if($this->timestamp){
-			$data['updated_at'] = new MongoDate();
+			$data['updated_at'] = new \MongoDate();
 		}
 
 		$this->getCollection()->where('_id', $id)->update($data);
