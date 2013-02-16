@@ -110,10 +110,25 @@ abstract class BaseController extends \Controller
 	{
 		$input = Input::json(true);
 
+        $schema = $this->model->getSchemaValidation();
+
+        $valid = [];
+
+        foreach ($schema as $k => $v) {
+            if (in_array($k, array_keys($input))) {
+                $valid[$k] = $v;
+            }
+        }
+
+        if (!$valid) {
+            throw new \Exception("No valid parameters sent");
+        }
+
 		$validator = Validator::make(
             $input,
-            $this->model->getSchemaValidation()
+            $valid
         );
+
         if($validator->fails()){
             return $this->badRequest($validator->messages());
         }
