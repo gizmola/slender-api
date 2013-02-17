@@ -62,48 +62,17 @@ class RouteCreator
 	 * 
 	 * @param \Illuminate\Foundation\Application $app
 	 */
-    public function __construct(Application $app, LMongoManager $mongoManager = null)
+    public function __construct(Application $app = null, LMongoManager $mongoManager = null)
     {
+        if (!$app){
+            $app = \App::instance();
+        }
 		$this->app = $app;
         if ($mongoManager){
             $this->setMongoManager($mongoManager);
         }
     }
-	
-	/**
-	 * @var array $config
-	 * 
-	 * $config format is something like:
-	 * 
-	 * [
-	 *     'resources' => [
-	 * 
-	 *         'photos' => [
-	 *			   
-	 *             // Optional, but defaults to false
-	 *			   // The idea is that you can still keep it in the system
-	 *			   // but disable it globally
-	 *             'isEnabled' => true,
-     *
-	 *     ],
-	 * 
-	 *     'sites' => [
-	 * 
-	 *         'site1' => [
-	 * 
-	 *             'photos' => [
-	 * 
-	 *                 // Optional, but defaults to false
-	 *                 // The idea here is that you can leave the config in the
-     *                 // in the system but disable it locally
-	 *                 'isEnabled': true,
-     * 
-	 *         ],
-	 *     ],
-	 * ];
-	 * 
-	 * 
-	 */
+
 	public function addSiteRoutes(array $config)
 	{
         $this->sitesConfig = new SitesConfig($config);

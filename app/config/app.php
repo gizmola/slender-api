@@ -199,5 +199,6 @@ return array(
 	'fallback-namespaces' => [
 		'models' => '\Slender\API\Model',
 	],
-
+    
+    'resources' => require __DIR__ . '/models.php',
 );
