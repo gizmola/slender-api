@@ -37,7 +37,8 @@ class BaseModel extends MongoModel
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $where, array $fields, array $orders, &$meta, array $aggregate = null, $take = null, $skip = null, $count = null)
+	public function findMany(array $where, array $fields, array $orders, &$meta, 
+							array $aggregate = null, $take = null, $skip = null, $with = null)
 	{
 	
 		$builder = $this->getCollection();
@@ -71,9 +72,7 @@ class BaseModel extends MongoModel
 			$builder = FromArrayBuilder::buildOrders($builder,$orders);
 		}
 
-		if($count){
-			$meta['count'] = $builder->count();
-		}
+		$meta['count'] = $builder->count();
 
 		if ($take) {
 			$builder = $builder->take($take);	
@@ -94,8 +93,10 @@ class BaseModel extends MongoModel
 		foreach ($result as $entity) {
 			$entities[] = $entity;
 		}
-        
 
+		if ($with) {
+			$this->embedWith($with, $entities);
+		} 
 
 		return $entities;
 	}
@@ -146,7 +147,7 @@ class BaseModel extends MongoModel
 	{
 
 		if($this->timestamp){
-			$data['updated_at'] = new MongoDate();
+			$data['updated_at'] = new \MongoDate();
 		}
 
 		$this->getCollection()->where('_id', $id)->update($data);
@@ -244,6 +245,30 @@ class BaseModel extends MongoModel
 			
 			if ($child) {
 				$childIds[$i] = $child;	
+			}
+
+		}
+	}
+
+	protected function embedWith($with,&$entities)
+    {  
+		$emdbedded = [];
+		foreach ($with as $array) {
+			$emdbedded[$array[0]] = $array[1];	
+		}  
+
+		if ($emdbedded['children']) {
+			
+			$notEmbeddedRelations = $this->getEmbeddedRelations(false);
+
+			foreach ($notEmbeddedRelations as $relation) {
+				
+				$childIntsance = $this->createRelatedClass($relation);
+				
+				for ($i = 0; $i < count($entities); $i++) {
+					$this->embedChildData($entities[$i][$relation],$childIntsance);
+				}
+				
 			}
 
 		}

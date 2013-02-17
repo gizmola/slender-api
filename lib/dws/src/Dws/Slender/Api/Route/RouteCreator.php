@@ -218,6 +218,11 @@ class RouteCreator
             
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);            
             $model = new $modelClass($connection);
+            //juni.samos@diamondwebservices.com
+            //inject a class resolver for instatiating relations
+            //from multiple namespaces
+            $resolver = $this->app->make('class-resolver');
+            $model->setResolver($resolver);
             
             $controllerClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
             $controller = new $controllerClass($model);
@@ -232,6 +237,11 @@ class RouteCreator
 
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
             $model = new $modelClass($connection);
+            //juni.samos@diamondwebservices.com
+            //inject a class resolver for instatiating relations
+            //from multiple namespaces
+            $resolver = $this->app->make('class-resolver');
+            $model->setResolver($resolver);
             
             $controllerClass = 'Slender\API\Controller\\' . ucfirst($resource) . 'Controller';            
             $controller = new $controllerClass($model);

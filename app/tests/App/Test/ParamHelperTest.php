@@ -7,6 +7,14 @@ use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 class ParamHelperTest extends TestCase 
 {
 
+	public function testCanSetStaticDontCast()
+	{
+		$dontCast = ['zipcode','phone'];
+		ParamsHelper::setDontCast($dontCast);
+		$output = ParamsHelper::getDontCast();
+		$this->assertEquals($dontCast,$output);
+	}
+
 	public function testParseReturnsStringFromString()
 	{
 		$input = 'some-string';
@@ -25,9 +33,8 @@ class ParamHelperTest extends TestCase
 	public function testParseReturnsSameArray()
 	{
 		$input = array('1','2');
-		$output = array((float)1, (float)2);
 		$params = ParamsHelper::parse($input);
-		$this->assertEquals($output,$params);
+		$this->assertSame($input,$params);
 	}	
 
 	public function testParseReturnsArrayFromDelimString()
@@ -35,23 +42,35 @@ class ParamHelperTest extends TestCase
 		$input = 'some,string';
 		$output = array('some','string');
 		$params = ParamsHelper::parse($input, ",");
-		$this->assertEquals($output,$params);
+		$this->assertSame($output,$params);
 	}
 
 	public function testParseReturnsAssociativeArrayFromArray()
 	{
 		$input = array('season:gte:10', 'lastname:doe');
-		$output = array(array('season', 'gte', (float)10), array('lastname','doe'));
+		$output = array(array('season', 'gte', '10'), array('lastname','doe'));
 		$params = ParamsHelper::parse($input, ":");
-		$this->assertEquals($output,$params);	
+		$this->assertSame($output,$params);	
 	}
 
-	public function testCanParseWhereParamIntoArray()
+	public function testCanCastWhereParams()
 	{
 		$input = array('season:gte:10', 'lastname:doe');
 		$output = array(array('season', 'gte', (float)10), array('lastname','doe'));
 		$params = ParamsHelper::getWhere($input);
-		$this->assertEquals($output,$params);
+		$this->assertSame($output,$params);
+	}
+
+	public function testDoesNotCastExcluded()
+	{
+		
+		$dontCast = ['zipcode','phone'];
+		ParamsHelper::setDontCast($dontCast);
+
+		$input = array('season:gte:10', 'phone:3105551212');
+		$output = array(array('season', 'gte', (float)10), array('phone','3105551212'));
+		$params = ParamsHelper::getWhere($input);
+		$this->assertSame($output,$params);	
 	}
 
 	public function testCanParseFieldsParamIntoArray()
@@ -59,7 +78,7 @@ class ParamHelperTest extends TestCase
 		$input = 'field1,field2';
 		$output = array('field1', 'field2');
 		$params = ParamsHelper::getFields($input);
-		$this->assertEquals($output,$params);
+		$this->assertSame($output,$params);
 	}
 
 	public function testCanParseOrdersIntoArray()
@@ -67,14 +86,7 @@ class ParamHelperTest extends TestCase
 		$input = 'season:desc,lastname:asc';
 		$output = array(array('season','desc'),array('lastname','asc'));
 		$params = ParamsHelper::getOrders($input);
-		$this->assertEquals($output,$params);
-	}
-
-	public function testCanParseCount()
-	{
-		$input = 1;
-		$params = ParamsHelper::getCount($input);
-		$this->assertEquals(1,$params);
+		$this->assertSame($output,$params);
 	}
 
 	public function testCanParseAggregateToArray()
@@ -88,16 +100,16 @@ class ParamHelperTest extends TestCase
 		$input = 'count';
 		$output = ['count'];
 		$params = ParamsHelper::getAggregate($input);
-		$this->assertEquals($output,$params);
+		$this->assertSame($output,$params);
 
 	}
 
 	public function testCanParseEmbedParamIntoArray()
 	{
-		$input = array('parents:1', 'children:0');
-		$output = array(array('parents', (float)1), array('children',(float)0));
+		$input = ['parents:1', 'children:0'];
+		$output = [['parents','1'],['children','0']];
 		$params = ParamsHelper::getWith($input);
-		$this->assertEquals($output,$params);
+		$this->assertSame($output,$params);
 	}
 
 }
