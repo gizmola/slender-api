@@ -1,5 +1,89 @@
 <?php
 
+/**
+ * The resource config has the structure:
+ *
+ * [
+ *      //  Core resources - things stored in the 'default' db
+ *      'core' => [
+ *          // core resources described here
+ *      ],
+ *
+ *      // Standard resources - things stored in a per-site db
+ *      // Ex: photos, albums, etc
+ *
+ *      // Per-site resources and possible overrides
+ *      'per-site' => [
+ *          'site-1' => [
+ *              // specific overrides or site-specific resources
+ *          ]
+ *      ],
+ * ]
+ *
+ * From this information, we control:
+ *
+ * 1. Routing
+ * 2. Model classes
+ * 3. Controller classes
+ * 4. Relations
+ *
+ * The basic structure of each resource-descriptor is:
+ *
+ *      'my-resource' => [
+ *          'controller' => [
+ *              'class' => 'My\Controller\Class\Name',
+ *          ],
+ *          'model' => [
+ *              'class' => 'My\Model\Class\Name',
+ *              'parents' => [
+ *                  'my-parent-1' => [
+ *                      'class' => 'My\Parent\Class\Name',
+ *                  ],
+ *              ],
+ *              'children' => [
+ *                  'my-child-1' => [
+ *                      'class' => 'My\Child\Class\Name',
+ *                      'embed' => true, // or false
+ *                      'embedKey' => 'sweet-child-of-mine',
+ *                  ],
+ *              ],
+ *          ],
+ *      ],
+ *
+ * Much of this is optional and there are many sensible defaults and conventions
+ * built in (the ResourceResolver class handles all of that).
+ *
+ * A reasonable working version of the above is (with parents and children) is:
+ *
+ *      'my-resource' => [
+ *          'model' => [
+ *              'parents' => [
+ *                  'my-parent-1' => [],
+ *              ],
+ *              'children' => [
+ *                  'my-child-1' => [],
+ *              ],
+ *          ],
+ *      ],
+ *
+ * The minimal working version of the above (no parents/children) is:
+ *
+ *      'my-resource' => [],
+ *
+ * The default fallback base namespace for models and controllers is defined
+ * in app/config/app.php under the key 'fallback-namespaces.resources'
+ *
+ * The ResourceResolver is populated with this data and then is able to construct
+ * (with proper fallbacks) classnames for models, controlllers, and relations.
+ *
+ * The RouteCreator uses this ResourceResolver to construct routes and callbacks
+ * corresponding to this resource data.
+ *
+ * Also, a PermissionsResolver uses this ResourceResolver to construct - given a
+ * URL request path - a collection of MongoDB dot-separated path corresponding
+ * to the permissions in our user records. This can then be used in the auth filter.
+ *
+ */
 return [
 
     // core resources
