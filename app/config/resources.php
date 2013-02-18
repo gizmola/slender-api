@@ -3,13 +3,15 @@
 return [
 
     // core resources
-    'roles' => [
-    ],
+    'core' => [
+        'roles' => [
+        ],
 
-    'users' => [
-    ],
+        'users' => [
+        ],
 
-    'sites' => [
+        'sites' => [
+        ],
     ],
 
     // base non-core resources (requires a site)

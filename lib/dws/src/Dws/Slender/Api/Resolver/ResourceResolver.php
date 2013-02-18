@@ -3,6 +3,7 @@
 namespace Dws\Slender\Api\Resolver;
 
 use Dws\Slender\Api\Support\Util\String as StringUtil;
+use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
 
 /**
  * Given configuration, this class performs checks and fallbacks
@@ -24,7 +25,7 @@ class ResourceResolver
      *
      * @var string
      */
-    protected $fallbackNamespace = 'Slender\Api';
+    protected $fallbackNamespace = 'Slender\API';
 
     /**
      * Constructor
@@ -39,7 +40,7 @@ class ResourceResolver
     public function isResourceConfigured($resource, $site)
     {
         if (!$site) {
-            return isset($this->config[$resource]);
+            return isset($this->config['core'][$resource]);
         } else {
             return isset($this->config[$resource])
                 || isset($this->config['per-site'][$site][$resource]);
@@ -69,7 +70,7 @@ class ResourceResolver
                 ? $this->config['per-site'][$site][$resource]
                 : [];
 
-            $return = array_merge_recursive($base, $perSite);
+            $return = ArrayUtil::merge_recursive_distinct($base, $perSite);
 
             return $return;
         }
@@ -117,13 +118,22 @@ class ResourceResolver
      *
      * @param string $resource
      * @param string $site
-     * @return string
+     * @param boolean $requireConfigured
+     * @return string|null
      */
-    public function createResourceModelClassName($resource, $site)
+    public function createResourceModelClassName($resource, $site, $requireConfigured = true)
     {
+
+        if ($requireConfigured && !$this->isResourceConfigured($resource, $site)){
+            return null;
+        }
         $camelizedResource = StringUtil::camelize($resource, true);
         if (!$site) {
-            return sprintf('%s\Model\%s', $this->getFallbackNamespace(), $camelizedResource);
+            if (isset($this->config['core'][$resource]['model']['class'])) {
+                return $this->config['core'][$resource]['model']['class'];
+            } else {
+                return sprintf('%s\Model\%s', $this->getFallbackNamespace(), $camelizedResource);
+            }
         } else {
             if (isset($this->config['per-site'][$site][$resource]['model']['class'])) {
                 return $this->config['per-site'][$site][$resource]['model']['class'];
@@ -140,10 +150,14 @@ class ResourceResolver
      *
      * @param string $resource
      * @param string $site
-     * @return string
+     * @param boolean $requireConfigured
+     * @return string|null
      */
-    public function createResourceControllerClassName($resource, $site = null)
+    public function createResourceControllerClassName($resource, $site = null, $requireConfigured = true)
     {
+        if ($requireConfigured && !$this->isResourceConfigured($resource, $site)){
+            return null;
+        }
         $camelizedResource = StringUtil::camelize($resource, true);
         if (!$site) {
             return sprintf('%s\Controller\%sController', $this->getFallbackNamespace(), $camelizedResource);
@@ -192,7 +206,7 @@ class ResourceResolver
                     ? $childData['class']
                     : sprintf('%s\Model\%s', $this->getFallbackNamespace(), StringUtil::camelize($childKey));
                 $embed = isset($childData['embed']) ? $childData['embed'] : false;
-                $embedKey = isset($childData['embed']) ? $childData['embed'] : $childKey;
+                $embedKey = isset($childData['embed']) ? $childData['embedKey'] : $childKey;
                 $relations[$childKey] = [
                     'class' => $childClass,
                     'embed' => $embed,
