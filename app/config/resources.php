@@ -4,50 +4,26 @@ return [
 
     // core resources
     'core' => [
-        'roles' => [
-        ],
+        'roles' => [],
 
-        'users' => [
-        ],
+        'users' => [],
 
-        'sites' => [
-        ],
+        'sites' => [],
     ],
 
     // base non-core resources (requires a site)
-
-    'photos' => [
-//        'model' => [
-//            'parents' => [
-//                'albums' => [],
-//            ],
-//        ],
-    ],
-
-    'albums' => [
-//        'model' => [
-//            'class' => 'Slender\Model\Albums',
-//            'children' => [
-//                'photos' => [
-//                    'embed' => true,        // optional: default to false
-//                    'embedKey' => 'pics',  // optional, default to key in 'children' array
-//                ],
-//            ],
-//        ]
-    ],
-
+    'albums' => [],
+    'channels' => [],
+    'episodes' => [],
     'news' => [],
+    'pages' => [],
+    'photos' => [],
+    'videos' => [],
 
     // per-site overrides or custom resources
     'per-site' => [
 
-        // AI
-        'ai' => [
-            'photos' => [],
-            'albums' => [],
-        ],
-        'demo' => [
-            'news',
-        ],
+        'ai' => [],
+        'demo' => [],
     ],
 ];
