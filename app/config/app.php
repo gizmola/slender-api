@@ -79,6 +79,8 @@ return array(
     |
 	*/
 
+    // Redundant? See resources.php.
+    // @todo chase any downstream usage
     'core-resources' => array(
     	// 'auth',
         'sites',
