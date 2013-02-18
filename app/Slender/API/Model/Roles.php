@@ -13,7 +13,12 @@ class Roles extends \Slender\API\Model\BaseModel
     protected $schema = [
         'name' => ['required', 'min:5'],
         'permissions' => [
-            'global' => [
+            '_global' => [
+                'read'      => ['required', 'boolean'],
+                'write'     => ['required', 'boolean'],
+                'delete'    => ['required', 'boolean'],
+            ],
+            'core' => [
                 'users' => [
                     'read'      => ['required', 'boolean'],
                     'write'     => ['required', 'boolean'], 
