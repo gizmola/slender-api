@@ -54,6 +54,16 @@ class Users extends \Slender\API\Model\BaseModel
         return parent::insert($data);
     }
 
+    public function update($id, array $data)
+    {
+        if (isset($data['password'])) {
+            $data['password'] = \Hash::make($data['password']);   
+        }
+
+        return parent::update($id,$data);
+
+    }
+
     private function array_unset_recursive(&$array, $remove) 
     {
         if (!is_array($remove)) $remove = array($remove);
