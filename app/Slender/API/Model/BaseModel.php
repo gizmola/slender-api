@@ -5,21 +5,29 @@ namespace Slender\API\Model;
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 
-use Dws\Slender\Api\Resolver\ResourceResolver;
-
 /**
  * Base Model
  */
-abstract class BaseModel extends MongoModel
+class BaseModel extends MongoModel
 {
-	protected $site = 'default';
+    /**
+     *
+     * @var string|null
+     */
+	protected $site = null;
 
 	protected $timestamp = false;
 
+    /**
+     * @var array
+     */
 	protected $schema = [];
 
+    /**
+     * @var array
+     */
 	protected $relations;
-    
+
 	public function findById($id)
 	{
 		return parent::find($id);
@@ -319,16 +327,6 @@ abstract class BaseModel extends MongoModel
 
 	}
 
-	public function getResolver()
-	{
-		return $this->resolver;
-	}
-
-	public function setResolver($resolver)
-	{
-		$this->resolver = $resolver;
-	}
-
 	public function shiftId(&$data)
 	{
 		$id = $data['_id'];
@@ -344,6 +342,17 @@ abstract class BaseModel extends MongoModel
     public function setRelations($relations)
     {
         $this->relations = $relations;
+        return $this;
+    }
+
+    public function getSite()
+    {
+        return $this->site;
+    }
+
+    public function setSite($site)
+    {
+        $this->site = $site;
         return $this;
     }
 }

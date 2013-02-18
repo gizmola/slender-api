@@ -154,6 +154,7 @@ class RouteCreator
 
         $modelInstance = new $modelClass($connection);
         $modelInstance->setRelations($this->resourceResolver->buildModelRelations($resource, $site));
+        $modelInstance->setSite($site);
         $controller = new $controllerClass($modelInstance);
 
         return $controller;
@@ -216,10 +217,8 @@ class RouteCreator
 
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
             $model = new $modelClass($connection);
-            //juni.samos@diamondwebservices.com
-            //inject a class resolver for instatiating relations
-            //from multiple namespaces
-            $model->setResolver($this->getClassResolver());
+            $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
+            $model->setSite(null);
 
             $controllerClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
             $controller = new $controllerClass($model);
