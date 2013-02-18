@@ -5,42 +5,38 @@ namespace Slender\API\Model;
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 
+use Dws\Slender\Api\Resolver\ResourceResolver;
+
 /**
  * Base Model
  */
-class BaseModel extends MongoModel
+abstract class BaseModel extends MongoModel
 {
 	protected $site = 'default';
-
 
 	protected $timestamp = false;
 
 	protected $schema = [];
 
-	protected $resolver;
-	
-	protected $relations = [
-		'children' => [],
-		'parents' => [],
-	];
-
+	protected $relations;
+    
 	public function findById($id)
 	{
 		return parent::find($id);
 	}
-	
+
 	/**
 	 * Get a collection of documents in this collection
-	 * 
+	 *
 	 * @param array $where
 	 * @param array $orders
 	 * @param type $limit
 	 * @param type $offset
 	 */
-	public function findMany(array $where, array $fields, array $orders, &$meta, 
+	public function findMany(array $where, array $fields, array $orders, &$meta,
 							array $aggregate = null, $take = null, $skip = null, $with = null)
 	{
-	
+
 		$builder = $this->getCollection();
 
 		if ($where) {
@@ -58,12 +54,12 @@ class BaseModel extends MongoModel
 			if ($aggregate[0] == 'count') {
 				$results = $builder->count();
 			} else {
-				$results = $builder->$aggregate[0]($aggregate[1]); 
+				$results = $builder->$aggregate[0]($aggregate[1]);
 				$meta['count'] = null;
 			}
 
 
-			$meta[$aggregate[0]] = $results; 
+			$meta[$aggregate[0]] = $results;
 
 			return [];
 		}
@@ -75,18 +71,18 @@ class BaseModel extends MongoModel
 		$meta['count'] = $builder->count();
 
 		if ($take) {
-			$builder = $builder->take($take);	
+			$builder = $builder->take($take);
 		}
 
 		if ($skip) {
-			$builder = $builder->skip($skip);	
+			$builder = $builder->skip($skip);
 		}
 
 		if ($fields) {
-			$result = $builder->get($fields);	
+			$result = $builder->get($fields);
 		} else {
-			$result = $builder->get();	
-		}	
+			$result = $builder->get();
+		}
 
 		$entities = [];
 
@@ -96,50 +92,47 @@ class BaseModel extends MongoModel
 
 		if ($with) {
 			$this->embedWith($with, $entities);
-		} 
+		}
 
 		return $entities;
 	}
-	
+
 	/**
 	 * Insert data into the collection
-	 * 
+	 *
 	 * @param array $data
 	 * @return array
 	 */
 	public function insert(array $data)
 	{
-		
-		if($this->timestamp){
+
+		if ($this->timestamp) {
 			$data['created_at'] = new \MongoDate();
 			$data['updated_at'] = new \MongoDate();
 		}
 
-		if(!isset($data['_id'])){
-			$data['_id'] = UUID::v4();	
+		if (!isset($data['_id'])) {
+			$data['_id'] = UUID::v4();
 		}
-		
+
 		//embed child data
 		$embeddedRelations = $this->getEmbeddedRelations();
 
-
 		foreach ($embeddedRelations as $relation) {
-
 			$childIntsance = $this->createRelatedClass($relation);
 			$this->embedChildData($data[$relation],$childIntsance);
-	
 		}
-				
+
 		$id = $this->getCollection()->insert($data);
 		$entity = $this->findById($id);
 		return $entity;
 
 	}
-	
+
 	/**
 	 * Update data of the record
 	 *
-	 * @param string $id 
+	 * @param string $id
 	 * @param array $data
 	 * @return array
 	 */
@@ -158,11 +151,11 @@ class BaseModel extends MongoModel
 		}
 
 		return $entity;
-	}	
+	}
 	/**
 	 * Delete record
 	 *
-	 * @param string $id 
+	 * @param string $id
 	 * @return array
 	 */
 	public function delete($id)
@@ -171,47 +164,25 @@ class BaseModel extends MongoModel
 		$this->updateParents($id, true);
 		return true;
 	}
-	
+
 	/**
-	 * Return information about abstract record including 
+	 * Return information about abstract record including
 	 * representation of the fields to help to pass correct data
 	 * for insert and update methods
 	 *
 	 * @return array
 	 */
 	public function options()
-	{	
+	{
 		// @TODO clean up $this->schema before passing up
 		return array(
 				'fields' => $this->schema,
 			);
 	}
 
-	public function getName()
-	{
-		return $this->resolver->parseClassName(get_class($this));
-	}
-
-	public function getNameSpace()
-	{
-		return $this->resolver->parseNameSpace(get_class($this));
-	}
-
 	public function getSchemaValidation()
 	{
 		return $this->schema;
-	}
-
-	public function addRelations($type, $relations)
-	{
-		foreach ($relations as $k => $v) {
-			$this->relations[$type][$k] = $v;	
-		}
-	}
-
-	public function getRelations()
-	{
-		return $this->relations;
 	}
 
 	public function getEmbeddedRelations($reverse=true)
@@ -220,7 +191,7 @@ class BaseModel extends MongoModel
 
 		foreach ($this->relations['children'] as $k => $v) {
 			if ($v && $reverse) {
-				$embedded[] = $k; 	
+				$embedded[] = $k;
 			} elseif (!$v && !$reverse) {
 				$embedded[] = $k;
 			}
@@ -241,34 +212,34 @@ class BaseModel extends MongoModel
 
 		for ($i = 0; $i < count($childIds); $i++) {
 
-			$child = $childIntsance->findById($childIds[$i]);	
-			
+			$child = $childIntsance->findById($childIds[$i]);
+
 			if ($child) {
-				$childIds[$i] = $child;	
+				$childIds[$i] = $child;
 			}
 
 		}
 	}
 
 	protected function embedWith($with,&$entities)
-    {  
+    {
 		$emdbedded = [];
 		foreach ($with as $array) {
-			$emdbedded[$array[0]] = $array[1];	
-		}  
+			$emdbedded[$array[0]] = $array[1];
+		}
 
 		if ($emdbedded['children']) {
-			
+
 			$notEmbeddedRelations = $this->getEmbeddedRelations(false);
 
 			foreach ($notEmbeddedRelations as $relation) {
-				
+
 				$childIntsance = $this->createRelatedClass($relation);
-				
+
 				for ($i = 0; $i < count($entities); $i++) {
 					$this->embedChildData($entities[$i][$relation],$childIntsance);
 				}
-				
+
 			}
 
 		}
@@ -296,12 +267,12 @@ class BaseModel extends MongoModel
 			$parents = $this->getRelations()['parents'];
 
 			foreach ($parents as $p => $c) {
-				
+
 				$parentClassName =  ucfirst($p);
 				$parentClass = $this->createRelatedClass(ucfirst($p));
-				
+
 				if (in_array($myLcName, $parentClass->getEmbeddedRelations())) {
-					
+
 					$results = $parentClass->getCollection()->where("{$myLcName}._id",$entity['_id'])->get();
 
 					foreach ($results as $res) {
@@ -328,7 +299,7 @@ class BaseModel extends MongoModel
 		$index = null;
 
 		for ($i=0; $i < count($children); $i++) {
-			
+
 			if ($childData['_id'] == $children[$i]["_id"]) {
 				$index = $i;
 				break;
@@ -338,14 +309,14 @@ class BaseModel extends MongoModel
 
 		if ($index !== null) {
 			if ($isDelete) {
-				unset($children[$i]);	
+				unset($children[$i]);
 			} else {
 				$children[$i] = $childData;
 			}
 		}
 
 		return $index;
-	
+
 	}
 
 	public function getResolver()
@@ -364,5 +335,15 @@ class BaseModel extends MongoModel
 		unset($data['_id']);
 		return $id;
 	}
-	
+
+    public function getRelations()
+    {
+        return $this->relations;
+    }
+
+    public function setRelations($relations)
+    {
+        $this->relations = $relations;
+        return $this;
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dws\Slender\Api\Resolver;
+namespace Dws\Slender\Api\Route;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -25,17 +25,13 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function register()
 	{
-        $this->app['resource-resolver'] = $this->app->share(function($app){
-            $resourceResolver = new ResourceResolver($app['config']['resources']);
-            $fallbackNamespace = $app['config']['app.fallbackNamespaces.resources'];
-            $resourceResolver->setFallbackNamespace($fallbackNamespace);
-            return $resourceResolver;
-        });
-
-        $this->app['permissions-resolver'] = $this->app->share(function($app){
+		$this->app['route-creator'] = $this->app->share(function($app)
+		{
             $resourceResolver = $app->make('resource-resolver');
-            return new PermissionsResolver($resourceResolver);
-        });
+            $mongoManager = $app->make('mongo');
+			$routeCreator = new RouteCreator($resourceResolver, $app, $mongoManager);
+            return $routeCreator;
+		});
 	}
 
 	/**
@@ -46,8 +42,7 @@ class ServiceProvider extends BaseServiceProvider
 	public function provides()
 	{
 		return array(
-            'resource-resolver',
-            'permissions-resolver',
+            'route-creator',
         );
 	}
 }
