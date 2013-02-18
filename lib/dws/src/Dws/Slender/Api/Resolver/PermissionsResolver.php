@@ -61,8 +61,6 @@ class PermissionsResolver
      */
     public function getPermissionsPaths($delimiter = null)
     {
-        $return = [];
-
         $pathSite = [];
         $pathResource = [];
 
@@ -71,24 +69,23 @@ class PermissionsResolver
 
         if (3 == $segmentCount) {
             // must be site-singular
-            $pathSite[] = $segments[0];  // site
-            $pathSite[] = $segments[1];  // resource
+            $pathSite = [$segments[0], '_global'];
+            $pathResource = [$segments[0], $segments[1]];
         } else if (2 == $segmentCount) {
             // could be core-singular or site-plural
             if ($this->resourceResolver->isResourceConfigured($segments[0], null)) {
                 // then it's a core singular resource
-                $pathResource[] = $segments[0];  // resource
+                $pathResource = ['core', $segments[0]];
             } else if ($this->resourceResolver->isResourceConfigured($segments[1], $segments[0])) {
                 // then it's a site plural
-                $pathSite[] = $segments[0];
-                $pathResource[] = $segments[0]; // site
-                $pathResource[] = $segments[1]; // resource
+                $pathSite = [$segments[0], '_global'];
+                $pathResource = [$segments[0], $segments[1]];
             } else {
                 // silently ignore
             }
         } else {
             // must be a core-plural
-            $pathResource[] = $segments[0];
+            $pathResource = ['core', $segments[0]];
         }
 
         // to do what?
@@ -100,19 +97,23 @@ class PermissionsResolver
             $pathResource[] = $this->methodMap[$method];
         }
 
-        $return = [
-            'site' => $pathSite,
-            'resource' => $pathResource,
-        ];
-        if (is_null($delimiter)) {
-            return $return;
-        } else {
-            foreach ($return as $k => $v) {
-                $return[$k] = implode($delimiter, $v);
-            }
+        $paths = [];
+        if (!empty($pathSite)) {
+            $paths[] = $pathSite;
+        }
+        if (!empty($pathResource)){
+            $paths[] = $pathResource;
         }
 
-        return $return;
+        if (is_null($delimiter)) {
+            return $paths;
+        } else {
+            $return = [];
+            foreach ($paths as $path) {
+                $return[] = implode($delimiter, $path);
+            }
+            return $return;
+        }
     }
 
     /**

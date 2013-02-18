@@ -45,17 +45,14 @@ App::after(function($request, $response)
 Route::filter('auth', function()
 {
     $key = Request::header('AUTHENTICATION');
-    $requestPaths  = App::make('permissions-resolver')->getPermissionsPaths('.');
+    $permissionPaths  = App::make('permissions-resolver')->getPermissionsPaths('.');
     $users = new Users();
     $user = $users->getCollection()
         ->where('key', $key)
-//        ->where(function($query) use ($requestPaths) {
-//                $query->where('permissions.global', 1);
-//                if (isset($requestPaths['site'])){
-//                    $query->where("permissions.{$requestPaths['site']}", 1);
-//                }
-//                if (isset($requestPaths['resource'])){
-//                    $query->where("permissions.{$requestPaths['resource']}", 1);
+//        ->where(function($query) use ($permissionPaths) {
+//                $query->where('permissions._global', 1);
+//                foreach ($permissionPaths as $path) {
+//                    $query->where("permissions.{$path}", 1);
 //                }
 //            }, '$or')
         ->first();
