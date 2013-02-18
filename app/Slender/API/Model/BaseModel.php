@@ -26,7 +26,7 @@ class BaseModel extends MongoModel
     /**
      * @var array
      */
-	protected $relations;
+	protected $relations = [];
 
 	public function findById($id)
 	{
@@ -192,22 +192,6 @@ class BaseModel extends MongoModel
 	{
 		return $this->schema;
 	}
-
-	public function getEmbeddedRelations($reverse=true)
-	{
-		$embedded = [];
-
-		foreach ($this->relations['children'] as $k => $v) {
-			if ($v && $reverse) {
-				$embedded[] = $k;
-			} elseif (!$v && !$reverse) {
-				$embedded[] = $k;
-			}
-		}
-
-		return $embedded;
-	}
-
 	/**
 	 * Replaces a child ids with an embeded objects
 	 * in the passed array
@@ -253,8 +237,16 @@ class BaseModel extends MongoModel
 		}
 	}
 
-	public function isEmbedded($child) {
-		return in_array($child, $this->getEmbeddedRelations());
+	public function isEmbedded($childClassName) {
+
+		$classes = array_map(function($x)
+		{
+			return $x['class'];
+		},
+		$this->getEmbeddedRelations());
+
+		return in_array($childClassName, $classes);
+	
 	}
 
 	private function createRelatedClass($name)
@@ -334,6 +326,15 @@ class BaseModel extends MongoModel
 		return $id;
 	}
 
+	public function addRelations($type,$relations)
+	{
+		if (!isset($this->relations[$type])) {
+			$this->relations[$type] = [];
+		}
+
+		$this->relations[$type] = array_merge($this->relations[$type],$relations);
+	}
+
     public function getRelations()
     {
         return $this->relations;
@@ -344,6 +345,20 @@ class BaseModel extends MongoModel
         $this->relations = $relations;
         return $this;
     }
+
+	public function getEmbeddedRelations($natural=true)
+	{
+		$embedded = [];
+
+		foreach ($this->relations['children'] as $k => $v) {
+			if (($v['embed'] && $natural) || (!$v['embed'] && !$natural)) {
+				$embedded[$k] = $v;	
+			}
+		}
+
+		return $embedded;
+	}
+
 
     public function getSite()
     {

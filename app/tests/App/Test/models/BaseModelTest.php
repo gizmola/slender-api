@@ -10,28 +10,75 @@ class BaseModelTest extends TestCase
  	public function testCanAddChildRelation()
 	{
 
+		$relations = [
+			'parents' => [
+		    	'my-parent-1' => [
+		        	'class' => 'My\Parent\Class\Name',
+		        ],
+		    ],
+		    'children' => [
+		    	'my-child-1' => [
+		        	'class' => 'My\Child\Class\Name',
+		            'embed' => true, // or false
+		            'embedKey' => 'sweet-child-of-mine',
+		        ],
+		    ],
+		];
+
 		$model = new BaseModel;	
-		$relations = ['child'=> true];
+		$model->setRelations($relations);
+		$children = $model->getRelations()['children'];
+		$this->assertArrayHasKey('my-child-1', $children);	
+	}
+
+	public function testCanAddRelation()
+	{
+
+		$relations = [
+			'my-child-1' => [
+				'class' => 'My\Child\Class\Name',
+				'embed' => true, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			]
+		];
+
+		$model = new BaseModel;	
 		$model->addRelations('children',$relations);
 		$children = $model->getRelations()['children'];
-		$this->assertArrayHasKey('child', $children);	
+		$this->assertArrayHasKey('my-child-1', $children);		
+
 	}
 
 	public function testCanGetEmbeddedChildRelations()
 	{
-		$model = new BaseModel;	
-		$relations = ['embeddedChild'=> true, 'notembeddedchild' => false];
+		$model = new BaseModel;
+
+		$relations = [
+			'embedded-child' => [
+				'class' => 'My\Child\Class\Name',
+				'embed' => true, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			],
+			'not-embedded-child' => [
+				'class' => 'My\Child\Class\Name',
+				'embed' => false, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			]
+		];
+		
 		$model->addRelations('children',$relations);
 
-		$embeddedChildren = $model->getEmbeddedRelations();
+		$embeddedChildren = $model->getEmbeddedRelations();		
 		$this->assertEquals(1,count($embeddedChildren));
-		$this->assertEquals(true, in_array('embeddedChild', $embeddedChildren));
+		$this->assertArrayHasKey('embedded-child', $embeddedChildren);
 
 		$notEmbeddedChildren = $model->getEmbeddedRelations(false);
 		$this->assertEquals(1,count($notEmbeddedChildren));
-		$this->assertEquals(true, in_array('notembeddedchild', $notEmbeddedChildren));
+		$this->assertArrayHasKey('not-embedded-child', $notEmbeddedChildren);
 
 	}
+
+
 
 	public function testEmbedChildArray()
 	{
@@ -53,38 +100,32 @@ class BaseModelTest extends TestCase
 		$this->assertArrayHasKey('name', $parentData['photos'][0]);
 	}
 
-	public function testCanAddParentRelations()
-	{
-
-		$model = new BaseModel;	
-		$relations = ['parent' => 'child'];
-		$model->addRelations('parents',$relations);
-		$parents = $model->getRelations()['parents'];
-		$this->assertEquals(true,in_array('parent', array_keys($parents)));
-
-	}
-
+	
 	public function testCanReportIfChildIsEmbedded()
 	{
 
 		$model = new BaseModel;	
-		$relations = ['embeddedChild'=> true, 'otherchild' => false];
+
+		$relations = [
+			'embedded-child' => [
+				'class' => 'My\Child\Class\EmbeddedClass',
+				'embed' => true, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			],
+			'not-embedded-child' => [
+				'class' => 'My\Child\Class\NotEmbeddedClass',
+				'embed' => false, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			]
+		];
+
 		$model->addRelations('children',$relations);
 
-		$embedded = $model->isEmbedded('embeddedChild');
-		$otherchild = $model->isEmbedded('otherchild');
+		$embedded = $model->isEmbedded('My\Child\Class\EmbeddedClass');
+		$otherchild = $model->isEmbedded('My\Child\Class\NotEmbeddedClass');
 
-		$this->assertEquals(true,$embedded);
-		$this->assertEquals(false,$otherchild);
-
-	}
-
-	public function testCanRetrieveParentKeyName()
-	{
-
-		$model = new BaseModel;	
-		$relations = ['parent' => 'child'];
-		$model->addRelations('parents',$relations);
+		$this->assertTrue($embedded);
+		$this->assertFalse($otherchild);
 
 	}
 
