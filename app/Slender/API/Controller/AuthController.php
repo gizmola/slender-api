@@ -20,8 +20,10 @@ class AuthController extends \Slender\API\Controller\BaseController
      */
     public function post()
     {
-        $email = \Input::get('email');
-        $password = \Input::get('password');
+        $input = \Input::json(true);
+        
+        $email = isset($input['email']) ? $input['email'] : '';
+        $password = isset($input['password']) ? $input['password'] : '';
   
         $entity = $this->model
                     ->getCollection()
