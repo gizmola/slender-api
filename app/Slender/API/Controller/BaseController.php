@@ -192,9 +192,7 @@ abstract class BaseController extends \Controller
 	{
 		$options = $this->model->options();
 		return Response::json(array(
-			'PUT' => array(
-				$options,
-			),
+			'PUT' => $options,
 		), self::HTTP_OPTIONS_OK);
 	}
 

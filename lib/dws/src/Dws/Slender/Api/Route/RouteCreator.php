@@ -35,7 +35,7 @@ class RouteCreator
 		'putSingular' => 'update',
 		'postPlural' => 'insert',
 		'deleteSingular' => 'delete',
-		'options' => 'options',
+		'optionsPlural' => 'options',
 	];
     
     /**
