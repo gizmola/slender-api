@@ -222,12 +222,12 @@ class BaseModel extends MongoModel
 
 			$notEmbeddedRelations = $this->getEmbeddedRelations(false);
 
-			foreach ($notEmbeddedRelations as $relation) {
+			foreach ($notEmbeddedRelations as $resource => $config) {
 
-				$childIntsance = $this->createRelatedClass($relation);
+				$childIntsance = $this->createRelatedClass($resource, $config);
 
 				for ($i = 0; $i < count($entities); $i++) {
-					$this->embedChildData($entities[$i][$relation],$childIntsance);
+					$this->embedChildData($entities[$i][$config['embedKey']], $childIntsance);
 				}
 
 			}
@@ -385,5 +385,5 @@ class BaseModel extends MongoModel
  		return false;
 
     }
-    
+
 }
