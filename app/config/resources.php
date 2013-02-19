@@ -104,12 +104,30 @@ return [
     ],
 
     // base non-core resources (requires a site)
-    'albums' => [],
+    'albums' => [
+       'model' => [
+           'children' => [
+               'photos' => [
+                   'class' => 'Slender\API\Model\Photos',
+                   'embed' => true,
+                   'embedKey' => 'photos',
+               ],
+           ],
+       ],
+    ],
+    'photos' => [
+       'model' => [
+           'parents' => [
+               'albums' => [
+                   'class' => 'Slender\API\Model\Albums',
+               ],
+           ],
+       ],
+    ],
     'channels' => [],
     'episodes' => [],
     'news' => [],
     'pages' => [],
-    'photos' => [],
     'videos' => [],
 
     // per-site overrides or custom resources
