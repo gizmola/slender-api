@@ -7,25 +7,25 @@ class Videos extends \Slender\API\Model\BaseModel
 	protected $collectionName = 'videos';
 
 	protected $schema = array(
-        'title' => array('type' => 'string'),
-        'description' => array('type' => 'string'),
-        'slug' => array('type' => 'string'),
-        'premiere_date' 	=> array('type' => 'DateTime'),
+        'title' => array('type' => 'Required'),
+        'description' => array('type' => 'Required'),
+        'slug' => array('type' => 'Required'),
+        'premiere_date' 	=> array('type' => 'Date'),
         'rating' 	=> array('type' => 'Integer'),
-        'genre' 	=> array('type' => 'string'),
+        'genre' 	=> array('type' => 'Required'),
         'episode_number' 	=> array('type' => 'Integer'),
-        'season' 	=> array('type' => 'string'),
+        'season' 	=> array('type' => 'Required'),
         'urls'	=> array (
-            'source' 	=> array('type' => 'string'),
-            'streaming' 	=> array('type' => 'string'),
-            'thumbnail' 	=> array('type' => 'string'),
+            'source' 	=> array('type' => 'URL'),
+            'streaming' 	=> array('type' => 'URL'),
+            'thumbnail' 	=> array('type' => 'URL'),
         ),
         'availability'	=> array (
-    		'sunrise' 	=> array('type' => 'DateTime'),
-    		'sunset'	=> array('type' => 'DateTime'),
+    		'sunrise' 	=> array('type' => 'Date'),
+    		'sunset'	=> array('type' => 'Date'),
         ),
-        'created' 	=> array('type' => 'DateTime'),
-        'updated' 	=> array('type' => 'DateTime'),
+        'created' 	=> array('type' => 'Date'),
+        'updated' 	=> array('type' => 'Date'),
 	);
 
 }
