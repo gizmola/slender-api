@@ -2,6 +2,7 @@
 
 namespace Slender\API\Model;
 
+use Dws\Slender\Api\Resolver\ResourceResolver;
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 
@@ -119,16 +120,13 @@ class BaseModel extends MongoModel
 			$data['updated_at'] = new \MongoDate();
 		}
 
-		if (!isset($data['_id'])) {
-			$data['_id'] = UUID::v4();
-		}
-
+		$data['_id'] = UUID::v4();
 		//embed child data
 		$embeddedRelations = $this->getEmbeddedRelations();
 
 		foreach ($embeddedRelations as $relation) {
-			$childIntsance = $this->createRelatedClass($relation);
-			$this->embedChildData($data[$relation],$childIntsance);
+			$childIntsance = $this->createRelatedClass($relation['class']);
+			$this->embedChildData($data[$relation['embedKey']],$childIntsance);
 		}
 
 		$id = $this->getCollection()->insert($data);
@@ -251,10 +249,17 @@ class BaseModel extends MongoModel
 
 	private function createRelatedClass($name)
 	{
-		$namespacedName = "\\" . $this->getNameSpace() . "\\" .  ucfirst($name);
-		$newClass = $this->resolver->create($namespacedName, $this->getConnection());
-		$newClass->setResolver($this->resolver);
-		return $newClass;
+
+		$shortName = $this->getNameFromNameSpace($name);
+		$resource = $this->getResourceName($shortName);
+
+		$resolver = \App::make('resource-resolver');
+		
+		$class = '\\' . $name;
+		$class = new $class($this->getConnection());
+		$class->setRelations($resolver->buildModelRelations($resource, $this->site));		
+
+		return $class;
 	}
 
 	public function updateParents($entity)
@@ -359,7 +364,6 @@ class BaseModel extends MongoModel
 		return $embedded;
 	}
 
-
     public function getSite()
     {
         return $this->site;
@@ -369,5 +373,36 @@ class BaseModel extends MongoModel
     {
         $this->site = $site;
         return $this;
+    }
+
+    public function getName()
+    {
+    	return $this->getNameFromNameSpace(get_class($this));
+    }
+
+    public function getResourceName($name)
+    {
+
+    	$first = strtolower(substr($name, 0,1));
+    	$subname = substr($name, 1);
+    	preg_match_all("/[A-Z]/", $subname, $matches);
+
+    	if (isset($matches[0])) {
+    		
+    		$replace = array_map(function($x){
+    			return "-" . strtolower($x);
+    		}, $matches[0]);
+
+    		$subname = str_replace($matches[0], $replace, $subname);
+    	}
+
+    	return $first . $subname;
+
+    }
+
+    public function getNameFromNameSpace($name)
+    {
+    	$names = explode('\\', $name);
+    	return end($names);
     }
 }
