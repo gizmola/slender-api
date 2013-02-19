@@ -124,9 +124,9 @@ class BaseModel extends MongoModel
 		//embed child data
 		$embeddedRelations = $this->getEmbeddedRelations();
 
-		foreach ($embeddedRelations as $relation) {
-			$childIntsance = $this->createRelatedClass($relation['class']);
-			$this->embedChildData($data[$relation['embedKey']],$childIntsance);
+		foreach ($embeddedRelations as $resource => $config) {
+			$childIntsance = $this->createRelatedClass($resource, $config);
+			$this->embedChildData($data[$config['embedKey']],$childIntsance);
 		}
 
 		$id = $this->getCollection()->insert($data);
@@ -247,18 +247,12 @@ class BaseModel extends MongoModel
 	
 	}
 
-	private function createRelatedClass($name)
+	private function createRelatedClass($resource, $config)
 	{
-
-		$shortName = $this->getNameFromNameSpace($name);
-		$resource = $this->getResourceName($shortName);
-
 		$resolver = \App::make('resource-resolver');
-		
-		$class = '\\' . $name;
+		$class = '\\' . $config['class'];
 		$class = new $class($this->getConnection());
 		$class->setRelations($resolver->buildModelRelations($resource, $this->site));		
-
 		return $class;
 	}
 
@@ -267,21 +261,21 @@ class BaseModel extends MongoModel
 
 		try{
 
-			$myLcName = strtolower($this->getName());
-
 			$parents = $this->getRelations()['parents'];
 
-			foreach ($parents as $p => $c) {
+			foreach ($parents as $resource => $config) {
 
-				$parentClassName =  ucfirst($p);
-				$parentClass = $this->createRelatedClass(ucfirst($p));
+				$parentClass = $this->createRelatedClass($resource, $config);
+				$embeded = $parentClass->getEmbeddedRelations();
 
-				if (in_array($myLcName, $parentClass->getEmbeddedRelations())) {
+				if ($classConfig = $parentClass->getChildByClassName(get_class($this), $embeded)) {
 
-					$results = $parentClass->getCollection()->where("{$myLcName}._id",$entity['_id'])->get();
+					$embedKey = $classConfig['embedKey'];
+
+					$results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
 
 					foreach ($results as $res) {
-						$this->updateParentData($entity, $res[$myLcName]);
+						$this->updateParentData($entity, $res[$embedKey]);
 						$parentId = $this->shiftId($res);
 						$parentClass->getCollection()->where('_id', $parentId)->update($res);
 					}
@@ -375,34 +369,21 @@ class BaseModel extends MongoModel
         return $this;
     }
 
-    public function getName()
-    {
-    	return $this->getNameFromNameSpace(get_class($this));
-    }
-
-    public function getResourceName($name)
+    public function getChildByClassName($name,$relations = null)
     {
 
-    	$first = strtolower(substr($name, 0,1));
-    	$subname = substr($name, 1);
-    	preg_match_all("/[A-Z]/", $subname, $matches);
+ 		if (!$relations) {
+ 			$relations = $this->relations['children'];
+ 		}
 
-    	if (isset($matches[0])) {
-    		
-    		$replace = array_map(function($x){
-    			return "-" . strtolower($x);
-    		}, $matches[0]);
+ 		foreach ($relations as $k => $v) {
+ 			if ($v['class'] == $name) {
+ 				return $v;
+ 			}
+ 		}
 
-    		$subname = str_replace($matches[0], $replace, $subname);
-    	}
-
-    	return $first . $subname;
+ 		return false;
 
     }
-
-    public function getNameFromNameSpace($name)
-    {
-    	$names = explode('\\', $name);
-    	return end($names);
-    }
+    
 }

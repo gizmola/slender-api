@@ -165,5 +165,30 @@ class BaseModelTest extends TestCase
 		$resource = $model->getResourceName('TestCamelCaseToDash');
 		$this->assertSame('test-camel-case-to-dash',$resource);
 	}
+
+	public function testCanGetEmbededChildParent()
+	{
+
+		$model = new BaseModel;	
+
+		$relations = [
+			'embedded-child' => [
+				'class' => 'My\Child\Class\EmbeddedClass',
+				'embed' => true, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			],
+			'not-embedded-child' => [
+				'class' => 'My\Child\Class\NotEmbeddedClass',
+				'embed' => false, // or false
+				'embedKey' => 'sweet-child-of-mine',
+			]
+		];
+
+		$model->addRelations('children',$relations);
+		$embedded = $model->getEmbeddedRelations();
+		$embededChild = $model->getChildByClassName('My\Child\Class\EmbeddedClass',$relations);
+		$this->assertSame($relations['embedded-child'],$embededChild);
+
+	}
 	
 } 
