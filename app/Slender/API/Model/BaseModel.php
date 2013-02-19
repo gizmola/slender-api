@@ -235,18 +235,6 @@ class BaseModel extends MongoModel
 		}
 	}
 
-	public function isEmbedded($childClassName) {
-
-		$classes = array_map(function($x)
-		{
-			return $x['class'];
-		},
-		$this->getEmbeddedRelations());
-
-		return in_array($childClassName, $classes);
-	
-	}
-
 	private function createRelatedClass($resource, $config)
 	{
 		$resolver = \App::make('resource-resolver');

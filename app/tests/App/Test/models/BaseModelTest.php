@@ -100,35 +100,6 @@ class BaseModelTest extends TestCase
 		$this->assertArrayHasKey('name', $parentData['photos'][0]);
 	}
 
-	
-	public function testCanReportIfChildIsEmbedded()
-	{
-
-		$model = new BaseModel;	
-
-		$relations = [
-			'embedded-child' => [
-				'class' => 'My\Child\Class\EmbeddedClass',
-				'embed' => true, // or false
-				'embedKey' => 'sweet-child-of-mine',
-			],
-			'not-embedded-child' => [
-				'class' => 'My\Child\Class\NotEmbeddedClass',
-				'embed' => false, // or false
-				'embedKey' => 'sweet-child-of-mine',
-			]
-		];
-
-		$model->addRelations('children',$relations);
-
-		$embedded = $model->isEmbedded('My\Child\Class\EmbeddedClass');
-		$otherchild = $model->isEmbedded('My\Child\Class\NotEmbeddedClass');
-
-		$this->assertTrue($embedded);
-		$this->assertFalse($otherchild);
-
-	}
-
 	public function testUpdateParentDataWithNewChildData()
 	{
 		$parentData = [
