@@ -152,20 +152,6 @@ class BaseModelTest extends TestCase
 		$this->assertEquals('123456',array_shift($parentData)['_id']);
 	}
 
-	public function testCanGetName()
-	{
-		$model = new BaseModel;
-		$name = $model->getName();
-		$this->assertSame('BaseModel',$name);	
-	}
-
-	public function testCanCreateResourceNameFromCamelCase()
-	{
-		$model = new BaseModel;
-		$resource = $model->getResourceName('TestCamelCaseToDash');
-		$this->assertSame('test-camel-case-to-dash',$resource);
-	}
-
 	public function testCanGetEmbededChildParent()
 	{
 
