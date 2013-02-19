@@ -1,1 +1,1 @@
-./scripts/phpunit
+vendor/phpunit/phpunit/composer/bin/phpunit
