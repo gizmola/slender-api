@@ -21,7 +21,7 @@ scripts/sftw.php
 scripts/phpunit
 scripts/behat
 build/logs/
-build/data
+build/data/
 
 # Numerous always-ignore extensions
 *.diff
