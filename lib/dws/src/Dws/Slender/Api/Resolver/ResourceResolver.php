@@ -60,10 +60,10 @@ class ResourceResolver
             return null;
         }
         if (!$site) {
-            return $this->config[$resource];
+            return $this->config['core'][$resource];
         } else {
             $base = (array_key_exists($resource, $this->config))
-                ? $base = $this->config[$resource]
+                ? $this->config[$resource]
                 : [];
 
             $perSite = (isset($this->config['per-site'][$site][$resource]))
