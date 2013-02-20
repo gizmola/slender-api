@@ -1,6 +1,13 @@
 <?php
 
-use App\Model\Users;
+use \Auth;
+use \App;
+use Illuminate\Session\TokenMismatchException;
+use \Input;
+use \Route;
+use \Redirect;
+use \Session;
+use Slender\API\Model\Users;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,20 +42,23 @@ App::after(function($request, $response)
 |
 */
 
-\Route::filter('auth', function()
+Route::filter('auth', function()
 {
-    $key = \Request::header('AUTHENTICATION');
-
-    $requestPath  = \App::make('route-creator')->getRequestPath('.');
-
-    $users = new Slender\API\Model\Users;
+    $key = Request::header('AUTHENTICATION');
+    $permissionPaths  = App::make('permissions-resolver')->getPermissionsPaths('.');
+    $users = new Users();
     $user = $users->getCollection()
-                            ->where('key', $key)
-                            //->where("permissions.{$requestPath}", 1)
-                            ->first();
+        ->where('key', $key)
+//        ->where(function($query) use ($permissionPaths) {
+//                $query->where('permissions._global', 1);
+//                foreach ($permissionPaths as $path) {
+//                    $query->where("permissions.{$path}", 1);
+//                }
+//            }, '$or')
+        ->first();
 
-    if(!$user){
-        return \Response::json(array(
+    if (!$user) {
+        return Response::json(array(
             'messages' => array(
                 'Unauthorized',
             ),
@@ -56,10 +66,9 @@ App::after(function($request, $response)
     }
 });
 
-
-\Route::filter('guest', function()
+Route::filter('guest', function()
 {
-	if (\Auth::check()) return \Redirect::to('/');
+	if (Auth::check()) return Redirect::to('/');
 });
 
 /*
@@ -73,10 +82,10 @@ App::after(function($request, $response)
 |
 */
 
-\Route::filter('csrf', function()
+Route::filter('csrf', function()
 {
-	if (\Session::getToken() != \Input::get('csrf_token'))
+	if (Session::getToken() != Input::get('csrf_token'))
 	{
-		throw new Illuminate\Session\TokenMismatchException;
+		throw new TokenMismatchException;
 	}
 });

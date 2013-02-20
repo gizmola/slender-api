@@ -58,8 +58,8 @@ class Validator extends LaravelValidator
                         {
                             $return[($path ? "{$path}" : $key)] = $data;
                         }else{
-                            $return[($path ? "{$path}.{$key}" : $key)] = $value;   
-                            
+                            $return[($path ? "{$path}.{$key}" : $key)] = $value;
+
                         }
                         break;
                 }
@@ -77,7 +77,7 @@ class Validator extends LaravelValidator
      */
     protected function parseData(array $data)
     {
-        $data = $this->flatIt($data);
+        // $data = $this->flatIt($data);
         return parent::parseData($data);
     }
 
@@ -103,9 +103,8 @@ class Validator extends LaravelValidator
      */
     protected function validateBoolean($attribute, $value)
     {
-        return ($value == '1' || $value == '0' ? true : false);
+        return (($value === 0) || ($value === 1) || $value === '0' || $value == '1');
     }
-
 
     /**
      * Validate that a required attribute exists.
@@ -115,11 +114,10 @@ class Validator extends LaravelValidator
      * @return bool
      */
     protected function validateRequired($attribute, $value, $parameters=null)
-    {   
+    {
 
-        if($parameters){
-            if(in_array('array', $parameters))
-            {
+        if ($parameters) {
+            if (in_array('array', $parameters)) {
                 return is_array($value);
             }
         }
