@@ -110,26 +110,32 @@ abstract class BaseController extends \Controller
 	{
 		$input = Input::json(true);
 
+        if (!$input) {
+            return $this->badRequest('Empty/invalid payload');
+        }
+
         $schema = $this->model->getSchemaValidation();
 
         $valid = [];
 
-        foreach ($schema as $k => $v) {
-            if (in_array($k, array_keys($input))) {
-                $valid[$k] = $v;
-            }
-        }
+        // Why selectively? PUT must contain a full representation of the object,
+        // just like in POST.
+//        foreach ($schema as $k => $v) {
+//            if (in_array($k, array_keys($input))) {
+//                $valid[$k] = $v;
+//            }
+//        }
+//
+//        if (!$valid) {
+//            throw new \Exception("No valid parameters sent");
+//        }
 
-        if (!$valid) {
-            throw new \Exception("No valid parameters sent");
-        }
-
-		$validator = Validator::make(
+        $validator = Validator::make(
             $input,
-            $valid
+            $this->model->getSchemaValidation()
         );
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->badRequest($validator->messages());
         }
 
