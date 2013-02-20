@@ -8,7 +8,7 @@ class Channels extends BaseModel
 
 	protected $schema = [
         'title'         => ['required', 'string'],
-        'slug'          => ['required', 'string'],
+        'slug'          => ['required', 'alpha_dash'],
         'description'   => ['string'],
         'tags'          => ['array'],
         'genre'         => ['string'],

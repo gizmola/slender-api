@@ -5,25 +5,22 @@ namespace Slender\API\Model;
 class Pages extends \Slender\API\Model\BaseModel
 {
 	protected $collectionName = 'pages';
-	
+
 	protected $schema = [
 
-        'id' => ['alpha_dash'],
-        'title' => ['required'],
-        'meta' => [
-            'title' => [],
-            'keywords' => [],
+        'title'  => ['required'],
+        'meta'   => [
+            'title'    => ['string'],
+            'keywords' => ['string'],
         ],
-        'slug' => ['alpha_dash'],
-        'body' => ['required'],
+        'slug'  => ['alpha_dash'],
+        'body'  => ['string'],
         'availability'  => [
-            'sunrise' => ['date'],
-            'sunset'  => ['date'],
+            'sunrise' => ['datetime'],
+            'sunset'  => ['datetime'],
         ],
-        'created' => ['date'],
-        'updated' => ['date'],
-
+        'created' => ['datetime'],
+        'updated' => ['datetime'],
 	];
-
 
 }

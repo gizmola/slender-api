@@ -8,7 +8,7 @@ class Episodes extends \Slender\API\Model\BaseModel
 
 	protected $schema = array(
         'title'         => ['required', 'string'],
-        'slug'          => ['required', 'string'],
+        'slug'          => ['required', 'alpha_dash'],
         'description'   => ['string'],
         'season'        => ['string'],
         'tags'          => ['array'],
