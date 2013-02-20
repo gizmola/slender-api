@@ -6,6 +6,7 @@ Route::get('/', function(){
 });
 
 Route::post('auth', 'Slender\API\Controller\AuthController@post');
+Route::any('eb/auth', 'Slender\API\Controller\Site\Eb\AuthController@post');
 
 // Get our generic route-creator from the IoC container
 $creator = App::make('route-creator');
@@ -29,4 +30,10 @@ $creator->addSiteRoutes([
     'demo' => [
         'news',
     ],
+
+
+    'eb' => [
+        'members'
+    ],
+
 ]);
