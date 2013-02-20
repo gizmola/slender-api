@@ -136,6 +136,7 @@ return [
         'demo' => [],
         'eb' => [
             'members' => [],
+            'profiles' => []
         ],
     ],
 ];
