@@ -132,8 +132,10 @@ return [
 
     // per-site overrides or custom resources
     'per-site' => [
-
         'ai' => [],
         'demo' => [],
+        'eb' => [
+            'members' => [],
+        ],
     ],
 ];
