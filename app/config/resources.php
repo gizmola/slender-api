@@ -103,14 +103,17 @@ return [
         'sites' => [],
     ],
 
-    // base non-core resources (requires a site)
+    // base non-core resources.
+    // Requires a site, but available to *all* sites). We may wish to add change this.
+    // Perhaps add a per-site key that disables such a resource. Or
+    //
     'albums' => [
        'model' => [
            'children' => [
                'photos' => [
-                   'class' => 'Slender\API\Model\Photos',
-                   'embed' => true,
-                   'embedKey' => 'photos',
+                   // 'class' => 'Slender\API\Model\Photos',
+                   // 'embed' => true,
+                   // 'embedKey' => 'photos',
                ],
            ],
        ],
@@ -119,7 +122,7 @@ return [
        'model' => [
            'parents' => [
                'albums' => [
-                   'class' => 'Slender\API\Model\Albums',
+                   // 'class' => 'Slender\API\Model\Albums',
                ],
            ],
        ],
