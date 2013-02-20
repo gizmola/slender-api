@@ -5,7 +5,6 @@ Vagrant::Config.run do |config|
   config.vm.box = "centos-6.3-i386"
   config.vm.forward_port 80, 4003
   config.vm.forward_port 27017, 27019
-  config.vm.forward_port 9000, 35000
 #  config.vm.network :hostonly, "192.168.1.101"
 
   config.vm.provision :chef_solo do |chef|
