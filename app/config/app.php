@@ -66,7 +66,7 @@ return array(
 	*/
 
 	'key' => 'slender-heidy-heidy-ho',
-    
+
 	/*
 	|--------------------------------------------------------------------------
 	| Core resources
@@ -78,7 +78,9 @@ return array(
     | Defining them here in config makes them available in the IoC container.
     |
 	*/
-    
+
+    // Redundant? See resources.php.
+    // @todo chase any downstream usage
     'core-resources' => array(
     	// 'auth',
         'sites',
@@ -128,10 +130,10 @@ return array(
 		'Dws\Slender\Api\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
-		
-		// Site-based resource routing
-		'Dws\Slender\Api\Route\RouteServiceProvider',
+
+		// App-specific registrations
 		'Dws\Slender\Api\Resolver\ServiceProvider',
+		'Dws\Slender\Api\Route\ServiceProvider',
 	),
 
 	/*
@@ -198,8 +200,9 @@ return array(
 		'ParamsHelper' => 'Dws\Slender\Api\Controller\Helper\Params',
 	),
 
-	'fallback-namespaces' => [
-		'models' => '\Slender\API\Model',
+	'fallbackNamespaces' => [
+		'resources' => 'Slender\API',
 	],
 
+    'resources' => require __DIR__ . '/resources.php',
 );
