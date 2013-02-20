@@ -9,12 +9,13 @@ class Profiles extends BaseModel
     protected $collectionName = 'profiles';
         
     protected $schema = [
-        'phone'    => ['alpha_num'],
-        'address'     => ['alpha_num'],
-        'zip'         => ['alpha_num'],
-        'city'      => ['alpha_num'],
-        'state/province' => ['alpha_num'],
-        'country' => ['alpha_num'],
+        'member_id' => ['alpha_dash'], 
+        'phone'    => ['alpha_dash'],
+        'address'     => ['regex:/^[0-9A-Za-z _-]+$/'],
+        'zip'         => ['alpha_dash'],
+        'city'      => ['regex:/^[0-9A-Za-z _-]+$/'],
+        'state/province' => ['regex:/^[0-9A-Za-z _-]+$/'],
+        'country' => ['regex:/^[0-9A-Za-z _-]+$/'],
         'birthday' => ['date'],
     ];
     

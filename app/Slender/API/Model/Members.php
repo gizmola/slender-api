@@ -13,6 +13,7 @@ class Members extends BaseModel
         'last_name'     => ['required'],
         'email'         => ['required', 'email'],
         'password'      => ['required'],
+        'active'      => ['in:0,1'],
     ];
 
 }
