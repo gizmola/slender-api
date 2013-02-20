@@ -40,15 +40,15 @@ class ValidationServiceProvider extends ServiceProvider
 			return $validator;
 		});
 
-        Validator::extend('string', function($attribute, $value, $parameters){
+        \Validator::extend('string', function($attribute, $value, $parameters){
             return (!is_array($value) && !is_object($value));
         });
 
-        Validator::extend('array', function($attribute, $value, $parameters){
+        \Validator::extend('array', function($attribute, $value, $parameters){
             return is_array($value);
         });
 
-        Validator::extend('datetime', function($attribute, $value, $parameters){
+        \Validator::extend('datetime', function($attribute, $value, $parameters){
             try {
                 $d = new DateTime($value);  // let DateTime do the heavy lifting
                 return true;
