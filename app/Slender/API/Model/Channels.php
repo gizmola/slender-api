@@ -2,20 +2,20 @@
 
 namespace Slender\API\Model;
 
-class Channels extends \Slender\API\Model\BaseModel
+class Channels extends BaseModel
 {
 	protected $collectionName = 'channels';
 
-	protected $schema = array(
-        'title' => array('type' => 'string'),
-        'slug' => array('type' => 'string'),
-        'description' => array('type' => 'string'),
-        'tags' => array('type' => 'array'),
-        'genre' 	=> array('type' => 'string'),
-        'start_date' 	=> array('type' => 'DateTime'),
-        'end_date' 	=> array('type' => 'DateTime'),
-        'created' 	=> array('type' => 'DateTime'),
-        'updated' 	=> array('type' => 'DateTime'),
-	);
+	protected $schema = [
+        'title'         => ['required', 'string'],
+        'slug'          => ['required', 'alpha_dash'],
+        'description'   => ['string'],
+        'tags'          => ['array'],
+        'genre'         => ['string'],
+        'start_date' 	=> ['date'],
+        'end_date'      => ['date'],
+        'created'       => ['datetime'],
+        'updated'       => ['datetime'],
+	];
 
 }

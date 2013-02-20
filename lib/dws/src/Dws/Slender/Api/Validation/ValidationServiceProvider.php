@@ -1,11 +1,13 @@
-<?php 
+<?php
 
 namespace Dws\Slender\Api\Validation;
 
 use Illuminate\Validation\DatabasePresenceVerifier as DatabasePresenceVerifier;
 use Illuminate\Support\ServiceProvider;
 
-class ValidationServiceProvider extends ServiceProvider {
+
+class ValidationServiceProvider extends ServiceProvider
+{
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -27,7 +29,7 @@ class ValidationServiceProvider extends ServiceProvider {
 		{
 			$validator = new Factory($app['translator']);
 
-			// The validation presence verifier is responsible for determing the existence
+            // The validation presence verifier is responsible for determing the existence
 			// of values in a given data collection, typically a relational database or
 			// other persistent data stores. And it is used to check for uniqueness.
 			if (isset($app['validation.presence']))
@@ -37,6 +39,23 @@ class ValidationServiceProvider extends ServiceProvider {
 
 			return $validator;
 		});
+
+        \Validator::extend('string', function($attribute, $value, $parameters){
+            return (!is_array($value) && !is_object($value));
+        });
+
+        \Validator::extend('array', function($attribute, $value, $parameters){
+            return is_array($value);
+        });
+
+        \Validator::extend('datetime', function($attribute, $value, $parameters){
+            try {
+                $d = new DateTime($value);  // let DateTime do the heavy lifting
+                return true;
+            } catch (\Exception $e) {
+                return false;
+            }
+        });
 	}
 
 	/**
