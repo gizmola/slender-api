@@ -5,7 +5,9 @@ namespace Dws\Slender\Api\Validation;
 use Illuminate\Validation\DatabasePresenceVerifier as DatabasePresenceVerifier;
 use Illuminate\Support\ServiceProvider;
 
-class ValidationServiceProvider extends ServiceProvider {
+
+class ValidationServiceProvider extends ServiceProvider
+{
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -37,6 +39,10 @@ class ValidationServiceProvider extends ServiceProvider {
 
 			return $validator;
 		});
+
+        Validator::extend('string', function($attribute, $value, $parameters){
+            return (!is_array($value) && !is_object($value));
+        });
 	}
 
 	/**
