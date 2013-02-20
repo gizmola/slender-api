@@ -16,7 +16,7 @@ class MongoModel
 	 * @var string
 	 */
 	protected $collectionName;
-	
+
 	/**
 	 * Collection for active model
 	 *
@@ -31,22 +31,21 @@ class MongoModel
 	 */
 	protected $connection;
 
+    protected $defaultConnectionName = 'default';
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param LMongo\Database $connection
 	 */
 	public function __construct(Connection $connection = null)
 	{
-		if (is_null($connection)) {
-			$connection = \App::make('mongo')->connection('default');
+		if (!is_null($connection)) {
+            $this->setConnection($connection);
+
 		}
         $this->connection = $connection;
 
-		if (is_null($this->collectionName)) {
-			$class = array_slice(explode('\\', get_called_class()), -1);
-			$this->collectionName = strtolower(array_shift($class));
-		}
 	}
 
 	/**
@@ -56,6 +55,10 @@ class MongoModel
 	 */
 	public function getConnection()
 	{
+        if (null === $this->connection) {
+            $this->connection = \App::make('mongo')
+                    ->connection($this->defaultConnectionName);
+        }
 		return $this->connection;
 	}
 
@@ -67,8 +70,8 @@ class MongoModel
 	 */
 	public function getCollection($collectionName = null)
 	{
-		$collectionName = $collectionName ?: $this->collectionName;
-		return $this->connection->collection($this->collectionName);
+		$collectionName = $collectionName ?: $this->getCollectionName();
+		return $this->getConnection()->collection($collectionName);
 	}
 
 
@@ -82,7 +85,7 @@ class MongoModel
 	{
 		$result = $this->getCollection()->get($columns);
 		$return = array();
-		foreach ($result as $value) 
+		foreach ($result as $value)
 		{
 			$return[] = $value;
 		}
@@ -93,7 +96,7 @@ class MongoModel
 	 * Get record by ID
 	 *
 	 * @param  string  $id
-	 * @return mixed 
+	 * @return mixed
 	 */
 	public function find($id)
 	{
@@ -127,5 +130,34 @@ class MongoModel
 		$model = get_called_class();
 		return call_user_func_array(array(new $model, $method), $parameters);
 	}
+
+    /**
+     * Set the connection
+     *
+     * @param Connection $connection
+     * @return \Slender\API\Model\MongoModel
+     */
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
+        return $this;
+    }
+
+    public function getCollectionName()
+    {
+ 		if (null === $this->collectionName) {
+			$class = array_slice(explode('\\', get_called_class()), -1);
+			$this->collectionName = strtolower(array_shift($class));
+		}
+       return $this->collectionName;
+    }
+
+    public function setCollectionName($collectionName)
+    {
+        $this->collectionName = $collectionName;
+        return $this;
+    }
+
+
 
 }
