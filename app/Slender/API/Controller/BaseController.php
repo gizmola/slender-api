@@ -148,23 +148,27 @@ abstract class BaseController extends \Controller
 	}
 
     /**
-     * Handles HTTP POST method on a plual endpoint
-     * 
+     * Handles HTTP POST method on a plural endpoint
+     *
      * @return mixed
      */
 	public function insert()
 	{
 		$input = Input::json(true);
 
-		$validator = Validator::make(
+        if (!$input) {
+            return $this->badRequest('Empty/invalid payload');
+        }
+
+        $validator = Validator::make(
             $input,
             $this->model->getSchemaValidation()
         );
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->badRequest($validator->messages());
         }
-	
+
 		$entity = $this->model->insert($input);
 		return Response::json(array(
 			$this->getReturnKey() => array(
