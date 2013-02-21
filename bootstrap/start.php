@@ -29,7 +29,7 @@ $env = $app->detectEnvironment(array(
     'local' => array('localhost', 'slender-api', 'slender-api.local'),
     'qa' => array('slender.qa.example.com'),
     'staging' => array('slender.staging.example.com'),
-    'production' => array('slender.example.com'),
+    'production' => array('stage.eventbidz.com'),
     
 ));
 
