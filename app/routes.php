@@ -6,6 +6,7 @@ Route::get('/', function(){
 });
 
 Route::post('auth', 'Slender\API\Controller\AuthController@post');
+Route::post('eb/auth', 'Slender\API\Controller\Site\Eb\AuthController@post');
 
 // Add all routes
 App::make('route-creator')->addRoutes();

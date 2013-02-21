@@ -20,6 +20,20 @@ class AuthController extends \Slender\API\Controller\BaseController
      */
     public function post()
     {
-        die("authme");
+        $email = \Input::all();
+        $where = [['email',$email]];
+        $meta = [];
+        
+        //$results = $this->model->getCollection()->where('email',$email)->get();
+
+        $results = $this->model->findMany($where,[],[],$meta);
+
+        $data = [];
+
+        //foreach ($results as $doc) {
+
+        //}
+
+        print_r($email);
     }
 }
