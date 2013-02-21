@@ -2,7 +2,7 @@
 
 namespace Slender\API\Model;
 
-use Dws\Slender\Api\Resolver\ResourceResolver;
+use Dws\Slender\Api\Resolver\ResourceResolver; // unused?
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 
