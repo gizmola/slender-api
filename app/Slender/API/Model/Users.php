@@ -65,4 +65,14 @@ class Users extends BaseModel
         return $data;
     }
 
+    /**
+     * Find user by key
+     * 
+     * @param string $key
+     * @return array
+     */
+    public function findByKey($key)
+    {
+        return $this->getCollection()->where('key', $key)->first();
+    }
 }
