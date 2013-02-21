@@ -124,4 +124,25 @@ class Validator extends LaravelValidator
         return parent::validateRequired($attribute, $value);
     }
 
+
+    protected function validateString($attribute, $value, $parameters=null)
+    {
+        return (!is_array($value) && !is_object($value));
+    }
+    
+    protected function validateArray($attribute, $value, $parameters=null)
+    {
+        return is_array($value);
+    }
+
+    protected function validateDatetime($attribute, $value, $parameters=null)
+    {
+        try {
+            $d = new DateTime($value);  // let DateTime do the heavy lifting
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
 }
