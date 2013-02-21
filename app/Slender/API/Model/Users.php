@@ -41,10 +41,11 @@ class Users extends BaseModel
 
     }
 
-    private function updateRolesAndPermissions(array $data){
-        if(isset($data['roles'])){
-            if(!is_array($data['roles']))
-            {
+    private function updateRolesAndPermissions(array $data)
+    {
+        if (isset($data['roles'])) {
+
+            if (!is_array($data['roles'])) {
                 $data['roles'] = (array) $data['roles'];
             }
             $roles = new Roles();
@@ -54,8 +55,7 @@ class Users extends BaseModel
             $data['roles'] = array();
             $data['permissions'] = array();
 
-            foreach ($user_roles as $key => $value)
-            {
+            foreach ($user_roles as $key => $value) {
                 $data['roles'][] = $value['_id'];
 
                 ArrayUtil::array_unset_recursive($value['permissions'], 0);
