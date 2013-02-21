@@ -44,8 +44,6 @@ class MongoModel
             $this->setConnection($connection);
 
 		}
-        $this->connection = $connection;
-
 	}
 
 	/**
