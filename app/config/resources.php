@@ -129,6 +129,7 @@ return [
     'news' => [],
     'pages' => [],
     'videos' => [],
+    'youtubechannels' => [],
 
     // per-site overrides or custom resources
     'per-site' => [

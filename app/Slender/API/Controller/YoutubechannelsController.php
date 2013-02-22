@@ -2,7 +2,7 @@
 
 namespace Slender\API\Controller;
 
-class VideochannelsController extends \Slender\API\Controller\BaseController
+class YoutubechannelsController extends \Slender\API\Controller\BaseController
 {
-    protected $returnKey = 'videochannels';
+    protected $returnKey = 'youtubechannels';
 }
