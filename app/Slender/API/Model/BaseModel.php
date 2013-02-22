@@ -337,11 +337,13 @@ class BaseModel extends MongoModel
 	{
 		$embedded = [];
 
-		foreach ($this->relations['children'] as $k => $v) {
-			if (($v['embed'] && $natural) || (!$v['embed'] && !$natural)) {
-				$embedded[$k] = $v;	
-			}
-		}
+        if (isset($this->relations['children']) && is_array($this->relations['children'])) {
+            foreach ($this->relations['children'] as $k => $v) {
+                if (($v['embed'] && $natural) || (!$v['embed'] && !$natural)) {
+                    $embedded[$k] = $v;
+                }
+            }
+        }
 
 		return $embedded;
 	}
