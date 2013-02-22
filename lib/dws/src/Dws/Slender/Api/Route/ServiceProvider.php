@@ -5,11 +5,11 @@ namespace Dws\Slender\Api\Route;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
- * A Laravel 4 service-provider for 
+ * A Laravel 4 service provider for Slender database connections
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
-class RouteServiceProvider extends BaseServiceProvider
+class ServiceProvider extends BaseServiceProvider
 {
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -27,7 +27,10 @@ class RouteServiceProvider extends BaseServiceProvider
 	{
 		$this->app['route-creator'] = $this->app->share(function($app)
 		{
-			return new RouteCreator($app);
+            $resourceResolver = $app->make('resource-resolver');
+            $mongoManager = $app->make('mongo');
+			$routeCreator = new RouteCreator($resourceResolver, $app, $mongoManager);
+            return $routeCreator;
 		});
 	}
 
@@ -38,6 +41,8 @@ class RouteServiceProvider extends BaseServiceProvider
 	 */
 	public function provides()
 	{
-		return array('route-creator');
+		return array(
+            'route-creator',
+        );
 	}
 }

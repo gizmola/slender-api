@@ -41,35 +41,30 @@ class AdminCommand extends Command
 
 
         //Get email from console
-        $first_name = $this->ask('Enter First Name:');
-        $last_name = $this->ask('Enter Last Name:');
-        $email = $this->ask('Enter Email:');
+        $first_name = $this->ask('Enter First Name: ');
+        $last_name = $this->ask('Enter Last Name: ');
+        $email = $this->ask('Enter Email: ');
 
 
         //Get password from console
         while (!$confirmed) {
             if (!$password) {
-                $password = $this->ask('Enter Password:');
+                $password = $this->ask('Enter Password: ');
             }
 
-            $password2 = $this->ask('Confirm Password:');
+            $password2 = $this->ask('Confirm Password: ');
             if ($password == $password2) {
                 $confirmed = true;
             }
             else {
                 $this->error('The passwords you entered do not match');
-                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]'))
+                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password] '))
                 {
                     $password = null;
                 }
             }
         }
 
-        // $first_name = "John";
-        // $last_name = "Doe";
-        // $email = "email@example.com";
-        // $password = "password";
-        
         $adminPermissions = [
             'global' => [
                 'users' => [
@@ -98,7 +93,7 @@ class AdminCommand extends Command
         $roles = new Roles();
 
         $entity = $roles->getCollection()->where('name', $roleData['name'])->first();
-        
+
         if(!$entity)
         {
             $entity = $roles->insert($roleData);
@@ -109,13 +104,13 @@ class AdminCommand extends Command
             'last_name'     => $last_name,
             'email'         => $email,
             'password'      => $password,
-            'roles'         => [(string)$entity['_id']]
+            'roles'         => [(string) $entity['_id']]
         ];
 
         $users = new Users();
         $entity = $users->insert($userData);
 
-        if($entity['key']){
+        if ($entity['key']){
             $this->info('*---------------------------------------------------------------------------*');
             $this->info('');
             $this->info('User has been successfully created!');
