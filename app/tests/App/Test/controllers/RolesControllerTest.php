@@ -89,7 +89,6 @@ class RolesControllerTest extends TestCase
 
     public function testPOSTWithValidData()
     {
-
         $input = [
             'name' => 'Admin Role',
             'permissions' => [
