@@ -15,19 +15,19 @@ class Roles extends BaseModel
         'permissions' => [
             'global' => [
                 'users' => [
-                    'read'      => ['required', 'boolean'],
-                    'write'     => ['required', 'boolean'],
-                    'delete'    => ['required', 'boolean'],
+                    'read'      => ['boolean'],
+                    'write'     => ['boolean'],
+                    'delete'    => ['boolean'],
                 ],
                 'roles' => [
-                    'read'      => ['required', 'boolean'],
-                    'write'     => ['required', 'boolean'],
-                    'delete'    => ['required', 'boolean'],
+                    'read'      => ['boolean'],
+                    'write'     => ['boolean'],
+                    'delete'    => ['boolean'],
                 ],
                 'sites' => [
-                    'read'      => ['required', 'boolean'],
-                    'write'     => ['required', 'boolean'],
-                    'delete'    => ['required', 'boolean'],
+                    'read'      => ['boolean'],
+                    'write'     => ['boolean'],
+                    'delete'    => ['boolean'],
                 ],
             ],
             'per-site' => [],
