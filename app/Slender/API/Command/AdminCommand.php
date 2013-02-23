@@ -55,39 +55,23 @@ class AdminCommand extends Command
             $password2 = $this->ask('Confirm Password: ');
             if ($password == $password2) {
                 $confirmed = true;
-            }
-            else {
+            } else {
                 $this->error('The passwords you entered do not match');
-                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password] '))
-                {
+                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]')) {
                     $password = null;
                 }
             }
         }
 
-        $adminPermissions = [
-            'global' => [
-                'users' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-                'roles' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-                'sites' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-            ]
-        ];
-
         $roleData = [
             'name' => 'Global Admin Role',
-            'permissions' => $adminPermissions
+            'permissions' => [
+                '_global' => [
+                    'read'      => 1,
+                    'write'     => 1,
+                    'delete'    => 1,
+                ],
+            ],
         ];
 
         $roles = new Roles();
@@ -139,5 +123,4 @@ class AdminCommand extends Command
 	{
 		return array();
 	}
-
 }

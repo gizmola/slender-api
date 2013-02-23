@@ -2,12 +2,11 @@
 
 namespace Slender\API\Model;
 
-use \MongoId;   // unused?
+use Dws\Slender\Api\Auth\Permissions;
 use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
 
 class Users extends BaseModel
 {
-
     protected $collectionName = 'users';
 
     protected $timestamp = true;
@@ -17,7 +16,7 @@ class Users extends BaseModel
         'last_name'     => ['required'],
         'email'         => ['required', 'email'],
         'password'      => ['required'],
-        'roles'         => ['required:array'],
+        'roles'         => ['required', 'array'],
         'permissions'   => [],
     ];
 
@@ -62,12 +61,13 @@ class Users extends BaseModel
                 $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
             }
         }
+        Permissions::normalize($data['permissions']);
         return $data;
     }
 
     /**
      * Find user by key
-     * 
+     *
      * @param string $key
      * @return array
      */

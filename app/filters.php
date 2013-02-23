@@ -2,12 +2,14 @@
 
 use \Auth;
 use \App;
+use Dws\Slender\Api\Auth\AuthHandler;
 use Illuminate\Session\TokenMismatchException;
 use \Input;
 use \Route;
 use \Redirect;
+use \Request;
 use \Session;
-use Slender\API\Model\Users;
+use Slender\API\Model\Users as UserModel;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +46,38 @@ App::after(function($request, $response)
 
 Route::filter('auth', function()
 {
+
+    /**
+     *  @todo: figure out how to plug our needs into the MongoAuthManager so
+     * that we can just do something like
+     *
+     * <code>
+     *  if (!Auth::stateless($credentials)){
+     *      // Return 401
+     *  }
+     *  </code>
+     *
+     * For now, we'll just our own custom object. After all, since we will
+     * authenticate on every request and never have to manage a session, there's
+     * really no benefit to using Laravel's Auth class
+     */
+
+    $request = Request::instance();
+    $userModel = new UserModel();
+    $resourceResolver = App::make('resource-resolver');
+    $handler = new AuthHandler($request, $userModel, $resourceResolver);
+    if (!$handler->authenticate()) {
+        return Response::json(array(
+            'messages' => array(
+                'Unauthorized',
+            ),
+        ), 401);
+    }
+
+    /*
+    $segments = $request->segments();
+
+
     $key = Request::header('AUTHENTICATION');
     $permissionPaths  = App::make('permissions-resolver')->getPermissionsPaths('.');
     $users = new Users();
@@ -64,11 +98,14 @@ Route::filter('auth', function()
             ),
         ), 401);
     }
+     */
 });
 
 Route::filter('guest', function()
 {
-	if (Auth::check()) return Redirect::to('/');
+	if (Auth::check()) {
+        return Redirect::to('/');
+    }
 });
 
 /*

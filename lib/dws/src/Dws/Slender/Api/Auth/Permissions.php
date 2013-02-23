@@ -10,6 +10,7 @@ namespace Dws\Slender\Api\Auth;
  */
 class Permissions
 {
+
     /**
      * The raw associative array of permissions
      *
@@ -22,7 +23,7 @@ class Permissions
      *
      * @var array
      */
-    protected $topLevelKeys = ['core', 'per-site'];
+    protected $topLevelKeys = ['_global', 'core', 'per-site'];
 
     /**
      * Constructor
@@ -99,22 +100,42 @@ class Permissions
     /**
      * Adds the permissions of another Permissions object into this one.
      *
-     * @param \Dws\Slender\Api\Auth\Permissions $permissions
+     * @param array $permissionsData
      * @return \Dws\Slender\Api\Auth\Permissions
      */
-    public function addPermissions(Permissions $permissions)
+    public function addPermissions($permissionsData)
     {
-        $permissionsToAdd = $permissions->createPermissionList();
-        foreach ($permissionsToAdd as $permString){
-            $comps = explode('.', $permString);
-            if (count($comps) == 3) {
-                $this->permissions[$comps[0]][$comps[1]][$comps[2]] = 1;
-            } else if (count($comps) == 4) {
-                $this->permissions[$comps[0]][$comps[1]][$comps[2]][$comps[3]] = 1;
+        $perms = $this->permissions;
+
+        self::traverseGlobal($permissionsData, function($op, $isAllowed) use (&$perms){
+            if ($isAllowed) {
+                $perms[$op] = 1;
             }
-        }
+        });
+
+        self::traverseCore($permissionsData, function($resource, $op, $isAllowed) use (&$perms){
+            if ($isAllowed) {
+                $perms[$resource][$op] = 1;
+            }
+        });
+
+        self::traversePerSite($permissionsData, function($site, $resource, $op, $isAllowed) use (&$perms){
+            if ($isAllowed) {
+                if ('_global' == $site){
+                    $perms['per-site'][$site][$op] = 1;
+                } else {
+                    $perms['per-site'][$site][$resource][$op] = 1;
+                }
+            }
+        });
+
+        self::normalize($perms);
+
+        $this->permissions = $perms;
+
         return $this;
     }
+
 
     public function hasPermission($site, $resource, $op)
     {
@@ -143,13 +164,23 @@ class Permissions
     public function createPermissionList()
     {
         $list = array();
-        $this->traverseCore(function($resource, $op, $perm) use (&$list){
-            if ($perm) {
+
+        self::traverseGlobal($this->permissions, function($op, $isAllowed) use (&$list){
+            if ($isAllowed) {
+                $list[] = implode('.', ['_global', $op]);
+            }
+        });
+
+        // add core perms
+        self::traverseCore($this->permissions, function($resource, $op, $isAllowed) use (&$list){
+            if ($isAllowed) {
                 $list[] = implode('.', ['core', $resource, $op]);
             }
         });
-        $this->traversePerSite(function($site, $resource, $op, $perm) use (&$list){
-            if ($perm) {
+
+        // add per-site perms
+        self::traversePerSite($this->permissions, function($site, $resource, $op, $isAllowed) use (&$list){
+            if ($isAllowed) {
                 $list[] = implode('.', ['per-site', $site, $resource, $op]);
             }
         });
@@ -163,10 +194,10 @@ class Permissions
      *
      * @param \Dws\Slender\Api\Auth\callable $callable
      */
-    protected function traverseCore(callable $callable)
+    protected static function traverseCore(array $scaffold, callable $callable)
     {
-        if (isset($this->permissions['core']) && is_array($this->permissions['core'])) {
-            foreach ($this->permissions['core'] as $resource => $ops) {
+        if (isset($scaffold['core']) && is_array($scaffold['core'])) {
+            foreach ($scaffold['core'] as $resource => $ops) {
                 if (is_array($ops)) {
                     foreach ($ops as $op => $perm) {
                         $callable($resource, $op, $perm);
@@ -182,10 +213,10 @@ class Permissions
      *
      * @param \Dws\Slender\Api\Auth\callable $callable
      */
-    protected function traversePerSite(callable $callable)
+    protected static function traversePerSite(array $scaffold, callable $callable)
     {
-        if (isset($this->permissions['per-site']) && is_array($this->permissions['per-site'])) {
-            foreach ($this->permissions['per-site'] as $site => $resources) {
+        if (isset($scaffold['per-site']) && is_array($scaffold['per-site'])) {
+            foreach ($scaffold['per-site'] as $site => $resources) {
                 if (is_array($resources)){
                     foreach ($resources as $resource => $ops) {
                         if (is_array($ops)) {
@@ -199,15 +230,24 @@ class Permissions
         }
     }
 
-    /**
-     * Do the given permissions represent the same permissions as the current ones?
-     * 
-     * @param \Dws\Slender\Api\Auth\Permissions $permissions
-     * @return boolean
-     */
-    public function hasSamePermissions(Permissions $permissions)
+//    /**
+//     * Do the given permissions represent the same permissions as the current ones?
+//     *
+//     * @param \Dws\Slender\Api\Auth\Permissions $permissions
+//     * @return boolean
+//     */
+//    public function hasSamePermissions(Permissions $permissions)
+//    {
+//        return $this->isAtLeast($permissions) && $permissions->isAtLeast($this);
+//    }
+//
+    public static function traverseGlobal(array $scaffold, callable $callable)
     {
-        return $this->isAtLeast($permissions) && $permissions->isAtLeast($this);
+        if (isset($scaffold['_global']) && is_array($scaffold['_global'])) {
+            foreach ($scaffold['_global'] as $op => $perm) {
+                $callable($op, $perm);
+            }
+        }
     }
 
     /**
@@ -218,5 +258,68 @@ class Permissions
     public function toArray()
     {
         return $this->permissions;
+    }
+
+    public static function normalize(&$permissions)
+    {
+        $globalScaffold = [
+            '_global' => [
+                'read' => 1,
+                'write' => 1,
+                'delete' => 1,
+            ],
+        ];
+        self::traverseGlobal($globalScaffold, function($op) use (&$permissions){
+            $permissions['_global'][$op] = isset($permissions['_global'][$op])
+                ? (int) (bool) $permissions['_global'][$op]
+                : 0;
+        });
+
+        $coreScaffold = [
+            'core' => [
+                'users' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 1,
+                ],
+                'roles' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 1,
+                ],
+                'sites' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 1,
+                ],
+            ],
+        ];
+        self::traverseCore($coreScaffold, function($resource, $op, $perm) use (&$permissions){
+            $permissions['core'][$resource][$op] = isset($permissions['core'][$resource][$op])
+                ? (int) (bool) $permissions['core'][$resource][$op]
+                : 0;
+        });
+
+        // We can't just use traversePerSite() here because we can't know in advance
+        // for which sites the given $permission structure has enabled. So, we have
+        // to walk through explicitly.
+        if (isset($permissions['per-site']) && is_array($permissions['per-site'])) {
+            foreach ($permissions['per-site'] as $site => $resources) {
+                if (is_array($resources)) {
+                    foreach (array_keys($resources) as $resource) {
+                        foreach (array('read', 'write', 'delete') as $op) {
+                            $permissions['per-site'][$site][$resource][$op] = isset($permissions['per-site'][$site][$resource][$op])
+                                ? (int) (bool) $permissions['per-site'][$site][$resource][$op]
+                                : 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        // finally, just make sure that per-site is set
+        if (!isset($permissions['per-site'])) {
+            $permissions['per-site'] = [];
+        }
     }
 }

@@ -13,7 +13,12 @@ class Roles extends BaseModel
     protected $schema = [
         'name' => ['required', 'min:5'],
         'permissions' => [
-            'global' => [
+            '_global' => [
+                'read'      => ['boolean'],
+                'write'     => ['boolean'],
+                'delete'    => ['boolean'],
+            ],
+            'core' => [
                 'users' => [
                     'read'      => ['boolean'],
                     'write'     => ['boolean'],

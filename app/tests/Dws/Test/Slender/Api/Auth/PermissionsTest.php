@@ -3,6 +3,7 @@
 namespace Dws\Test\Slender\Api\Auth;
 
 use Dws\Slender\Api\Auth\Permissions;
+use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
 
 /**
  * Tests for the permissions class
@@ -629,95 +630,39 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                            'write' => 1,
-                        ],
-                    ],
+                '_global' => [
+                    'read' => 0,
+                    'write' => 0,
+                    'delete' => 0,
                 ],
-            ],
-        ];
-
-        $data[] = [
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'write' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                            'write' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-        ];
-
-        $data[] = [
-            [
                 'core' => [
+                    'users' => [
+                        'read' => 0,
+                        'write' => 0,
+                        'delete' => 0,
+                    ],
                     'roles' => [
-                        'write' => 1,
+                        'read' => 0,
+                        'write' => 0,
+                        'delete' => 0,
                     ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'core' => [
-                    'roles' => [
-                        'write' => 1,
+                    'sites' => [
+                        'read' => 0,
+                        'write' => 0,
+                        'delete' => 0,
                     ],
                 ],
                 'per-site' => [
                     'ai' => [
+                        '_global' => [
+                            'read' => 0,
+                            'write' => 0,
+                            'delete' => 0,
+                        ],
                         'users' => [
                             'read' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
+                            'write' => 1,
+                            'delete' => 0,
                         ],
                     ],
                 ],
@@ -732,160 +677,83 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
      * @dataProvider dataProviderTestAddPermissions
      * @param array $permissionsData
      * @param array $otherPermissionsData
-     * @param boolean $result
+     * @param boolean $$expectedData
      */
-    public function testAddPermissions($permissionsData, $otherPermissionsData, $result)
+    public function testAddPermissions($permissionsData, $otherPermissionsData, $expectedData)
     {
         $permissions = new Permissions($permissionsData);
-        $otherPermissions = new Permissions($otherPermissionsData);
-        $expectedPermissions = new Permissions($result);
 
-        // Shouldn't actually be using another method of the SUT
-        // (hasSamePermissions()) - since that method might be faulty.
-        // But it's so useful here. And that method has its own tests.
-        // #rationalization #weak
-        $this->assertTrue(
-            $permissions->addPermissions($otherPermissions)
-                ->hasSamePermissions($expectedPermissions));
+        $modifiedPermissions = $permissions->addPermissions($otherPermissionsData);
+        $modifiedPermissions = $modifiedPermissions->toArray();
+
+        // Now need to compare the structures. But I can't find a good away to
+        // compare two multidimensional arrays. So, we'll just cheat and generate
+        // sorted, one-dimensional arrays that we can compare easily.
+
+        $expectedPermissionsList = (new Permissions($expectedData))->createPermissionList();
+        $modifiedPermissionsList = (new Permissions($modifiedPermissions))->createPermissionList();
+
+        sort($expectedPermissionsList);
+        sort($modifiedPermissionsList);
+
+        $this->assertSame($expectedPermissionsList, $modifiedPermissionsList);
     }
 
-    public function dataProviderTestHasSamePermissions()
+
+    public function dataProviderTestNormalize()
     {
-        $data = [];
+        return [
 
-        $data[] = [
+            // set 0, read-only global
             [
-                'per-site' => [
-                    'ai' => [
+                // initial
+                [
+                    '_global' => [
+                        'read' => 1,
+                    ]
+                ],
+
+                // expected
+                [
+                    '_global' => [
+                        'read' => 1,
+                        'write' => 0,
+                        'delete' => 0,
+                    ],
+                    'core' => [
                         'users' => [
-                            'write' => 1,
+                            'read' => 0,
+                            'write' => 0,
+                            'delete' => 0,
+                        ],
+                        'roles' => [
+                            'read' => 0,
+                            'write' => 0,
+                            'delete' => 0,
+                        ],
+                        'sites' => [
+                            'read' => 0,
+                            'write' => 0,
+                            'delete' => 0,
                         ],
                     ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                        ],
+                    'per-site' => [
+
                     ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                            'write' => 1,
-                        ],
-                    ],
-                ],
-            ],
+                ]
+            ]
         ];
-
-        $data[] = [
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'write' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                            'write' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-        ];
-
-        $data[] = [
-            [
-                'core' => [
-                    'roles' => [
-                        'write' => 1,
-                    ],
-                ],
-            ],
-            [
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            [
-                'core' => [
-                    'roles' => [
-                        'write' => 1,
-                    ],
-                ],
-                'per-site' => [
-                    'ai' => [
-                        'users' => [
-                            'read' => 1,
-                        ],
-                    ],
-                    'txf' => [
-                        'videos' => [
-                            'delete' => 1,
-                        ],
-                    ],
-                ],
-            ],
-        ];
-
-        return $data;
     }
 
     /**
-     * @covers hasSamePermissions
-     * @dataProvider dataProviderTestHasSamePermissions
-     * @param array $permissionsData
-     * @param array $otherPermissionsData
-     * @param boolean $result
+     * @dataProvider dataProviderTestNormalize
+     * @param array $initialPermissions
+     * @param array $expectedPermissions
      */
-    public function testHasSamePermissions($permissionsData, $otherPermissionsData, $result)
+    public function testNormalize($permissions, $expectedPermissions)
     {
-        $permissions = new Permissions($permissionsData);
-        $otherPermissions = new Permissions($otherPermissionsData);
-        $expectedPermissions = new Permissions($result);
-        $this->assertTrue(
-            $permissions->addPermissions($otherPermissions)
-                ->hasSamePermissions($expectedPermissions));
+        Permissions::normalize($permissions);
+        $this->assertSame($expectedPermissions, $permissions);
     }
 
 }

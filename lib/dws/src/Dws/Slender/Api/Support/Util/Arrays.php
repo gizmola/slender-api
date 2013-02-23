@@ -74,4 +74,14 @@ class Arrays
         $return[$key] = self::setValueAsLeafViaPathKeys($pathKeys, $leafValue);
         return $return;
     }
+
+    static function deep_ksort(&$arr) {
+        ksort($arr);
+        foreach ($arr as &$a) {
+            if (is_array($a) && !empty($a)) {
+                self::deep_ksort($a);
+            }
+        }
+    }
+
 }

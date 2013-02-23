@@ -16,7 +16,7 @@ class UsersControllerTest extends TestCase
         $this->assertInternalType('array', $response);
         $this->assertNotSame(null, $response);
         $this->assertArrayHasKey('users', $response);
-    }   
+    }
 
 	public function testBadInsert()
 	{
@@ -26,39 +26,44 @@ class UsersControllerTest extends TestCase
             'last_name'     => '',
             'email'         => 'john@doe.no',
             'password'      => 'required',
-            'roles'         => ['492608c0-1b95-4a55-9648-928c2349fcab', '5d9deca9-6a5f-4efd-afc0-7a181262a3ab'] 
+            'roles'         => ['492608c0-1b95-4a55-9648-928c2349fcab', '5d9deca9-6a5f-4efd-afc0-7a181262a3ab']
         ];
 
         $response = $this->call('POST', '/users', array(), array(), array(), json_encode($input));
         $response = json_decode($response->getContent(), true);
         $this->assertInternalType('array', $response);
         $this->assertArrayHasKey('messages', $response);
-	}	
+	}
 
     public function testInsert()
     {
 
         $input = [
-            'name' => 'Admin Role',
+            'name' => 'Core Reader',
             'permissions' => [
-                'global' => [
+                '_global' => [
+                    'read'      => 0,
+                    'write'     => 0,
+                    'delete'    => 0,
+                ],
+                'core' => [
                     'users' => [
                         'read'      => 1,
-                        'write'     => 1, 
-                        'delete'    => 1,
-                    ], 
-                    'roles' => [
-                        'read'      => 0,
-                        'write'     => 0, 
+                        'write'     => 0,
                         'delete'    => 0,
-                    ], 
+                    ],
+                    'roles' => [
+                        'read'      => 1,
+                        'write'     => 0,
+                        'delete'    => 0,
+                    ],
                     'sites' => [
                         'read'      => 1,
-                        'write'     => 0, 
-                        'delete'    => 1,
-                    ],                 
-                ]
-            ]
+                        'write'     => 0,
+                        'delete'    => 0,
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->call('POST', '/roles', array(), array(), array(), json_encode($input));
@@ -68,24 +73,29 @@ class UsersControllerTest extends TestCase
         $this->refreshApplication(); // fuck this
 
         $input = [
-            'name' => 'Admin Role',
+            'name' => 'Core Writer',
             'permissions' => [
-                'global' => [
+                '_global' => [
+                    'read'      => 0,
+                    'write'     => 0,
+                    'delete'    => 0,
+                ],
+                'core' => [
                     'users' => [
-                        'read'      => 1,
-                        'write'     => 1, 
-                        'delete'    => 1,
-                    ], 
+                        'read'      => 0,
+                        'write'     => 1,
+                        'delete'    => 0,
+                    ],
                     'roles' => [
-                        'read'      => 1,
-                        'write'     => 0, 
-                        'delete'    => 1,
-                    ], 
+                        'read'      => 0,
+                        'write'     => 1,
+                        'delete'    => 0,
+                    ],
                     'sites' => [
                         'read'      => 0,
-                        'write'     => 1, 
+                        'write'     => 1,
                         'delete'    => 0,
-                    ],                 
+                    ],
                 ]
             ]
         ];
@@ -101,7 +111,7 @@ class UsersControllerTest extends TestCase
             'last_name'     => 'Doe',
             'email'         => 'john@doe.no',
             'password'      => 'required',
-            'roles'         => [(string)$role1['_id'], (string)$role2['_id']] 
+            'roles'         => [(string)$role1['_id'], (string)$role2['_id']]
         ];
 
         $response = $this->call('POST', '/users', array(), array(), array(), json_encode($input));
@@ -114,14 +124,19 @@ class UsersControllerTest extends TestCase
         $this->assertContains($role2['_id'], $user['roles']);
 
 
-        $this->assertEquals(1, $user['permissions']['global']['users']['read']);
+        // no global privileges
+        $this->assertEquals(0, $user['permissions']['_global']['read']);
+        $this->assertEquals(0, $user['permissions']['_global']['write']);
+        $this->assertEquals(0, $user['permissions']['_global']['delete']);
 
-        $this->assertEquals(1, $user['permissions']['global']['roles']['read']);
-        $this->assertEquals(1, $user['permissions']['global']['roles']['delete']);
+        // some core privileges
+        $this->assertEquals(1, $user['permissions']['core']['users']['read']);
+        $this->assertEquals(1, $user['permissions']['core']['users']['write']);
 
-        $this->assertEquals(1, $user['permissions']['global']['sites']['read']);
-        $this->assertEquals(1, $user['permissions']['global']['sites']['write']);
-        $this->assertEquals(1, $user['permissions']['global']['sites']['delete']);
+        $this->assertEquals(1, $user['permissions']['core']['roles']['read']);
+        $this->assertEquals(1, $user['permissions']['core']['roles']['write']);
+
+        $this->assertEquals(1, $user['permissions']['core']['sites']['read']);
+        $this->assertEquals(1, $user['permissions']['core']['sites']['write']);
     }
-
 }
