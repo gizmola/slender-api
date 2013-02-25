@@ -18,6 +18,11 @@ package "php-mbstring" do
   action :install
 end
 
+package "php-memcached" do
+  not_if "php -m | grep memcached"
+  action :install
+end
+
 package "php-pear" do
   not_if "which pecl"
   action :install
@@ -45,6 +50,11 @@ end
 
 template "/etc/php.d/mongo.ini" do
   source "mongo.ini.erb"
+  mode 0744
+end
+
+template "/etc/php.d/memcached.ini" do
+  source "memcached.ini.erb"
   mode 0744
 end
 

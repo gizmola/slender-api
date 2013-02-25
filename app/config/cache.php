@@ -15,7 +15,7 @@ return array(
 	|
 	*/
 
-	'driver' => 'file',
+	'driver' => 'memcached',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -68,9 +68,7 @@ return array(
 	*/
 
 	'memcached' => array(
-
-		array('host' => '127.0.0.1', 'port' => 11211, 'weight' => 100),
-
+		array('host' => '127.0.0.1', 'port' => 27018, 'weight' => 100),
 	),
 
 	/*
@@ -85,5 +83,11 @@ return array(
 	*/
 
 	'prefix' => 'laravel',
+    
+    // Cache time in minutes
+    'cache_time' => 5,
+    
+    // Cache enabled?
+    'enabled' => true,
 
 );
