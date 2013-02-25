@@ -50,7 +50,7 @@ class BaseModel extends MongoModel
                              array $aggregate = null, $take = null, $skip = null, $with = null)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
-            return findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
+            return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
         } else {
             /*
             * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
@@ -66,7 +66,7 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with){ return findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with){ return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
         }
 
     }
