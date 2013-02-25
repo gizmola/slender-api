@@ -2,6 +2,8 @@
 
 namespace Slender\API\Model;
 
+use Dws\Slender\Api\Auth\Permissions;
+
 class Roles extends BaseModel
 {
 
@@ -38,4 +40,16 @@ class Roles extends BaseModel
             'per-site' => [],
         ]
     ];
+
+    public function insert(array $data)
+    {
+        Permissions::normalize($data['permissions']);
+        return parent::insert($data);
+    }
+
+    public function update($id, array $data)
+    {
+        Permissions::normalize($data['permissions']);
+        return parent::update($id, $data);
+    }
 }
