@@ -66,9 +66,9 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with){ return return findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with){ return findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
         }
-        
+
     }
 
     protected function findManyQuery(array $where, array $fields, array $orders, &$meta,
