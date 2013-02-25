@@ -756,4 +756,19 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expectedPermissions, $permissions);
     }
 
+    public function testGetSupercedingGlobals()
+    {
+        // No superceding global for a global permissions
+        $this->assertSame([], Permissions::getSupercedingGlobals('_global.read'));
+
+        // Only globals permissions can supercede core permissions
+        $this->assertSame(['_global.read'], Permissions::getSupercedingGlobals('core.users.read'));
+
+        // Both global and per-site global permissions supercede per-site resource permissions
+        $this->assertSame([
+            '_global.read',
+            'per-site.ai._global.read',
+        ], Permissions::getSupercedingGlobals('per-site.ai.users.read'));
+    }
+
 }

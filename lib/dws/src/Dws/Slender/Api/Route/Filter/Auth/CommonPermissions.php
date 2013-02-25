@@ -1,19 +1,18 @@
 <?php
 
-namespace Dws\Slender\Api\Auth;
+namespace Dws\Slender\Api\Route\Filter\Auth;
 
+use Dws\Slender\Api\Auth\Permissions;
 use Dws\Slender\Api\Resolver\PermissionsResolver;
 use Dws\Slender\Api\Resolver\ResourceResolver;
-use Slender\API\Model\Users as UserModel;
-
 use Illuminate\Http\Request;
 
 /**
- * Performs authentication a given request
+ * Performs common permission authentication a given request
  *
  * @author David Weinraub <david.weinraub@diamondwebservices.com>
  */
-class AuthHandler
+class CommonPermissions
 {
     /**
      * The request object
@@ -23,11 +22,11 @@ class AuthHandler
     protected $request;
 
     /**
-     * A user model
+     * A user record
      *
-     * @var UserModel
+     * @var array
      */
-    protected $userModel;
+    protected $user;
 
     /**
      *
@@ -60,10 +59,10 @@ class AuthHandler
      * @param \Illuminate\Http\Request $request
      * @param \Slender\API\Model\Users $userModel
      */
-    public function __construct(Request $request, UserModel $userModel, ResourceResolver $resourceResolver)
+    public function __construct(Request $request, $user, ResourceResolver $resourceResolver)
     {
         $this->request = $request;
-        $this->userModel = $userModel;
+        $this->user = $user;
         $this->resourceResolver = $resourceResolver;
     }
 
@@ -74,12 +73,9 @@ class AuthHandler
      */
     public function authenticate()
     {
-        $key = $this->request->header('Authentication');
-        $user = $this->userModel->findByKey($key);
-        if (!$user) {
+        if (!$this->user) {
             return false;
         }
-        $this->user = $user;
         return $this->userHasPermissions();
     }
 

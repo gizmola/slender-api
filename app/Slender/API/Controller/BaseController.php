@@ -25,12 +25,12 @@ abstract class BaseController extends \Controller
 	const HTTP_UPDATE_OK = 204;
 	// const HTTP_DELETE_OK = 204;
 	const HTTP_OPTIONS_OK = 200;
-	
+
 	/**
 	 * @var BaseModel
 	 */
 	protected $model;
-	
+
     /**
      *
      * @var string
@@ -38,18 +38,23 @@ abstract class BaseController extends \Controller
 	protected $returnKey;
 
     /**
+     * @var array
+     */
+    protected $bodyData;
+
+    /**
      * Constructor
-     * 
+     *
      * @param \App\Controller\BaseModel $model
      */
 	public function __construct(BaseModel $model)
-	{		
+	{
 		$this->model = $model;
 	}
-	
+
     /**
      * Handles HTTP GET method on a singular endpoint
-     * 
+     *
      * @param string $id
      * @return mixed
      */
@@ -70,12 +75,12 @@ abstract class BaseController extends \Controller
 
     /**
      * Handles HTTP GET method on a plural-endpoint
-     * 
+     *
      * @return mixed
      */
 	public function index()
 	{
-		
+
 		$where = (ParamsHelper::getWhere()) ? ParamsHelper::getWhere() : [];
 		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : [];
 		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : [];
@@ -102,17 +107,13 @@ abstract class BaseController extends \Controller
 
     /**
      * Handles HTTP PUT method in a singular endpoint
-     * 
+     *
      * @param string $id
      * @return mixed
      */
 	public function update($id)
 	{
-		$input = Input::json(true);
-
-        if (!$input) {
-            return $this->badRequest('Empty/invalid payload');
-        }
+        $input = $this->getJsonBodyData();
 
         $schema = $this->model->getSchemaValidation();
 
@@ -154,11 +155,7 @@ abstract class BaseController extends \Controller
      */
 	public function insert()
 	{
-		$input = Input::json(true);
-
-        if (!$input) {
-            return $this->badRequest('Empty/invalid payload');
-        }
+        $input = $this->getJsonBodyData();
 
         $validator = Validator::make(
             $input,
@@ -179,7 +176,7 @@ abstract class BaseController extends \Controller
 
     /**
      * Handles HTTP DELETE method on a singular endpoint
-     * 
+     *
      * @param string $id
      * @return type mixed
      */
@@ -195,7 +192,7 @@ abstract class BaseController extends \Controller
 
     /**
      * Handles HTTP OPTIONS method on plural endpoint
-     * 
+     *
      * @return mixed
      */
 	public function options()
@@ -206,21 +203,6 @@ abstract class BaseController extends \Controller
 		), self::HTTP_OPTIONS_OK);
 	}
 
-//	public function getSite()
-//	{
-//		if (null == $this->site) {
-//			throw new \Exception('Site must be set in subclasses');
-//			// @todo: extract from classame
-//		}
-//		return $this->site;
-//	}
-//	
-//	public function setSite($site)
-//	{
-//		$this->site = (string) $site;
-//		return $this;
-//	}
-//	
 	public function getModel()
 	{
 		if (null == $this->model) {
@@ -229,13 +211,13 @@ abstract class BaseController extends \Controller
 		}
 		return $this->model;
 	}
-	
+
 	public function setModel($model)
 	{
 		$this->model = $model;
 		return $model;
 	}
-	
+
 	public function getReturnKey()
 	{
 		if (null == $this->returnKey) {
@@ -263,6 +245,20 @@ abstract class BaseController extends \Controller
                 $messages,
             ),
         ), 400);
-	} 
+	}
+
+    public function getJsonBodyData()
+    {
+        if (null === $this->bodyData) {
+            $data = Input::json(true);
+            if (null === $data) {
+                $this->badRequest([
+                    'Empty/invalid JSON body',
+                ]);
+            }
+            $this->bodyData = $data;
+        }
+        return $this->bodyData;
+    }
 
 }

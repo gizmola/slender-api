@@ -94,7 +94,73 @@ class Permissions
         $hisPermissionList = $permissions->createPermissionList();
         $myPermissionList = $this->createPermissionList();
         $diff = array_diff($hisPermissionList, $myPermissionList);
-        return empty($diff);
+        if (empty($diff)) {
+            return true;
+        } else {
+            // @todo
+            // $hisPermissions has some entries that are missing in $myPermissions.
+            // But, $myPermissions might have some _global settings that
+            // semantically include his specific ones.
+            foreach ($diff as $hisSpecificPermission) {
+                $supercedingGlobals = self::getSupercedingGlobals($hisSpecificPermission);
+                if (!in_array($supercedingGlobals, $myPermissionList)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Given a permissions string, construct an array of
+     * _global permission strings that grant the given permission
+     *
+     * In the case of core permissions, the permission:
+     *
+     *      core.users.write
+     *
+     * would be granted to a user with either of the global permissions:
+     *
+     *      _global.write
+     *
+     * In the case of per-site permissions, the permission:
+     *
+     *      per-site.ai.videos.read
+     *
+     * would be granted to a client with either of the global permissions:
+     *
+     *      _global.read
+     *      per-site.ai._global.read
+     *
+     * @param string $permissionString
+     * @return array An array of potentially superceding global permission strings
+     */
+    public static function getSupercedingGlobals($permissionString)
+    {
+        $sitePattern = '[0-9a-zA-Z]+';
+        $resourcePattern = '[0-9a-zA-Z]+';
+        $opPattern = 'read|write|delete';
+
+        $corePattern = "/^core\.({$resourcePattern})\.({$opPattern})$/";
+        $perSitePattern = "/^per-site\.({$sitePattern})\.({$resourcePattern})\.({$opPattern})$/";
+
+        // Is the given permission string a core permission?
+        if (preg_match($corePattern, $permissionString, $matches)) {
+            return [
+                sprintf('_global.%s', $matches[2]),
+            ];
+        }
+
+        // Is the given permission string a per-site permission?
+        if (preg_match($perSitePattern, $permissionString, $matches)) {
+            return [
+                sprintf('_global.%s' , $matches[3]),
+                sprintf('per-site.%s._global.%s', $matches[1], $matches[3]),
+            ];
+        }
+
+        // Otherwise, no superceding globals
+        return [];
     }
 
     /**

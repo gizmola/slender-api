@@ -40,7 +40,7 @@ class Users extends BaseModel
 
     }
 
-    private function updateRolesAndPermissions(array $data)
+    public static function updateRolesAndPermissions(array $data)
     {
         if (isset($data['roles'])) {
 

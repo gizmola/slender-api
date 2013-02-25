@@ -1,0 +1,20 @@
+{
+    "name": "Core Write-Only",
+    "permissions" : {
+        "roles" : {
+            "read" : 0,
+            "write" : 1,
+            "delete" : 0
+        },
+        "users" : {
+            "read" : 0,
+            "write" : 1,
+            "delete" : 0
+        },
+        "sites" : {
+            "read" : 0,
+            "write" : 1,
+            "delete" : 0
+        }
+    }
+}

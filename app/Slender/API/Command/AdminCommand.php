@@ -2,6 +2,7 @@
 
 namespace Slender\API\Command;
 
+use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Roles;
 use Slender\API\Model\Users;
 
@@ -63,23 +64,26 @@ class AdminCommand extends Command
             }
         }
 
+        $adminPermissions = [
+            '_global' => [
+                'read'      => 1,
+                'write'     => 1,
+                'delete'    => 1,
+            ],
+        ];
+
+        Permissions::normalize($adminPermissions);
+
         $roleData = [
             'name' => 'Global Admin Role',
-            'permissions' => [
-                '_global' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-            ],
+            'permissions' => $adminPermissions,
         ];
 
         $roles = new Roles();
 
         $entity = $roles->getCollection()->where('name', $roleData['name'])->first();
 
-        if(!$entity)
-        {
+        if (!$entity){
             $entity = $roles->insert($roleData);
         }
 
