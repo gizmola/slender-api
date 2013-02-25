@@ -23,7 +23,7 @@ class Users extends BaseModel
 
     public function insert(array $data)
     {
-        $data = $this->updateRolesAndPermissions($data);
+        $data = self::updateRolesAndPermissions($data);
         $data['password'] = \Hash::make($data['password']);
         $data['key'] = sha1(time() . str_shuffle($data['email']));
 
@@ -35,7 +35,7 @@ class Users extends BaseModel
         if (isset($data['password'])) {
             $data['password'] = \Hash::make($data['password']);
         }
-        $data = $this->updateRolesAndPermissions($data);
+        $data = self::updateRolesAndPermissions($data);
         return parent::update($id, $data);
 
     }
