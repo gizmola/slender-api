@@ -1,7 +1,6 @@
 <?php
 
 use Dws\Slender\Api\Route\RouteException;
-
 /*
 |--------------------------------------------------------------------------
 | Register The Laravel Class Loader
@@ -92,3 +91,11 @@ App::missing(function(\Exception $exception)
 */
 
 require __DIR__.'/../filters.php';
+
+/*
+* set the query parameters that should not be
+* cast to a different data type and remain as
+* strings
+*/
+$dontCast = ['zipcode','phone'];
+ParamsHelper::setDontCast($dontCast);

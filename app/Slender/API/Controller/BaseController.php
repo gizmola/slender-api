@@ -82,12 +82,11 @@ abstract class BaseController extends \Controller
 		$aggregate = (ParamsHelper::getAggregate()) ? ParamsHelper::getAggregate() : [];
 		$take = ParamsHelper::getTake();
 		$skip = ParamsHelper::getSkip();
-		$count = ParamsHelper::getCount();
 		$with = ParamsHelper::getWith();
 
 		$meta = [];
 
-		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $count, $with);
+		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
 
 		$result = [
 			$this->getReturnKey() => $records
@@ -111,10 +110,25 @@ abstract class BaseController extends \Controller
 	{
 		$input = Input::json(true);
 
+        $schema = $this->model->getSchemaValidation();
+
+        $valid = [];
+
+        foreach ($schema as $k => $v) {
+            if (in_array($k, array_keys($input))) {
+                $valid[$k] = $v;
+            }
+        }
+
+        if (!$valid) {
+            throw new \Exception("No valid parameters sent");
+        }
+
 		$validator = Validator::make(
             $input,
-            $this->model->getSchemaValidation()
+            $valid
         );
+
         if($validator->fails()){
             return $this->badRequest($validator->messages());
         }
@@ -178,9 +192,7 @@ abstract class BaseController extends \Controller
 	{
 		$options = $this->model->options();
 		return Response::json(array(
-			'PUT' => array(
-				$options,
-			),
+			'PUT' => $options,
 		), self::HTTP_OPTIONS_OK);
 	}
 

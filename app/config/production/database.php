@@ -3,8 +3,13 @@
 return array(
 
 	'mongodb' => array(
+		// 'default' => array(
+		// 	'host' => 'slender.example.com',
+		// 	'port' => 27017,
+		// 	'database' => 'slender',
+		// ),
 		'default' => array(
-			'host' => 'slender.example.com',
+			'host' => '127.0.0.1',
 			'port' => 27017,
 			'database' => 'slender',
 		),

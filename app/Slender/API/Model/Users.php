@@ -16,7 +16,6 @@ class Users extends \Slender\API\Model\BaseModel
         'last_name'     => ['required'],
         'email'         => ['required', 'email'],
         'password'      => ['required'],
-        // 'key'           => [],
         'roles'         => ['required:array'],
         'permissions'   => [],
     ];
@@ -24,7 +23,24 @@ class Users extends \Slender\API\Model\BaseModel
 
     public function insert(array $data)
     {
+        $data = $this->updateRolesAndPermissions($data);
+        $data['password'] = \Hash::make($data['password']);
+        $data['key'] = sha1(time() . str_shuffle($data['email']));
 
+        return parent::insert($data);
+    }
+
+    public function update($id, array $data)
+    {
+        if (isset($data['password'])) {
+            $data['password'] = \Hash::make($data['password']);   
+        }
+        $data = $this->updateRolesAndPermissions($data);
+        return parent::update($id, $data);
+
+    }
+
+    private function updateRolesAndPermissions(array $data){
         if(isset($data['roles'])){
             if(!is_array($data['roles']))
             {
@@ -45,10 +61,7 @@ class Users extends \Slender\API\Model\BaseModel
                 $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
             }
         }
-
-        $data['key'] = sha1(time() . str_shuffle($data['email']));
-
-        return parent::insert($data);
+        return $data;
     }
 
     private function array_unset_recursive(&$array, $remove) 

@@ -25,10 +25,17 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function register()
 	{
-		$this->app['class-resolver'] = $this->app->share(function($app){
-			$fallBackNamespace = $app['config']['app.fallback-namespaces']['models'];
-			return new ClassResolver($fallBackNamespace);
-		});
+        $this->app['resource-resolver'] = $this->app->share(function($app){
+            $resourceResolver = new ResourceResolver($app['config']['resources']);
+            $fallbackNamespace = $app['config']['app.fallbackNamespaces.resources'];
+            $resourceResolver->setFallbackNamespace($fallbackNamespace);
+            return $resourceResolver;
+        });
+
+        $this->app['permissions-resolver'] = $this->app->share(function($app){
+            $resourceResolver = $app->make('resource-resolver');
+            return new PermissionsResolver($resourceResolver);
+        });
 	}
 
 	/**
@@ -38,6 +45,9 @@ class ServiceProvider extends BaseServiceProvider
 	 */
 	public function provides()
 	{
-		return array('class-resolver');
+		return array(
+            'resource-resolver',
+            'permissions-resolver',
+        );
 	}
 }

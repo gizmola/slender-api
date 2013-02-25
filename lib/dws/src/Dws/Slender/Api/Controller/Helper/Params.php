@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Input;
  */
 class Params{
 
+	protected static $dontCast = [];
+
 	/**
 	 * Parse the named query param into an array.
 	 * @param  string | array $input
@@ -20,25 +22,13 @@ class Params{
 	public static function parse($input, $delim=false)
 	{
 
-
-		if (!$input) {
+		if (!$input || !$delim) {
 
 			return $input;
 		
-		} elseif (!$delim) {
-			
-			if (is_array($input)) {
-				array_walk_recursive($input, array(new Params,'floatize'));
-				return $input;
-			} else {
-				return (is_numeric($input)) ? (float)$input : $input;
-			}
-	
 		} elseif (!is_array($input)) {
 
 			$array = explode($delim, $input);
-			array_walk_recursive($array, array(new Params,'floatize'));
-
 			return $array; 
 	
 		} else {
@@ -49,34 +39,54 @@ class Params{
 				$array[] = explode($delim,$v);
 			}
 
-			array_walk_recursive($array, array(new Params,'floatize'));
-
 			return $array;
 		}
 
 	}
 	/**
-	 * Convert all numeric strings to float.
+	 * Convert all strings to datatype that can match mongo.
 	 * @param  string  $item
-	 * @param  string  $key
 	 * @return void
 	 */
-	public static function floatize(&$item,$key){
-	   	
-	   	if (is_numeric($item)) {
-	   		$item = (float)$item;
-	   	}
+	public static function castWhereValues(&$where)
+	{
+
+		for ($i = 0; $i < count($where); $i++) {
+
+			$valueStore = count($where[$i]) -1;
+			$key = $where[$i][0];
+
+			if (!in_array($key, self::getDontCast())) {
+
+				//double and int types
+				if (is_numeric($where[$i][$valueStore])) {
+					$where[$i][$valueStore] = (float)$where[$i][$valueStore];	
+				}
+
+				/**
+				* @todo date types
+				*/
+
+			}
+
+		}
 
 	}
+
+
 	/**
 	 * Parse the filter query param to an array 
 	 * arrays containing 2 or 3 elements
 	 * @return array
 	 */
-	public static function getWhere(Array $filters = null)
+	public static function getWhere(Array $where = null)
 	{
-		$input = ($filters) ? $filters : Input::get('where');
-		return self::parse($input, ":");
+		$input = ($where) ? $where : Input::get('where');
+		$input =  self::parse($input, ":");
+		//where parameters need to be casted correctly
+		self::castWhereValues($input);
+		//array_walk_recursive($input, array(new Params,'cast'));
+		return $input;
 	}
 	/**
 	 * Parse the orders query param 
@@ -132,12 +142,6 @@ class Params{
 		return (is_numeric(Input::get('skip'))) ? (int)Input::get('skip') : false;
 	}
 
-	public static function getCount($count = 0)
-	{
-		$input = ($count) ? $count : Input::get('count');
-		return (is_numeric($input)) ? (int)$input : 0;
-	}
-
 	public static function getAggregate($aggregate = null)
 	{
 		$input = ($aggregate) ? $aggregate : Input::get('aggregate');
@@ -148,6 +152,16 @@ class Params{
 	{
 		$input = ($embed) ? $embed : Input::get('with');
 		return self::parse($input, ":");	
+	}
+
+	public static function setDontCast(Array $array)
+	{
+		self::$dontCast = $array;
+	}
+
+	public static function getDontCast()
+	{
+		return self::$dontCast;
 	}
 
 

@@ -5,9 +5,9 @@ namespace Slender\API\Model;
 class Photos extends \Slender\API\Model\BaseModel
 {
 	protected $collectionName = 'photos';
-	
+
 	protected $schema = [
-    
+
         'title' => ['required'],
         'meta' => [
             'title' => [],
@@ -16,11 +16,11 @@ class Photos extends \Slender\API\Model\BaseModel
         'slug' => ['alpha_dash','required'],
         'photos' => [],
         'availability'  => [
-            'sunrise' => ['date'],
-            'sunset'  => ['date'],
+            'sunrise' => ['datetime'],
+            'sunset'  => ['datetime'],
         ],
-        'created' => ['date'],
-        'updated' => ['date'],
+        'created' => ['datetime'],
+        'updated' => ['datetime'],
 
     ];
 
