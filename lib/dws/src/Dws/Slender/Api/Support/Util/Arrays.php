@@ -33,4 +33,55 @@ class Arrays
 
       return $merged;
     }
+
+    /**
+     *
+     * @param array $array
+     * @param array $remove
+     */
+    public static function array_unset_recursive(&$array, $remove)
+    {
+        if (!is_array($remove)) {
+            $remove = array($remove);
+        }
+        foreach ($array as $key => &$value) {
+            if (in_array($value, $remove)) {
+                unset($array[$key]);
+            } else if (is_array($value)) {
+                self::array_unset_recursive($value, $remove);
+            }
+        }
+    }
+
+    /**
+     * Given: an array of keys ['key1', 'key2', ..., 'keyN'],
+     * and a leaf value $leafValue, create an array $tree with:
+     *
+     * $tree ['key1']['key2']...['keyN'] = $leafValue
+     *
+     * @param array $tree
+     * @param array $keys
+     * @param mixed $leafValue
+     * @return true
+     */
+    public static function setValueAsLeafViaPathKeys($pathKeys, $leafValue)
+    {
+        $return  = [];
+        if (empty($pathKeys)) {
+            return $leafValue;
+        }
+        $key = array_shift($pathKeys);
+        $return[$key] = self::setValueAsLeafViaPathKeys($pathKeys, $leafValue);
+        return $return;
+    }
+
+    static function deep_ksort(&$arr) {
+        ksort($arr);
+        foreach ($arr as &$a) {
+            if (is_array($a) && !empty($a)) {
+                self::deep_ksort($a);
+            }
+        }
+    }
+
 }

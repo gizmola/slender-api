@@ -2,6 +2,7 @@
 
 namespace Slender\API\Command;
 
+use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Roles;
 use Slender\API\Model\Users;
 
@@ -55,47 +56,34 @@ class AdminCommand extends Command
             $password2 = $this->ask('Confirm Password: ');
             if ($password == $password2) {
                 $confirmed = true;
-            }
-            else {
+            } else {
                 $this->error('The passwords you entered do not match');
-                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password] '))
-                {
+                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]')) {
                     $password = null;
                 }
             }
         }
 
         $adminPermissions = [
-            'global' => [
-                'users' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-                'roles' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-                'sites' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-            ]
+            '_global' => [
+                'read'      => 1,
+                'write'     => 1,
+                'delete'    => 1,
+            ],
         ];
+
+        Permissions::normalize($adminPermissions);
 
         $roleData = [
             'name' => 'Global Admin Role',
-            'permissions' => $adminPermissions
+            'permissions' => $adminPermissions,
         ];
 
         $roles = new Roles();
 
         $entity = $roles->getCollection()->where('name', $roleData['name'])->first();
 
-        if(!$entity)
-        {
+        if (!$entity){
             $entity = $roles->insert($roleData);
         }
 
@@ -139,5 +127,4 @@ class AdminCommand extends Command
 	{
 		return array();
 	}
-
 }

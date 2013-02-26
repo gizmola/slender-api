@@ -13,6 +13,10 @@ use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
  */
 class ResourceResolver
 {
+
+    const RESOURCE_TYPE_CORE = 'core';
+    const RESOURCE_TYPE_PERSITE = 'per-site';
+
     /**
      * An array of resource/site config data
      *
@@ -216,6 +220,30 @@ class ResourceResolver
             return $relations;
         }
         return $relations;
+    }
+
+    /**
+     * Examine request path to determine it's type: 'core' or 'per-site'
+     *
+     * @param array|string $requestPath
+     */
+    public function getRequestType($requestPath)
+    {
+        if (is_string($requestPath)) {
+            $requestPath = trim($requestPath, '/');
+            $requestPath = explode('/', $requestPath);
+        }
+
+        if (count($requestPath) == 0) {
+            return null;
+        }
+        if ($this->isResourceConfigured($requestPath[0], null)){
+            return self::RESOURCE_TYPE_CORE;
+        } elseif ($this->isResourceConfigured ($requestPath[1], $requestPath[0])) {
+            return self::RESOURCE_TYPE_PERSITE;
+        } else {
+            return null;
+        }
     }
 
     public function getFallbackNamespace()

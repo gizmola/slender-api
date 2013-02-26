@@ -2,11 +2,11 @@
 
 namespace Slender\API\Model;
 
-use \MongoId;
+use Dws\Slender\Api\Auth\Permissions;
+use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
 
-class Users extends \Slender\API\Model\BaseModel
+class Users extends BaseModel
 {
-
     protected $collectionName = 'users';
 
     protected $timestamp = true;
@@ -16,14 +16,14 @@ class Users extends \Slender\API\Model\BaseModel
         'last_name'     => ['required'],
         'email'         => ['required', 'email'],
         'password'      => ['required'],
-        'roles'         => ['required:array'],
+        'roles'         => ['required', 'array'],
         'permissions'   => [],
     ];
 
 
     public function insert(array $data)
     {
-        $data = $this->updateRolesAndPermissions($data);
+        $data = self::updateRolesAndPermissions($data);
         $data['password'] = \Hash::make($data['password']);
         $data['key'] = sha1(time() . str_shuffle($data['email']));
 
@@ -33,17 +33,18 @@ class Users extends \Slender\API\Model\BaseModel
     public function update($id, array $data)
     {
         if (isset($data['password'])) {
-            $data['password'] = \Hash::make($data['password']);   
+            $data['password'] = \Hash::make($data['password']);
         }
-        $data = $this->updateRolesAndPermissions($data);
+        $data = self::updateRolesAndPermissions($data);
         return parent::update($id, $data);
 
     }
 
-    private function updateRolesAndPermissions(array $data){
-        if(isset($data['roles'])){
-            if(!is_array($data['roles']))
-            {
+    public static function updateRolesAndPermissions(array $data)
+    {
+        if (isset($data['roles'])) {
+
+            if (!is_array($data['roles'])) {
                 $data['roles'] = (array) $data['roles'];
             }
             $roles = new Roles();
@@ -53,26 +54,25 @@ class Users extends \Slender\API\Model\BaseModel
             $data['roles'] = array();
             $data['permissions'] = array();
 
-            foreach ($user_roles as $key => $value)
-            {
+            foreach ($user_roles as $key => $value) {
                 $data['roles'][] = $value['_id'];
 
-                $this->array_unset_recursive($value['permissions'], 0);
+                ArrayUtil::array_unset_recursive($value['permissions'], 0);
                 $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
             }
         }
+        Permissions::normalize($data['permissions']);
         return $data;
     }
 
-    private function array_unset_recursive(&$array, $remove) 
+    /**
+     * Find user by key
+     *
+     * @param string $key
+     * @return array
+     */
+    public function findByKey($key)
     {
-        if (!is_array($remove)) $remove = array($remove);
-        foreach ($array as $key => &$value) {
-            if (in_array($value, $remove)) unset($array[$key]);
-            else if (is_array($value)) {
-                $this->array_unset_recursive($value, $remove);
-            }
-        }
+        return $this->getCollection()->where('key', $key)->first();
     }
-
 }
