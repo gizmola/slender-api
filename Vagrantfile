@@ -15,7 +15,6 @@ Vagrant::Config.run do |config|
 	chef.add_recipe("slender-api::hostname")
 	chef.add_recipe("slender-api::bash")
 	chef.add_recipe("slender-api::scm")
-	chef.add_recipe("slender-api::mongo")
 	chef.add_recipe("slender-api::memcached")
 	chef.add_recipe("slender-api::php")
 	chef.add_recipe("slender-api::mongo")
