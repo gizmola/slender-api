@@ -133,7 +133,7 @@ return [
     'pages' => [],
     'videos' => [],
     'youtubechannels' => [],
-    'videoqueues' => [],
+    'videodistributions' => [],
 
     // per-site overrides or custom resources
     'per-site' => [
