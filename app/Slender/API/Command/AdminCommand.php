@@ -2,6 +2,7 @@
 
 namespace Slender\API\Command;
 
+use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Roles;
 use Slender\API\Model\Users;
 
@@ -41,66 +42,48 @@ class AdminCommand extends Command
 
 
         //Get email from console
-        $first_name = $this->ask('Enter First Name:');
-        $last_name = $this->ask('Enter Last Name:');
-        $email = $this->ask('Enter Email:');
+        $first_name = $this->ask('Enter First Name: ');
+        $last_name = $this->ask('Enter Last Name: ');
+        $email = $this->ask('Enter Email: ');
 
 
         //Get password from console
         while (!$confirmed) {
             if (!$password) {
-                $password = $this->ask('Enter Password:');
+                $password = $this->ask('Enter Password: ');
             }
 
-            $password2 = $this->ask('Confirm Password:');
+            $password2 = $this->ask('Confirm Password: ');
             if ($password == $password2) {
                 $confirmed = true;
-            }
-            else {
+            } else {
                 $this->error('The passwords you entered do not match');
-                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]'))
-                {
+                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]')) {
                     $password = null;
                 }
             }
         }
 
-        // $first_name = "John";
-        // $last_name = "Doe";
-        // $email = "email@example.com";
-        // $password = "password";
-        
         $adminPermissions = [
-            'global' => [
-                'users' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-                'roles' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-                'sites' => [
-                    'read'      => 1,
-                    'write'     => 1,
-                    'delete'    => 1,
-                ],
-            ]
+            '_global' => [
+                'read'      => 1,
+                'write'     => 1,
+                'delete'    => 1,
+            ],
         ];
+
+        Permissions::normalize($adminPermissions);
 
         $roleData = [
             'name' => 'Global Admin Role',
-            'permissions' => $adminPermissions
+            'permissions' => $adminPermissions,
         ];
 
         $roles = new Roles();
 
         $entity = $roles->getCollection()->where('name', $roleData['name'])->first();
-        
-        if(!$entity)
-        {
+
+        if (!$entity){
             $entity = $roles->insert($roleData);
         }
 
@@ -109,13 +92,13 @@ class AdminCommand extends Command
             'last_name'     => $last_name,
             'email'         => $email,
             'password'      => $password,
-            'roles'         => [(string)$entity['_id']]
+            'roles'         => [(string) $entity['_id']]
         ];
 
         $users = new Users();
         $entity = $users->insert($userData);
 
-        if($entity['key']){
+        if ($entity['key']){
             $this->info('*---------------------------------------------------------------------------*');
             $this->info('');
             $this->info('User has been successfully created!');
@@ -144,5 +127,4 @@ class AdminCommand extends Command
 	{
 		return array();
 	}
-
 }

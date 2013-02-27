@@ -2,12 +2,16 @@
 
 use \Auth;
 use \App;
+use Dws\Slender\Api\Resolver\ResourceResolver;
+use Dws\Slender\Api\Route\Filter\Auth\CommonPermissions as CommonPermissionsAuth;
+use Dws\Slender\Api\Support\Util\String as StringUtil;
 use Illuminate\Session\TokenMismatchException;
 use \Input;
 use \Route;
 use \Redirect;
+use \Request;
 use \Session;
-use Slender\API\Model\Users;
+use Slender\API\Model\Users as UserModel;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,16 +24,26 @@ use Slender\API\Model\Users;
 |
 */
 
-App::before(function($request)
-{
-	//
+
+// Initialize the user-model and client-user in the container
+
+App::singleton('user-model', function(){
+    return new UserModel();
+});
+App::singleton('client-user', function(){
+    return null;
 });
 
-
-App::after(function($request, $response)
-{
-	//
-});
+//App::before(function($request)
+//{
+//	//
+//});
+//
+//
+//App::after(function($request, $response)
+//{
+//	//
+//});
 
 /*
 |--------------------------------------------------------------------------
@@ -42,22 +56,39 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
+Route::filter('auth-common-permissions', function($route, $request)
 {
-    $key = Request::header('AUTHENTICATION');
-    $permissionPaths  = App::make('permissions-resolver')->getPermissionsPaths('.');
-    $users = new Users();
-    $user = $users->getCollection()
-        ->where('key', $key)
-//        ->where(function($query) use ($permissionPaths) {
-//                $query->where('permissions._global', 1);
-//                foreach ($permissionPaths as $path) {
-//                    $query->where("permissions.{$path}", 1);
-//                }
-//            }, '$or')
-        ->first();
 
+    /**
+     *  @todo: figure out how to plug our needs into the MongoAuthManager so
+     * that we can just do something like
+     *
+     * <code>
+     *  if (!Auth::stateless($credentials)){
+     *      // Return 401
+     *  }
+     *  </code>
+     *
+     * For now, we'll just our own custom object. After all, since we will
+     * authenticate on every request and never have to manage a session, there's
+     * really no benefit to using Laravel's Auth class
+     */
+
+    // $request = Request::instance();
+    $key = $request->header('Authentication');
+
+    $user = App::make('client-user');
     if (!$user) {
+        $user = App::make('user-model')->findByKey($key);
+        App::singleton('client-user', function() use ($user){
+            return $user;
+        });
+    }
+    $resourceResolver = App::make('resource-resolver');
+
+    $auth = new CommonPermissionsAuth($request, $user, $resourceResolver);
+
+    if (!$auth->authenticate()) {
         return Response::json(array(
             'messages' => array(
                 'Unauthorized',
@@ -66,26 +97,35 @@ Route::filter('auth', function()
     }
 });
 
-Route::filter('guest', function()
-{
-	if (Auth::check()) return Redirect::to('/');
-});
-
-/*
-|--------------------------------------------------------------------------
-| CSRF Protection Filter
-|--------------------------------------------------------------------------
-|
-| The CSRF filter is responsible for protecting your application against
-| cross-site request forgery attacks. If this special token in a user
-| session does not match the one given in this request, we'll bail.
-|
-*/
-
-Route::filter('csrf', function()
-{
-	if (Session::getToken() != Input::get('csrf_token'))
-	{
-		throw new TokenMismatchException;
-	}
-});
+//Route::filter('auth-core-modify', function($route, $request) {
+//
+//    // Expect the user to be stored by auth-common-permissions already
+//    $user = App::make('client-user');
+//    if (!$user) {
+//        return Response::json(array(
+//            'messages' => array(
+//                'Unauthorized',
+//            ),
+//        ), 401);
+//    }
+//
+//    $segments = $request->segments();
+//    if (ResourceResolver::RESOURCE_TYPE_CORE != App::make('resource-resolver')->getRequestType($segments)) {
+//        return;
+//    }
+//    $resource = $segments[0];
+//    $method = strtoupper($request->getMethod());
+//    if (!in_array($method, array('POST', 'PUT'))) {
+//        return;
+//    }
+//    $authClass = 'Dws\Slender\Api\Route\Filter\Auth\Core\Modify\\' . StringUtil::camelize($resource);
+//    $auth = new $authClass($request, $user);
+//    if (!$auth->authenticate()) {
+//        return Response::json(array(
+//            'messages' => array(
+//                'Unauthorized',
+//            ),
+//        ), 401);
+//    }
+//});
+//

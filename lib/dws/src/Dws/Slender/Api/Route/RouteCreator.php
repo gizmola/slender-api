@@ -37,7 +37,7 @@ class RouteCreator
     /**
      * @var Name of the filter to use
      */
-    protected $auth = 'auth';
+    protected $auth = 'auth-common-permissions';
 
 	/**
 	 * A mapping of HTTP request methods to controller methods
