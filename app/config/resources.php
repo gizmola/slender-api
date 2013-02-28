@@ -140,8 +140,15 @@ return [
         'ai' => [],
         'demo' => [],
         'eb' => [
-            'members' => [],
-            'profiles' => []
+            'profiles' => [],
+            'users' => [
+                'controller' => [
+                  'class' => 'Slender\API\Controller\Site\Eb\UsersController',
+                ],
+                'model' => [
+                  'class' => 'Slender\API\Model\Site\Eb\Users',
+                ],
+            ],
         ],
     ],
 ];
