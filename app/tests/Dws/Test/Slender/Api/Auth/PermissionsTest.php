@@ -239,189 +239,189 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
     {
         $data = [];
 
-//        $data[] = [
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            true,
-//        ];
-//
-//        $data[] = [
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 0,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            true,
-//        ];
-//
-//        $data[] = [
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'read' => 1,
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            true,
-//        ];
-//
-//        $data[] = [
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'read' => 1,
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            false,
-//        ];
-//
-//        $data[] = [
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                    'txf' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'read' => 1,
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            false,
-//        ];
-//
-//        $data[] = [
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                    'txf' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'read' => 1,
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            false,
-//        ];
-//
-//        $data[] = [
-//            [
-//                'core' => [
-//                    'users' => [
-//                        'write' => 1,
-//                    ],
-//                ],
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                    'txf' => [
-//                        'users' => [
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            [
-//                'core' => [
-//                    'users' => [
-//                        'write' => 1,
-//                    ],
-//                ],
-//                'per-site' => [
-//                    'ai' => [
-//                        'users' => [
-//                            'read' => 1,
-//                            'write' => 1,
-//                        ],
-//                    ],
-//                ],
-//            ],
-//            false,
-//        ];
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            true,
+        ];
+
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 0,
+                        ],
+                    ],
+                ],
+            ],
+            true,
+        ];
+
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'read' => 1,
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            true,
+        ];
+
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'read' => 1,
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            false,
+        ];
+
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                    'txf' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'read' => 1,
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            false,
+        ];
+
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                    'txf' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'read' => 1,
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            false,
+        ];
+
+        $data[] = [
+            [
+                'core' => [
+                    'users' => [
+                        'write' => 1,
+                    ],
+                ],
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                    'txf' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'core' => [
+                    'users' => [
+                        'write' => 1,
+                    ],
+                ],
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'read' => 1,
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            false,
+        ];
 
         // exceed "or equal" is ok, too
         $data[] = [
