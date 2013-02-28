@@ -21,9 +21,11 @@ class Users extends BaseModel
     ];
 
 
-    public function insert(array $data)
+    public function insert(array $data, $updatePermissions = true)
     {
-        $data = self::updateRolesAndPermissions($data);
+        if ($updatePermissions) {
+            $data = self::updateRolesAndPermissions($data);
+        }
         $data['password'] = \Hash::make($data['password']);
         $data['key'] = sha1(time() . str_shuffle($data['email']));
 
@@ -40,29 +42,32 @@ class Users extends BaseModel
 
     }
 
-    public static function updateRolesAndPermissions(array $data)
+    public static function updateRolesAndPermissions(array $userData)
     {
-        if (isset($data['roles'])) {
+        if (isset($userData['roles'])) {
 
-            if (!is_array($data['roles'])) {
-                $data['roles'] = (array) $data['roles'];
+            if (!is_array($userData['roles'])) {
+                $userData['roles'] = (array) $userData['roles'];
             }
-            $roles = new Roles();
+            $rolesModel = new Roles();
 
-            $user_roles = $roles->whereIn('_id', $data['roles'])->get();
+            $user_roles = $rolesModel->whereIn('_id', $userData['roles'])->get();
 
-            $data['roles'] = array();
-            $data['permissions'] = array();
+            $userData['roles'] = [];
+            $userData['permissions'] = [];
+
+            $permissions = new Permissions($userData['permissions']);
 
             foreach ($user_roles as $key => $value) {
-                $data['roles'][] = $value['_id'];
-
-                ArrayUtil::array_unset_recursive($value['permissions'], 0);
-                $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
+                $userData['roles'][] = $value['_id'];
+                $permissions->addPermissions($value['permissions']);
+                // ArrayUtil::array_unset_recursive($value['permissions'], 0);
+                // $data['permissions'] = array_replace_recursive($data['permissions'], $value['permissions']);
             }
+            $userData['permissions'] = $permissions->toArray();
         }
-        Permissions::normalize($data['permissions']);
-        return $data;
+        // Permissions::normalize($data['permissions']);  // necessary?
+        return $userData;
     }
 
     /**

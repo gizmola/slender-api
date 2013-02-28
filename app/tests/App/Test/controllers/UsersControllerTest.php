@@ -2,6 +2,7 @@
 
 namespace App\Test\Controller;
 
+use \App;
 use App\Test\TestCase;
 use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Roles;
@@ -99,7 +100,7 @@ class UsersControllerTest extends TestCase
             'roles'         => $roleIds,
         ];
 
-        $response = $this->call('POST', '/users', array(), array(), array(), json_encode($input));
+        $response = $this->call('POST', '/users', [], [], [], json_encode($input));
         $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
 
         $response = json_decode($response->getContent(), true);
@@ -135,5 +136,53 @@ class UsersControllerTest extends TestCase
         $this->assertEquals(1, $permissions['core']['sites']['read']);
         $this->assertEquals(1, $permissions['core']['sites']['write']);
         $this->assertEquals(0, $permissions['core']['sites']['delete']);
+    }
+
+    /**
+     * @group auth
+     */
+    public function testAttemptToInsertUserWithExcessivePermissionsIsUnauthorized()
+    {
+        $clientUser = [
+            'first_name' => 'John-Client',
+            'last_name'  => 'Userschmidt',
+            'email' => 'aaa@xxx.com',
+            'permissions' => [
+            'core' => [
+                'users' => [
+                    'read' => 1,
+                ],
+            ],
+        ]];
+        Permissions::normalize($clientUser['permissions']);
+
+        // Override the client-user with this one. He'll be reset back in start/global.php
+        App::singleton('client-user', function() use ($clientUser) {
+            return $clientUser;
+        });
+
+        $roleData = [
+            'name' => 'Core User Write',
+            'permissions' => [
+                'core' => [
+                    'users' => [
+                        'write' => 1,
+                    ],
+                ],
+            ]
+        ];
+        Permissions::normalize($roleData['permissions']);
+        $role = $this->rolesModel->insert($roleData);
+
+        $userData = [
+            'first_name' => 'John-Client',
+            'last_name'  => 'Userschmidt',
+            'email' => 'aaa@xxx.com',
+            'password' => 'asdf',
+            'roles' => [ $role['_id'] ],
+        ];
+
+        $response = $this->call('POST', '/users', array(), array(), array(), json_encode($userData));
+        $this->assertEquals(401, $response->getStatusCode());
     }
 }

@@ -24,16 +24,6 @@ use Slender\API\Model\Users as UserModel;
 |
 */
 
-
-// Initialize the user-model and client-user in the container
-
-App::singleton('user-model', function(){
-    return new UserModel();
-});
-App::singleton('client-user', function(){
-    return null;
-});
-
 /*
 |--------------------------------------------------------------------------
 | Authentication Filters

@@ -123,12 +123,12 @@ abstract class BaseController extends \Controller
 	{
         $input = $this->getJsonBodyData();
 
-        $schema = $this->model->getSchemaValidation();
-
-        $valid = [];
-
-        // Why selectively? PUT must contain a full representation of the object,
-        // just like in POST.
+//        $schema = $this->model->getSchemaValidation();
+//
+//        $valid = [];
+//
+//        // Why selectively? PUT must contain a full representation of the object,
+//        // just like in POST.
 //        foreach ($schema as $k => $v) {
 //            if (in_array($k, array_keys($input))) {
 //                $valid[$k] = $v;

@@ -103,9 +103,10 @@ return [
         'sites' => [],
     ],
 
-    // base non-core resources.
-    // Requires a site, but available to *all* sites). We may wish to add change this.
-    // Perhaps add a per-site key that disables such a resource. Or
+    // Base non-core resources.
+    // Requires a site, but available to *all* sites. We may wish to add change this.
+    // Perhaps add a per-site key that disables such a resource.
+    // @todo
     //
     'albums' => [
        'model' => [

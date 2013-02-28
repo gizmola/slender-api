@@ -2,6 +2,8 @@
 
 namespace Slender\API\Controller;
 
+use \Response;
+use \Validator;
 use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Users;
 
@@ -11,17 +13,82 @@ class UsersController extends BaseController
 
     public function update($id)
     {
-        $this->checkPayloadAgainstClientPermissions();
-        parent::update($id);
+        $input = $this->getJsonBodyData();
+
+//        $schema = $this->model->getSchemaValidation();
+//
+//        $valid = [];
+//
+//        // Why selectively? PUT must contain a full representation of the object,
+//        // just like in POST.
+//        foreach ($schema as $k => $v) {
+//            if (in_array($k, array_keys($input))) {
+//                $valid[$k] = $v;
+//            }
+//        }
+//
+//        if (!$valid) {
+//            throw new \Exception("No valid parameters sent");
+//        }
+
+        $validator = Validator::make(
+            $input,
+            $this->model->getSchemaValidation()
+        );
+
+        if ($validator->fails()) {
+            return $this->badRequest($validator->messages());
+        }
+
+        if (!$this->validatePayloadAgainstClient($input)) {
+            return Response::json([
+                'messages' => [
+                    'Unauthorized: proposed permissions in excess of client permissions',
+                ],
+            ], 401);
+        }
+        
+		$entity = $this->model->update($id, $input);
+		return Response::json(array(
+			$this->getReturnKey() => array(
+				$entity,
+			),
+		), self::HTTP_PUT_OK);
     }
 
     public function insert()
     {
-        $this->checkPayloadAgainstClientPermissions();
-        return parent::insert();
+        $input = $this->getJsonBodyData();
+
+        $validator = Validator::make(
+            $input,
+            $this->model->getSchemaValidation()
+        );
+
+        if ($validator->fails()) {
+            return $this->badRequest($validator->messages());
+        }
+
+        // add in all the roles and permissions
+        $input = Users::updateRolesAndPermissions($input);
+
+        if (!$this->validatePayloadAgainstClient($input)) {
+            return Response::json([
+                'messages' => [
+                    'Unauthorized: proposed permissions in excess of client permissions',
+                ],
+            ], 401);
+        }
+
+        $entity = $this->model->insert($input, false);
+		return Response::json(array(
+			$this->getReturnKey() => array(
+				$entity,
+			),
+		), self::HTTP_POST_OK);
     }
 
-    protected function checkPayloadAgainstClientPermissions()
+    protected function validatePayloadAgainstClient($input)
     {
         // get client user permissions
         $clientUser = $this->getClientUser();
@@ -29,23 +96,12 @@ class UsersController extends BaseController
         // The client-user is populated by the common-permission filter, which doesn't
         // run during unit-tests. So, just skip this if he hasn't been populated.
         if (!$clientUser) {
-            return;
+            return true;
         }
         $clientPermissions = new Permissions($clientUser['permissions']);
 
-        // get payload
-        $input = $this->getJsonBodyData();
+        $proposedPermissions = new Permissions($input['permissions']);
 
-        // aggregate role permissions
-        $proposedPermissions = new Permissions(Users::updateRolesAndPermissions($input['roles']));
-
-        // check aggregate role permissions against payload permissions
-        if (!$clientPermissions->isAtLeast($proposedPermissions)) {
-            Response::json([
-                'messages' => [
-                    'Unauthorized: proposed permissions in excess of client permissions',
-                ],
-            ], 401);
-        }
+        return $clientPermissions->isAtLeast($proposedPermissions);
     }
 }

@@ -37,6 +37,7 @@ class Permissions
             unset($permissions[$k]);
         }
         $this->permissions = $permissions;
+        self::normalize($this->permissions);
     }
 
     /**
@@ -103,11 +104,12 @@ class Permissions
             // semantically include his specific ones.
             foreach ($diff as $hisSpecificPermission) {
                 $supercedingGlobals = self::getSupercedingGlobals($hisSpecificPermission);
-                if (!in_array($supercedingGlobals, $myPermissionList)) {
-                    return false;
+                $common = array_intersect($supercedingGlobals, $myPermissionList);
+                if (count($common) > 0) {
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
     }
 
@@ -181,7 +183,7 @@ class Permissions
 
         self::traverseCore($permissionsData, function($resource, $op, $isAllowed) use (&$perms){
             if ($isAllowed) {
-                $perms[$resource][$op] = 1;
+                $perms['core'][$resource][$op] = 1;
             }
         });
 
