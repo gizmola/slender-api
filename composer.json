@@ -14,12 +14,16 @@
             "Slender\\API\\Command": "app",
             "Slender\\API\\Database\\Migration": "app",
 			"Dws\\Slender\\Api": "lib/dws/src"
-		}
+		},
+        "files": [
+            "lib/dws/src/Dws/Gdata/YoutubeClient.php",
+            "lib/Zend/Loader.php"
+        ]
 
 	},
-	
+    "include-path": ["lib"],
 	"minimum-stability": "dev",
-	
+
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*"
 	}

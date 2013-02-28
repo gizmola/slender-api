@@ -29,12 +29,16 @@ class BaseModel extends MongoModel
      */
     protected $relations = [];
 
-    public function findById($id)
+    public function findById($id, $no_cache=false)
     {
-        if (\Config::get('cache.enabled')) {
-            return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){return parent::find($id);});
-        } else {
+        if (!\Config::get('cache.enabled') OR \Input::get('no_cache') OR $no_cache) {
+
             return parent::find($id);
+        
+        } else {
+        
+            return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){return parent::find($id);});
+        
         }
     }
 
@@ -181,7 +185,7 @@ class BaseModel extends MongoModel
         }
 
         $this->getCollection()->where('_id', $id)->update($data);
-        $entity = $this->findById($id);
+        $entity = $this->findById($id, true);
 
         if (\Config::get('cache.enabled'))
             \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
