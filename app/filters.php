@@ -34,17 +34,6 @@ App::singleton('client-user', function(){
     return null;
 });
 
-//App::before(function($request)
-//{
-//	//
-//});
-//
-//
-//App::after(function($request, $response)
-//{
-//	//
-//});
-
 /*
 |--------------------------------------------------------------------------
 | Authentication Filters
@@ -97,35 +86,3 @@ Route::filter('auth-common-permissions', function($route, $request)
     }
 });
 
-//Route::filter('auth-core-modify', function($route, $request) {
-//
-//    // Expect the user to be stored by auth-common-permissions already
-//    $user = App::make('client-user');
-//    if (!$user) {
-//        return Response::json(array(
-//            'messages' => array(
-//                'Unauthorized',
-//            ),
-//        ), 401);
-//    }
-//
-//    $segments = $request->segments();
-//    if (ResourceResolver::RESOURCE_TYPE_CORE != App::make('resource-resolver')->getRequestType($segments)) {
-//        return;
-//    }
-//    $resource = $segments[0];
-//    $method = strtoupper($request->getMethod());
-//    if (!in_array($method, array('POST', 'PUT'))) {
-//        return;
-//    }
-//    $authClass = 'Dws\Slender\Api\Route\Filter\Auth\Core\Modify\\' . StringUtil::camelize($resource);
-//    $auth = new $authClass($request, $user);
-//    if (!$auth->authenticate()) {
-//        return Response::json(array(
-//            'messages' => array(
-//                'Unauthorized',
-//            ),
-//        ), 401);
-//    }
-//});
-//
