@@ -2,14 +2,15 @@
 
 namespace Slender\API\Controller;
 
-use Slender\API\Model\BaseModel;
-use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
-use Dws\Slender\Api\Validation\ValidationException;
-use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
-use Illuminate\Support\MessageBag;
+use \App;
 use \Input;
 use \Response;
 use \Validator;
+use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
+// use Dws\Slender\Api\Validation\ValidationException;
+// use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
+use Illuminate\Support\MessageBag;
+use Slender\API\Model\BaseModel;
 
 /**
  * Base controller
@@ -41,6 +42,13 @@ abstract class BaseController extends \Controller
      * @var array
      */
     protected $bodyData;
+
+    /**
+     * The client user making the request
+     *
+     * @var array
+     */
+    protected $clientUser;
 
     /**
      * Constructor
@@ -261,4 +269,31 @@ abstract class BaseController extends \Controller
         return $this->bodyData;
     }
 
+    /**
+     * Get the client-user making the request
+     *
+     * @return array
+     */
+    public function getClientUser()
+    {
+        if (null === $this->clientUser) {
+            try {
+                $this->clientUser = App::make('client-user');
+            } catch (\Exception $e) {
+            }
+        }
+        return $this->clientUser;
+    }
+
+    /**
+     * Set the client user making the request
+     *
+     * @param array $clientUser
+     * @return \Slender\API\Controller\BaseController
+     */
+    public function setClientUser($clientUser)
+    {
+        $this->clientUser = $clientUser;
+        return $this;
+    }
 }

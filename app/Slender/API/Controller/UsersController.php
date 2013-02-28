@@ -2,7 +2,6 @@
 
 namespace Slender\API\Controller;
 
-use \App;
 use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Users;
 
@@ -13,7 +12,7 @@ class UsersController extends BaseController
     public function update($id)
     {
         $this->checkPayloadAgainstClientPermissions();
-        return parent::update($id);
+        parent::update($id);
     }
 
     public function insert()
@@ -25,7 +24,7 @@ class UsersController extends BaseController
     protected function checkPayloadAgainstClientPermissions()
     {
         // get client user permissions
-        $clientUser = App::make('client-user');
+        $clientUser = $this->getClientUser();
 
         // The client-user is populated by the common-permission filter, which doesn't
         // run during unit-tests. So, just skip this if he hasn't been populated.
