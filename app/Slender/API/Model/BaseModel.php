@@ -284,7 +284,7 @@ class BaseModel extends MongoModel
         return $class;
     }
 
-    public function updateParents($entity)
+    public function updateParents($entity, $isDelete=false)
     {
 
         try{
@@ -299,11 +299,10 @@ class BaseModel extends MongoModel
                 if ($classConfig = $parentClass->getChildByClassName(get_class($this), $embeded)) {
 
                     $embedKey = $classConfig['embedKey'];
-
                     $results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
 
                     foreach ($results as $res) {
-                        $this->updateParentData($entity, $res[$embedKey]);
+                        $this->updateParentData($entity, $res[$embedKey], $isDelete);
                         $parentId = $this->shiftId($res);
                         $parentClass->getCollection()->where('_id', $parentId)->update($res);
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
