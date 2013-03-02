@@ -191,8 +191,7 @@ return array(
 		'Schema'          => 'Illuminate\Support\Facades\Schema',
 		'Session'         => 'Illuminate\Support\Facades\Session',
 		'URL'             => 'Illuminate\Support\Facades\URL',
-		// 'Validator'       => 'Illuminate\Support\Facades\Validator',
-		'Validator'       => 'Dws\Slender\Api\Support\Facades\Validator',
+		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
 		'LMongo'		  => 'LMongo\Facades\LMongo',
 
