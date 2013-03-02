@@ -6,6 +6,7 @@ use \App;
 use \Input;
 use \Response;
 use \Validator;
+use Dws\Slender\Api\Auth\Permissions;
 use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 // use Dws\Slender\Api\Validation\ValidationException;
 // use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
@@ -174,6 +175,14 @@ abstract class BaseController extends \Controller
             return $this->badRequest($validator->messages());
         }
 
+        if (!$this->validatePayloadAgainstClient($input)) {
+            return Response::json([
+                'messages' => [
+                    'Unauthorized: proposed role permissions in excess of client permissions',
+                ],
+            ], 401);
+        }
+
 		$entity = $this->model->insert($input);
 		return Response::json(array(
 			$this->getReturnKey() => array(
@@ -255,6 +264,20 @@ abstract class BaseController extends \Controller
         ), 400);
 	}
 
+	// @TODO: try to find better way which works for App and PHPUnit
+	public function unauthorizedRequest($messages)
+    {
+		if ($messages instanceof MessageBag) {
+            $messages->setFormat(':message');
+            $messages = $messages->getMessages();
+        }
+		return Response::json([
+            'messages' => [
+                $messages,
+            ],
+        ], 401);
+	}
+
     public function getJsonBodyData()
     {
         if (null === $this->bodyData) {
@@ -295,5 +318,22 @@ abstract class BaseController extends \Controller
     {
         $this->clientUser = $clientUser;
         return $this;
+    }
+
+    protected function validatePayloadAgainstClient($input)
+    {
+        // get client user permissions
+        $clientUser = $this->getClientUser();
+
+        // The client-user is populated by the common-permission filter, which doesn't
+        // run during unit-tests. So, just skip this if he hasn't been populated.
+        if (!$clientUser) {
+            return true;
+        }
+        $clientPermissions = new Permissions($clientUser['permissions']);
+
+        $proposedPermissions = new Permissions($input['permissions']);
+
+        return $clientPermissions->isAtLeast($proposedPermissions);
     }
 }
