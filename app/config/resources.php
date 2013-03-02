@@ -127,27 +127,33 @@ return [
            ],
        ],
     ],
-    'channels' => [],
-    'episodes' => [],
     'news' => [],
     'pages' => [],
     'videos' => [],
-    'youtubechannels' => [],
-    'videodistributions' => [],
-    'youtubeplaylists' => [],
 
     // per-site overrides or custom resources
     'per-site' => [
-        'ai' => [],
-        'demo' => [],
         'eb' => [
-            'profiles' => [],
+            'vendor-profiles' => [],
+            'customer-profiles' => [],
             'users' => [
                 'controller' => [
                   'class' => 'Slender\API\Controller\Site\Eb\UsersController',
                 ],
                 'model' => [
                   'class' => 'Slender\API\Model\Site\Eb\Users',
+                ],
+                'children' => [
+                   'vendor-profiles' => [
+                       'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
+                       'embed' => true,
+                       'embedKey' => 'vendor-profiles',
+                   ],
+                   'customer-profiles' => [
+                       'class' => 'Slender\API\Model\Site\Eb\CustomerProfiles',
+                       'embed' => true,
+                       'embedKey' => 'customer-profiles',
+                   ],
                 ],
             ],
         ],
