@@ -134,7 +134,14 @@ return [
     // per-site overrides or custom resources
     'per-site' => [
         'eb' => [
-            'vendor-profiles' => [],
+            'vendor-profiles' => [
+                'controller' => [
+                  'class' => 'Slender\API\Controller\Site\Eb\VendorProfilesController',
+                ],
+                'model' => [
+                  'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
+                ],
+            ],
             'customer-profiles' => [],
             'users' => [
                 'controller' => [
