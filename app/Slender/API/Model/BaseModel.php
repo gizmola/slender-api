@@ -167,8 +167,7 @@ class BaseModel extends MongoModel
         }
 
         $data['_id'] = UUID::v4();
-        print_r($data);
-        die();
+
         //embed child data
         $embeddedRelations = $this->getEmbeddedRelations();
 
