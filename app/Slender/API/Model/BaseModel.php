@@ -5,6 +5,7 @@ namespace Slender\API\Model;
 use Dws\Slender\Api\Resolver\ResourceResolver; // unused?
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
+use LMongo\Database as Connection;
 
 /**
  * Base Model
@@ -23,6 +24,18 @@ class BaseModel extends MongoModel
      * @var array
      */
     protected $schema = [];
+    protected $extendedSchema = [];
+
+    public function __construct(Connection $connection = null)
+    {
+        parent::__construct($connection);
+        /*
+        * extending classes can define only new attributes
+        * not defined in the base class by providing an
+        * $extendedSchema attribute
+        */
+        $this->setSchema(array_merge($this->schema, $this->extendedSchema));
+    }
 
     /**
      * @var array
@@ -159,7 +172,7 @@ class BaseModel extends MongoModel
 
         foreach ($embeddedRelations as $resource => $config) {
             $childIntsance = $this->createRelatedClass($resource, $config);
-            $this->embedChildData($data[$config['embedKey']],$childIntsance);
+            $this->embedChildData($data[$config['embedKey']], $childIntsance);
         }
 
         $id = $this->getCollection()->insert($data);
@@ -226,9 +239,19 @@ class BaseModel extends MongoModel
         );
     }
 
-    public function getSchemaValidation()
+    public function getSchema()
     {
         return $this->schema;
+    }
+
+    public function setSchema($schema)
+    {
+        $this->schema = $schema;
+    }
+
+    public function getSchemaValidation()
+    {
+        return $this->getSchema();
     }
     /**
      * Replaces a child ids with an embeded objects
@@ -284,7 +307,7 @@ class BaseModel extends MongoModel
         return $class;
     }
 
-    public function updateParents($entity)
+    public function updateParents($entity, $isDelete=false)
     {
 
         try{
@@ -303,11 +326,10 @@ class BaseModel extends MongoModel
                 if ($classConfig = $parentClass->getChildByClassName(get_class($this), $embeded)) {
 
                     $embedKey = $classConfig['embedKey'];
-
                     $results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
 
                     foreach ($results as $res) {
-                        $this->updateParentData($entity, $res[$embedKey]);
+                        $this->updateParentData($entity, $res[$embedKey], $isDelete);
                         $parentId = $this->shiftId($res);
                         $parentClass->getCollection()->where('_id', $parentId)->update($res);
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
