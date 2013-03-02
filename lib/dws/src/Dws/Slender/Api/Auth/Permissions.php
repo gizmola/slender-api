@@ -87,11 +87,14 @@ class Permissions
     /**
      * Are the current permissions at least as much as the given permissions?
      *
-     * @param \Dws\Slender\Api\Auth\Permissions $permissions
+     * @param array|\Dws\Slender\Api\Auth\Permissions $permissions
      * @return type
      */
-    public function isAtLeast(Permissions $permissions)
+    public function isAtLeast($permissions)
     {
+        if (is_array($permissions)) {
+            $permissions = new Permissions($permissions);
+        }
         $hisPermissionList = $permissions->createPermissionList();
         $myPermissionList = $this->createPermissionList();
         $diff = array_diff($hisPermissionList, $myPermissionList);
