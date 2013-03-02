@@ -141,8 +141,25 @@ return [
                 'model' => [
                   'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
                 ],
+                'parents' => [
+                   'users' => [
+                       'class' => 'Slender\API\Model\Site\Eb\Users',
+                   ],
+                ],
             ],
-            'customer-profiles' => [],
+            'customer-profiles' => [
+                'controller' => [
+                  'class' => 'Slender\API\Controller\Site\Eb\CustomerProfilesController',
+                ],
+                'model' => [
+                  'class' => 'Slender\API\Model\Site\Eb\CustomerProfiles',
+                ],
+                'parents' => [
+                   'users' => [
+                       'class' => 'Slender\API\Model\Site\Eb\Users',
+                   ],
+                ],
+            ],
             'users' => [
                 'controller' => [
                   'class' => 'Slender\API\Controller\Site\Eb\UsersController',

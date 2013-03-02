@@ -14,8 +14,8 @@ class VendorProfiles extends BaseModel
         'business_name'     => ['regex:/^[0-9A-Za-z _-]+$/'],
         'service_categories' => [],
         'keywords' => [],
-        'website_link',
-        'youtube_link'
+        'website_link' => ['url'],
+        'youtube_link' => ['url']
     ];
     
 }
