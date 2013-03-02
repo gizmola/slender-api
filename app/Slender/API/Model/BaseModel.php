@@ -5,6 +5,7 @@ namespace Slender\API\Model;
 use Dws\Slender\Api\Resolver\ResourceResolver; // unused?
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
+use LMongo\Database as Connection;
 
 /**
  * Base Model
@@ -23,6 +24,18 @@ class BaseModel extends MongoModel
      * @var array
      */
     protected $schema = [];
+    protected $extendedSchema = [];
+
+    public function __construct(Connection $connection = null)
+    {
+        parent::__construct($connection);
+        /*
+        * extending classes can define only new attributes
+        * not defined in the base class by providing an
+        * $extendedSchema attribute
+        */
+        $this->setSchema(array_merge($this->schema, $this->extendedSchema));
+    }
 
     /**
      * @var array
