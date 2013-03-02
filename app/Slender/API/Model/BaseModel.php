@@ -159,7 +159,7 @@ class BaseModel extends MongoModel
 
         foreach ($embeddedRelations as $resource => $config) {
             $childIntsance = $this->createRelatedClass($resource, $config);
-            $this->embedChildData($data[$config['embedKey']],$childIntsance);
+            $this->embedChildData($data[$config['embedKey']], $childIntsance);
         }
 
         $id = $this->getCollection()->insert($data);
@@ -226,9 +226,19 @@ class BaseModel extends MongoModel
         );
     }
 
-    public function getSchemaValidation()
+    public function getSchema()
     {
         return $this->schema;
+    }
+
+    public function setSchema($schema)
+    {
+        $this->schema = $schema;
+    }
+
+    public function getSchemaValidation()
+    {
+        return $this->getSchema;
     }
     /**
      * Replaces a child ids with an embeded objects
