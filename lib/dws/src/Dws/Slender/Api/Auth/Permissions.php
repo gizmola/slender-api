@@ -117,6 +117,18 @@ class Permissions
     }
 
     /**
+     * Are the given permissions effectively the same as the current ones?
+     * 
+     * @param array|\Dws\Slender\Api\Auth\Permissions $permissions
+     * @return boolean
+     */
+    public function isSameAs($permissions)
+    {
+        $permissions = new Permissions($permissions);
+        return $this->isAtleast($permissions) && $permissions->isAtLeast($this);
+    }
+
+    /**
      * Given a permissions string, construct an array of
      * _global permission strings that grant the given permission
      *
