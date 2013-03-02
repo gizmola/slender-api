@@ -119,21 +119,19 @@ abstract class BaseController extends \Controller
 
         $valid = [];
 
-        // Why selectively? PUT must contain a full representation of the object,
-        // just like in POST.
-//        foreach ($schema as $k => $v) {
-//            if (in_array($k, array_keys($input))) {
-//                $valid[$k] = $v;
-//            }
-//        }
-//
-//        if (!$valid) {
-//            throw new \Exception("No valid parameters sent");
-//        }
+        foreach ($schema as $k => $v) {
+            if (in_array($k, array_keys($input))) {
+                $valid[$k] = $v;
+            }
+        }
+
+        if (!$valid) {
+            throw new \Exception("No valid parameters sent");
+        }
 
         $validator = Validator::make(
             $input,
-            $this->model->getSchemaValidation()
+            $valid
         );
 
         if ($validator->fails()) {
