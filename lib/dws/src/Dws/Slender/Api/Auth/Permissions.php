@@ -30,7 +30,7 @@ class Permissions
      *
      * @param array $permissions
      */
-    public function __construct($permissions)
+    public function __construct($permissions = [])
     {
         $keysToRemove = array_diff(array_keys($permissions), $this->topLevelKeys);
         foreach ($keysToRemove as $k) {
