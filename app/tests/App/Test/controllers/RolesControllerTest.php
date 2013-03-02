@@ -2,6 +2,7 @@
 
 namespace App\Test\Controller;
 
+use \App;
 use App\Test\TestCase;
 
 class RolesControllerTest extends TestCase
@@ -116,6 +117,104 @@ class RolesControllerTest extends TestCase
         $response = json_decode($response->getContent(), true);
         $this->assertInternalType('array', $response);
         $this->assertArrayHasKey('roles', $response);
+    }
+
+    /**
+     * @group auth
+     */
+    public function testThatPOSTRoleInExcessOfClientPermissionsFails()
+    {
+        // create a client
+        $clientData = [
+            'first_name' => 'John',
+            'last_name' => 'Client',
+            'email' => 'johnclient@exmaple.com',
+            'permissions' => [
+                'per-site' => [
+                    'ai' => [
+                        'videos' => [
+                            'read' => 1,
+                            'write' => 0,
+                            'delete' => 0,
+                    ],
+                ],
+            ],
+                ],
+        ];
+
+        // set client into the IoC container
+        App::singleton('client-user', function() use ($clientData) {
+                    return $clientData;
+                });
+
+        // create a role with permissions exceeding the client
+        $input = [
+            'name' => 'Excessive Role',
+            'permissions' => [
+                'per-site' => [
+                    'ai' => [
+                        'videos' => [
+                            'read' => 1,
+                            'write' => 1,
+                            'delete' => 1,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        // assert 401 reject
+        $response = $this->call('POST', '/roles', array(), array(), array(), json_encode($input));
+        $this->assertEquals(401, $response->getStatusCode());
+    }
+
+    /**
+     * @group auth
+     */
+    public function testThatPUTRoleInExcessOfClientPermissionsFails()
+    {
+        // create a client
+        $clientData = [
+            'first_name' => 'John',
+            'last_name' => 'Client',
+            'email' => 'johnclient@exmaple.com',
+            'permissions' => [
+                'per-site' => [
+                    'ai' => [
+                        'videos' => [
+                            'read' => 1,
+                            'write' => 0,
+                            'delete' => 0,
+                    ],
+                ],
+            ],
+                ],
+        ];
+
+        // set client into the IoC container
+        App::singleton('client-user', function() use ($clientData) {
+                    return $clientData;
+                });
+
+        // create a role with permissions exceeding the client
+        $input = [
+            'name' => 'Excessive Role',
+            'permissions' => [
+                'per-site' => [
+                    'ai' => [
+                        'videos' => [
+                            'read' => 1,
+                            'write' => 1,
+                            'delete' => 1,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        // assert 401 reject
+        $response = $this->call('PUT', '/roles/123', array(), array(), array(), json_encode($input));
+        $this->assertEquals(401, $response->getStatusCode());
     }
 
 }
