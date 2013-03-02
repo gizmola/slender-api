@@ -80,4 +80,9 @@ class Users extends BaseModel
     {
         return $this->getCollection()->where('key', $key)->first();
     }
+
+    public function findManyByRoleId($roleId)
+    {
+        return $this->getCollection()->where('roles', $roleId)->get();
+    }
 }

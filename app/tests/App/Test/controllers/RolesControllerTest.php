@@ -216,5 +216,4 @@ class RolesControllerTest extends TestCase
         $response = $this->call('PUT', '/roles/123', array(), array(), array(), json_encode($input));
         $this->assertEquals(401, $response->getStatusCode());
     }
-
 }

@@ -34,11 +34,11 @@ class BaseModel extends MongoModel
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache') OR $no_cache) {
 
             return parent::find($id);
-        
+
         } else {
-        
+
             return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){return parent::find($id);});
-        
+
         }
     }
 
@@ -205,7 +205,7 @@ class BaseModel extends MongoModel
     public function delete($id)
     {
         $this->getCollection()->where('_id', $id)->delete();
-        $this->updateParents($id, true);
+        $this->updateParents($id);
         if (\Config::get('cache.enabled'))
             \Cache::forget($this->collectionName . "_" . $id);
         return true;
@@ -289,7 +289,11 @@ class BaseModel extends MongoModel
 
         try{
 
-            $parents = $this->getRelations()['parents'];
+            $relations = $this->getRelations();
+            if (!$relations || !is_array($relations) || !array_key_exists('parents', $relations)) {
+                return true;
+            }
+            $parents = ['parents'];
 
             foreach ($parents as $resource => $config) {
 
