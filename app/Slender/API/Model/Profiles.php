@@ -18,8 +18,6 @@ class Profiles extends BaseModel
             'city'      => ['regex:/^[0-9A-Za-z _-]+$/'],
             'state/province' => ['regex:/^[0-9A-Za-z _-]+$/'],
         ],
-        'facebook_id' => ['alpha_dash'],
-        'twitter_id' => ['alpha_dash'],
     ];
     
 }
