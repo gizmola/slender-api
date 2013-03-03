@@ -317,7 +317,7 @@ class BaseModel extends MongoModel
             if (!$relations || !is_array($relations) || !array_key_exists('parents', $relations)) {
                 return true;
             }
-            $parents = ['parents'];
+            $parents = $relations['parents'];
 
             foreach ($parents as $resource => $config) {
 
