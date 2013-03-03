@@ -2,17 +2,8 @@
 
 namespace Slender\API\Model\Site\Eb;
 
-use \Slender\API\Model\BaseModel as BaseModel;
+use \Slender\API\Model\Members as BaseModel;
 
 class Users extends BaseModel
 {
-    
-    protected $schema = [
-        'first_name'    => ['required'],
-        'last_name'     => ['required'],
-        'email'         => ['required', 'email'],
-        'password'      => ['required'],
-        'active'      => ['in:0,1'],
-    ];
-
 }
