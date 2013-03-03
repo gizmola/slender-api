@@ -2,21 +2,22 @@
 
 namespace App\Test\Controller;
 
+use \App;
 use App\Test\TestCase;
 
 class PagesControllerTest extends TestCase
 {
 
-    public static function setUpBeforeClass()
+    public function setUp()
     {
-        parent::setUpBeforeClass();
-        
+        parent::setUp();
+
         // override site-based mongo connection for tests
-		\App::singleton('MongoSiteSingleton', function(){
+		App::singleton('MongoSiteSingleton', function(){
 			return App::make('mongo')->connection('unit-tests');
-		});        
+		});
     }
-    
+
 	public function testGetSingular()
 	{
         $response = $this->call('GET', '/ai/pages/some-slug');
@@ -25,8 +26,8 @@ class PagesControllerTest extends TestCase
         $this->assertInternalType('array', $response);
         $this->assertNotSame(null, $response);
         $this->assertArrayHasKey('pages', $response);
-	}	
- 
+	}
+
   /*
     public function testBadInsert()
     {
@@ -52,7 +53,7 @@ class PagesControllerTest extends TestCase
         ];
 
         $response = $this->call('POST', '/pages', [], [], [], json_encode($input));
-        $response = json_decode($response->getContent(), true); 
+        $response = json_decode($response->getContent(), true);
         $this->assertInternalType('array', $response);
         $this->assertArrayHasKey('messages', $response);
         $this->assertArrayHasKey('availability.sunrise', $response['messages'][0]);

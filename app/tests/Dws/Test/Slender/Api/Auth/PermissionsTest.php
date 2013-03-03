@@ -111,7 +111,7 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers canWriteUerToSite
+     * @covers canWriteUserToSite
      * @dataProvider dataProviderTestCanWriteUsertoSite
      * @param array $permissionsData
      * @param string|null $site
@@ -427,7 +427,9 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
         $data[] = [
             [
                 'core' => [
-                    'users' => 1,
+                    'users' => [
+                        'write' => 1,
+                    ],
                 ],
                 'per-site' => [
                     'ai' => [
@@ -444,7 +446,9 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 'core' => [
-                    'users' => 1,
+                    'users' => [
+                        'write' => 1,
+                    ],
                 ],
                 'per-site' => [
                     'ai' => [
