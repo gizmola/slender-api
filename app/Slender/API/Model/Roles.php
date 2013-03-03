@@ -50,10 +50,11 @@ class Roles extends BaseModel
     public function update($id, array $data)
     {
         Permissions::normalize($data['permissions']);
-        if (!parent::update($id, $data)) {
+        $entity = parent::update($id, $data);
+        if (!$entity) {
             return false;
         }
-        return $this->updatePermissionsForUsersWithRoleId($id, false);
+        return $this->updatePermissionsForUsersWithRoleId($id, false) ? $entity : false;
     }
 
     public function delete($id)
