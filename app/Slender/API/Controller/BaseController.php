@@ -328,7 +328,7 @@ abstract class BaseController extends \Controller
             throw new \Exception("No valid parameters sent");
         }
 
-        $validator = Validator::make(
+        return Validator::make(
             $input,
             $valid
         );
