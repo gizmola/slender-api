@@ -673,6 +673,39 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                '_global' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 0,
+                ],
+            ],
+            [
+                '_global' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 0,
+                ],
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
         return $data;
     }
 
