@@ -378,7 +378,8 @@ class BaseModel extends MongoModel
                 $parentClass = $this->createRelatedClass($resource, $config);
                 $embeded = $parentClass->getEmbeddedRelations();
 
-                if ($classConfig = $parentClass->getChildByClassName(get_class($this), $embeded)) {
+                $classConfig = $parentClass->getChildByClassName(get_class($this), $embeded);
+                if ($classConfig) {
 
                     $embedKey = $classConfig['embedKey'];
                     $results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
