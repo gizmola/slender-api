@@ -189,10 +189,9 @@ class Permissions
     public function addPermissions($permissionsData)
     {
         $perms = $this->permissions;
-
         self::traverseGlobal($permissionsData, function($op, $isAllowed) use (&$perms){
             if ($isAllowed) {
-                $perms[$op] = 1;
+                $perms['_global'][$op] = 1;
             }
         });
 
