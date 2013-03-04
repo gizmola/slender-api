@@ -124,10 +124,8 @@ abstract class BaseController extends \Controller
 	{
         $input = $this->getJsonBodyData();
 
-        $validator = $this->makeCustomValidator($input);
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, true)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
 		$entity = $this->model->update($id, $input);
@@ -152,8 +150,8 @@ abstract class BaseController extends \Controller
             $this->model->getSchemaValidation()
         );
 
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, false)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
 		$entity = $this->model->insert($input);
@@ -306,31 +304,5 @@ abstract class BaseController extends \Controller
         $proposedPermissions = new Permissions($input['permissions']);
 
         return $clientPermissions->isAtLeast($proposedPermissions);
-    }
-
-    /**
-     * Filters the schema's validation by the keys of the input.
-     * Useful for partial updates.
-     *
-     * @param array$input
-     * @return \Validator
-     * @throws \Exception
-     */
-    protected function makeCustomValidator($input)
-    {
-        $valid = [];
-        foreach ($this->model->getSchemaValidation() as $k => $v) {
-            if (in_array($k, array_keys($input))) {
-                $valid[$k] = $v;
-            }
-        }
-        if (empty($valid)) {
-            throw new \Exception("No valid parameters sent");
-        }
-
-        return Validator::make(
-            $input,
-            $valid
-        );
     }
 }

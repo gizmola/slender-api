@@ -2,8 +2,7 @@
 
 namespace Slender\API\Model;
 
-use Dws\Slender\Api\Resolver\ResourceResolver; // unused?
-use Dws\Slender\Api\Support\Util\UUID;
+use \Validator;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
 use Dws\Slender\Api\Support\Util\UUID;
@@ -33,6 +32,23 @@ class BaseModel extends MongoModel
      */
     protected $extendedSchema = [];
 
+    /**
+     * @var array
+     */
+    protected $relations = [];
+
+    /**
+     * Failed validation messages
+     *
+     * @var MessageBag
+     */
+    protected $validationMessages;
+
+    /**
+     * Constructor
+     *
+     * @param \LMongo\Database $connection
+     */
     public function __construct(Connection $connection = null)
     {
         parent::__construct($connection);
@@ -390,11 +406,8 @@ class BaseModel extends MongoModel
                         $parentClass->getCollection()->where('_id', $parentId)->update($res);
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
                     }
-
                 }
-
             }
-
         } catch (\Exception $e) {
             return false;
         }
@@ -493,7 +506,64 @@ class BaseModel extends MongoModel
         }
 
         return false;
-
     }
 
+    /**
+     * Filters the schema's validation by the keys of the input.
+     * Useful for partial updates.
+     *
+     * @param array $input
+     * @param boolean $isPartial
+     * @return \Validator
+     * @throws \Exception
+     */
+    protected function makeCustomValidator($input, $isPartial)
+    {
+        $validationInfo = [];
+        $schema = $this->getSchema();
+        $keys = array_keys($schema);
+        if ($isPartial) {
+            $keys = array_intersect($keys, array_keys($input));
+        }
+        array_map(function($k) use ($schema, $input, &$validationInfo){
+            $validationInfo[$k] = $schema[$k];
+        }, $keys);
+        if (empty($validationInfo)) {
+            throw new \Exception("No valid parameters sent");
+        }
+
+        return Validator::make($input, $validationInfo);
+    }
+
+    /**
+     * Is the given data valid for this model?
+     *
+     * @param array $data
+     * @return boolean
+     */
+    public function isValid($data, $isPartial = false)
+    {
+        $validator = $this->makeCustomValidator($data, $isPartial);
+        if ($validator->fails()) {
+            $this->validationMessages = $validator->messages();
+            return false;
+        }
+        return true;
+    }
+
+    public function getValidationMessages()
+    {
+        return $this->validationMessages;
+    }
+
+    public function setValidationMessages(MessageBag $validationMessages)
+    {
+        $this->validationMessages = $validationMessages;
+        return $this;
+    }
+
+    public function clearValidationMessages()
+    {
+        return $this->setValidationMessages(null);
+    }
 }

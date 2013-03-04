@@ -4,8 +4,9 @@ namespace App\Test\Model;
 
 use Slender\API\Model\BaseModel;
 use App\Test\TestCase;
+use App\Test\Mock\Model\PartialUpdateWithValidation as PartialUpdateModel;
 
-class BaseModelTest extends TestCase 
+class BaseModelTest extends TestCase
 {
  	public function testCanAddChildRelation()
 	{
@@ -25,10 +26,10 @@ class BaseModelTest extends TestCase
 		    ],
 		];
 
-		$model = new BaseModel;	
+		$model = new BaseModel;
 		$model->setRelations($relations);
 		$children = $model->getRelations()['children'];
-		$this->assertArrayHasKey('my-child-1', $children);	
+		$this->assertArrayHasKey('my-child-1', $children);
 	}
 
 	public function testCanAddRelation()
@@ -42,10 +43,10 @@ class BaseModelTest extends TestCase
 			]
 		];
 
-		$model = new BaseModel;	
+		$model = new BaseModel;
 		$model->addRelations('children',$relations);
 		$children = $model->getRelations()['children'];
-		$this->assertArrayHasKey('my-child-1', $children);		
+		$this->assertArrayHasKey('my-child-1', $children);
 
 	}
 
@@ -65,10 +66,10 @@ class BaseModelTest extends TestCase
 				'embedKey' => 'sweet-child-of-mine',
 			]
 		];
-		
+
 		$model->addRelations('children',$relations);
 
-		$embeddedChildren = $model->getEmbeddedRelations();		
+		$embeddedChildren = $model->getEmbeddedRelations();
 		$this->assertEquals(1,count($embeddedChildren));
 		$this->assertArrayHasKey('embedded-child', $embeddedChildren);
 
@@ -109,8 +110,8 @@ class BaseModelTest extends TestCase
 
 		$childData = ['_id' => '123', 'location' => 'new/path/to/file_123'];
 
-		$model = new BaseModel;	
-			
+		$model = new BaseModel;
+
 		$index = $model->updateParentData($childData, $parentData);
 		$this->assertNotSame(null, $index);
 
@@ -126,7 +127,7 @@ class BaseModelTest extends TestCase
 	public function testCanGetEmbededChildParent()
 	{
 
-		$model = new BaseModel;	
+		$model = new BaseModel;
 
 		$relations = [
 			'embedded-child' => [
@@ -147,5 +148,19 @@ class BaseModelTest extends TestCase
 		$this->assertSame($relations['embedded-child'],$embededChild);
 
 	}
-	
-} 
+
+    public function testPartialUpdate()
+    {
+        $data = [
+            // missing required field
+            'my-optional-field' => 'xxx',
+        ];
+
+        $model = new PartialUpdateModel();
+        $this->assertTrue($model->isValid($data, true));  // isPartial = true
+
+        $model = new PartialUpdateModel();
+        $this->assertFalse($model->isValid($data, false));   // isPartial = false
+    }
+
+}

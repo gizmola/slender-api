@@ -13,10 +13,8 @@ class RolesController extends \Slender\API\Controller\BaseController
     {
         $input = $this->getJsonBodyData();
 
-        $validator = $this->makeCustomValidator($input);
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, true)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
         if (!$this->validatePayloadAgainstClient($input)) {
@@ -37,13 +35,8 @@ class RolesController extends \Slender\API\Controller\BaseController
     {
         $input = $this->getJsonBodyData();
 
-        $validator = Validator::make(
-            $input,
-            $this->model->getSchemaValidation()
-        );
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, false)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
         if (!$this->validatePayloadAgainstClient($input)) {
