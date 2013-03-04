@@ -124,7 +124,7 @@ abstract class BaseController extends \Controller
 	{
         $input = $this->getJsonBodyData();
 
-        $validator = $this->makeCostumeValidator($input); 
+        $validator = $this->makeCustomValidator($input);
 
         if ($validator->fails()) {
             return $this->badRequest($validator->messages());
@@ -308,10 +308,16 @@ abstract class BaseController extends \Controller
         return $clientPermissions->isAtLeast($proposedPermissions);
     }
 
-    protected function makeCostumeValidator($input){
-
-        $schema = $this->model->getSchemaValidation();
-
+    /**
+     * Filters the schema's validation by the keys of the input.
+     * Useful for partial updates.
+     *
+     * @param array$input
+     * @return \Validator
+     * @throws \Exception
+     */
+    protected function makeCustomValidator($input)
+    {
         $valid = [];
         foreach ($schema as $k => $v) {
             if (in_array($k, array_keys($input))) {

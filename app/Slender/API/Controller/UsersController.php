@@ -14,7 +14,7 @@ class UsersController extends BaseController
     {
         $input = $this->getJsonBodyData();
 
-        $validator = $this->makeCostumeValidator($input);   
+        $validator = $this->makeCustomValidator($input);
 
         if ($validator->fails()) {
             return $this->badRequest($validator->messages());
