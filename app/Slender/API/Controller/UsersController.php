@@ -12,25 +12,9 @@ class UsersController extends BaseController
 
     public function update($id)
     {
- $input = $this->getJsonBodyData();
+        $input = $this->getJsonBodyData();
 
-        $schema = $this->model->getSchemaValidation();
-
-        $valid = [];
-
-        foreach ($schema as $k => $v) {
-            if (in_array($k, array_keys($input))) {
-                $valid[$k] = $v;
-            }
-        }
-        if (!$valid) {
-            throw new \Exception("No valid parameters sent");
-        }
-
-        $validator = Validator::make(
-            $input,
-            $valid
-        );
+        $validator = $this->makeCostumeValidator($input);   
 
         if ($validator->fails()) {
             return $this->badRequest($validator->messages());
