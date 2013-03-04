@@ -24,6 +24,10 @@ class BaseModel extends MongoModel
      * @var array
      */
     protected $schema = [];
+
+    /**
+     * @var array
+     */
     protected $extendedSchema = [];
 
     public function __construct(Connection $connection = null)
@@ -38,11 +42,13 @@ class BaseModel extends MongoModel
     }
 
     /**
-     * @var array
+     * Find a single item
+     *
+     * @param string $id
+     * @param boolean $no_cache
+     * @return array
      */
-    protected $relations = [];
-
-    public function findById($id, $no_cache=false)
+    public function findById($id, $no_cache = false)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache') OR $no_cache) {
 
@@ -88,6 +94,18 @@ class BaseModel extends MongoModel
 
     }
 
+    /**
+     *
+     * @param array $where
+     * @param array $fields
+     * @param array $orders
+     * @param type $meta
+     * @param array $aggregate
+     * @param type $take
+     * @param type $skip
+     * @param type $with
+     * @return type
+     */
     protected function findManyQuery(array $where, array $fields, array $orders, &$meta,
                              array $aggregate = null, $take = null, $skip = null, $with = null)
     {
@@ -240,16 +258,32 @@ class BaseModel extends MongoModel
         );
     }
 
+    /**
+     * Get the schema
+     *
+     * @return array
+     */
     public function getSchema()
     {
         return $this->schema;
     }
 
+    /**
+     * Set the schema
+     *
+     * @param array $schema
+     */
     public function setSchema($schema)
     {
         $this->schema = $schema;
     }
 
+    /**
+     * Get the schema
+     *
+     * @deprecated use getSchema()
+     * @return type
+     */
     public function getSchemaValidation()
     {
         return $this->getSchema();
@@ -275,6 +309,11 @@ class BaseModel extends MongoModel
         }
     }
 
+    /**
+     *
+     * @param type $with
+     * @param type $entities
+     */
     protected function embedWith($with,&$entities)
     {
         $emdbedded = [];
@@ -299,6 +338,12 @@ class BaseModel extends MongoModel
         }
     }
 
+    /**
+     *
+     * @param type $resource
+     * @param type $config
+     * @return \Slender\API\Model\class
+     */
     private function createRelatedClass($resource, $config)
     {
         $resolver = \App::make('resource-resolver');
@@ -308,6 +353,12 @@ class BaseModel extends MongoModel
         return $class;
     }
 
+    /**
+     *
+     * @param type $entity
+     * @param type $isDelete
+     * @return boolean
+     */
     public function updateParents($entity, $isDelete=false)
     {
 
@@ -348,18 +399,23 @@ class BaseModel extends MongoModel
 
     }
 
+    /**
+     *
+     * @param type $childData
+     * @param type $children
+     * @param type $isDelete
+     * @return int
+     */
     public function updateParentData($childData, &$children, $isDelete=false)
     {
 
         $index = null;
 
         for ($i=0; $i < count($children); $i++) {
-
             if ($childData['_id'] == $children[$i]["_id"]) {
                 $index = $i;
                 break;
             }
-
         }
 
         if ($index !== null) {
