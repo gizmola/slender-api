@@ -156,14 +156,6 @@ abstract class BaseController extends \Controller
             return $this->badRequest($validator->messages());
         }
 
-        if (!$this->validatePayloadAgainstClient($input)) {
-            return Response::json([
-                'messages' => [
-                    'Unauthorized: proposed role permissions in excess of client permissions',
-                ],
-            ], 401);
-        }
-
 		$entity = $this->model->insert($input);
 		return Response::json(array(
 			$this->getReturnKey() => array(
