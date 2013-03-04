@@ -133,7 +133,6 @@ abstract class BaseController extends \Controller
                 $valid[$k] = $v;
             }
         }
-
         if (!$valid) {
             throw new \Exception("No valid parameters sent");
         }
@@ -256,9 +255,7 @@ abstract class BaseController extends \Controller
             $messages = $messages->getMessages();
         }
 		return Response::json(array(
-            'messages' => array(
-                $messages,
-            ),
+            'messages' => $messages,
         ), 400);
 	}
 
