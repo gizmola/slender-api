@@ -319,12 +319,12 @@ abstract class BaseController extends \Controller
     protected function makeCustomValidator($input)
     {
         $valid = [];
-        foreach ($schema as $k => $v) {
+        foreach ($this->model->getSchemaValidation() as $k => $v) {
             if (in_array($k, array_keys($input))) {
                 $valid[$k] = $v;
             }
         }
-        if (!$valid) {
+        if (empty($valid)) {
             throw new \Exception("No valid parameters sent");
         }
 
