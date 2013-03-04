@@ -2,6 +2,7 @@
 
 namespace Dws\Slender\Api\Route\Filter\Auth;
 
+use \Log;
 use Dws\Slender\Api\Auth\Permissions;
 use Dws\Slender\Api\Resolver\PermissionsResolver;
 use Dws\Slender\Api\Resolver\ResourceResolver;
@@ -74,6 +75,7 @@ class CommonPermissions
     public function authenticate()
     {
         if (!$this->user) {
+            Log::info('Auth failed: No user');
             return false;
         }
         return $this->userHasPermissions();
@@ -82,9 +84,11 @@ class CommonPermissions
     protected function userHasPermissions()
     {
         if (!$this->user) {
+            // Log::info('Auth failed: No user');
             throw new \Exception('Missing key-authenticated user');
         }
         if (!isset($this->user['permissions'])) {
+            // Log::info('Auth failed: Udser permissions not set');
             return false;
         }
         $segments = $this->getRequest()->segments();
@@ -98,7 +102,8 @@ class CommonPermissions
         } else if (ResourceResolver::RESOURCE_TYPE_CORE == $requestType){
             return $this->authenticateCoreRequest($segments);
         } else {
-            return false;
+            // return true so that the failed route can throw 404 rather than 401
+            return true;
         }
     }
 
@@ -110,6 +115,7 @@ class CommonPermissions
         $resource = $segments[1];
         $method = $this->getMethodFromRequest();
         if (!$method) {
+            // Log::info('Auth failed: Bad method (' . $method . ')');
             return false;
         }
 
@@ -124,7 +130,11 @@ class CommonPermissions
         $userPermissionsPaths = $userPermissions->createPermissionList();
 
         $paths = array_intersect($qualifyingPermissionPaths, $userPermissionsPaths);
-        return !empty($paths);
+        if (empty($paths)){
+            // Log::info('Auth failed: no per-site or superceding permission');
+            return false;
+        }
+        return true;
 
     }
 
@@ -149,7 +159,11 @@ class CommonPermissions
         $userPermissionsPaths = $userPermissions->createPermissionList();
 
         $paths = array_intersect($qualifyingPermissionPaths, $userPermissionsPaths);
-        return !empty($paths);
+        if (empty($paths)){
+            // Log::info('Auth failed: no core or superceding permission');
+            return false;
+        }
+        return true;
     }
 
     protected function getMethodFromRequest()

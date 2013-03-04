@@ -13,29 +13,8 @@ class RolesController extends \Slender\API\Controller\BaseController
     {
         $input = $this->getJsonBodyData();
 
-//        $schema = $this->model->getSchemaValidation();
-//
-//        $valid = [];
-//
-//        // Why selectively? PUT must contain a full representation of the object,
-//        // just like in POST.
-//        foreach ($schema as $k => $v) {
-//            if (in_array($k, array_keys($input))) {
-//                $valid[$k] = $v;
-//            }
-//        }
-//
-//        if (!$valid) {
-//            throw new \Exception("No valid parameters sent");
-//        }
-
-        $validator = Validator::make(
-            $input,
-            $this->model->getSchemaValidation()
-        );
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, true)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
         if (!$this->validatePayloadAgainstClient($input)) {
@@ -56,13 +35,8 @@ class RolesController extends \Slender\API\Controller\BaseController
     {
         $input = $this->getJsonBodyData();
 
-        $validator = Validator::make(
-            $input,
-            $this->model->getSchemaValidation()
-        );
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, false)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
         if (!$this->validatePayloadAgainstClient($input)) {

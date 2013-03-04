@@ -84,4 +84,33 @@ class Arrays
         }
     }
 
+    /**
+     * Shift a value off the given array using a key
+     *
+     * @param array $data
+     * @return mixed|null
+     */
+    public static function shiftByKey(&$data, $key = '_id')
+    {
+        $key = (string) $key;
+
+        if (isset($data[$key])) {
+            $id = $data[$key];
+            unset($data[$key]);
+            return $id;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Shift a value off the gibven array using key _id
+     * 
+     * @param type $data
+     * @return type
+     */
+    public static function shiftId(&$data)
+    {
+        return self::shiftByKey($data, '_id');
+    }
 }

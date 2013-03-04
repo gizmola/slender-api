@@ -2,9 +2,11 @@
 
 namespace Slender\API\Model;
 
-use Dws\Slender\Api\Resolver\ResourceResolver; // unused?
-use Dws\Slender\Api\Support\Util\UUID;
+use \Validator;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
+use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
+use Dws\Slender\Api\Support\Util\UUID;
+use Illuminate\Support\MessageBag;
 use LMongo\Database as Connection;
 
 /**
@@ -24,8 +26,29 @@ class BaseModel extends MongoModel
      * @var array
      */
     protected $schema = [];
+
+    /**
+     * @var array
+     */
     protected $extendedSchema = [];
 
+    /**
+     * @var array
+     */
+    protected $relations = [];
+
+    /**
+     * Failed validation messages
+     *
+     * @var MessageBag
+     */
+    protected $validationMessages;
+
+    /**
+     * Constructor
+     *
+     * @param \LMongo\Database $connection
+     */
     public function __construct(Connection $connection = null)
     {
         parent::__construct($connection);
@@ -38,11 +61,13 @@ class BaseModel extends MongoModel
     }
 
     /**
-     * @var array
+     * Find a single item
+     *
+     * @param string $id
+     * @param boolean $no_cache
+     * @return array
      */
-    protected $relations = [];
-
-    public function findById($id, $no_cache=false)
+    public function findById($id, $no_cache = false)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache') OR $no_cache) {
 
@@ -88,6 +113,18 @@ class BaseModel extends MongoModel
 
     }
 
+    /**
+     *
+     * @param array $where
+     * @param array $fields
+     * @param array $orders
+     * @param type $meta
+     * @param array $aggregate
+     * @param type $take
+     * @param type $skip
+     * @param type $with
+     * @return type
+     */
     protected function findManyQuery(array $where, array $fields, array $orders, &$meta,
                              array $aggregate = null, $take = null, $skip = null, $with = null)
     {
@@ -240,16 +277,32 @@ class BaseModel extends MongoModel
         );
     }
 
+    /**
+     * Get the schema
+     *
+     * @return array
+     */
     public function getSchema()
     {
         return $this->schema;
     }
 
+    /**
+     * Set the schema
+     *
+     * @param array $schema
+     */
     public function setSchema($schema)
     {
         $this->schema = $schema;
     }
 
+    /**
+     * Get the schema
+     *
+     * @deprecated use getSchema()
+     * @return type
+     */
     public function getSchemaValidation()
     {
         return $this->getSchema();
@@ -275,6 +328,11 @@ class BaseModel extends MongoModel
         }
     }
 
+    /**
+     *
+     * @param type $with
+     * @param type $entities
+     */
     protected function embedWith($with,&$entities)
     {
         $emdbedded = [];
@@ -299,6 +357,12 @@ class BaseModel extends MongoModel
         }
     }
 
+    /**
+     *
+     * @param type $resource
+     * @param type $config
+     * @return \Slender\API\Model\class
+     */
     private function createRelatedClass($resource, $config)
     {
         $resolver = \App::make('resource-resolver');
@@ -308,6 +372,12 @@ class BaseModel extends MongoModel
         return $class;
     }
 
+    /**
+     *
+     * @param type $entity
+     * @param type $isDelete
+     * @return boolean
+     */
     public function updateParents($entity, $isDelete=false)
     {
 
@@ -324,22 +394,20 @@ class BaseModel extends MongoModel
                 $parentClass = $this->createRelatedClass($resource, $config);
                 $embeded = $parentClass->getEmbeddedRelations();
 
-                if ($classConfig = $parentClass->getChildByClassName(get_class($this), $embeded)) {
+                $classConfig = $parentClass->getChildByClassName(get_class($this), $embeded);
+                if ($classConfig) {
 
                     $embedKey = $classConfig['embedKey'];
                     $results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
 
                     foreach ($results as $res) {
                         $this->updateParentData($entity, $res[$embedKey], $isDelete);
-                        $parentId = $this->shiftId($res);
+                        $parentId = ArrayUtil::shiftId($res);
                         $parentClass->getCollection()->where('_id', $parentId)->update($res);
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
                     }
-
                 }
-
             }
-
         } catch (\Exception $e) {
             return false;
         }
@@ -348,18 +416,23 @@ class BaseModel extends MongoModel
 
     }
 
+    /**
+     *
+     * @param type $childData
+     * @param type $children
+     * @param type $isDelete
+     * @return int
+     */
     public function updateParentData($childData, &$children, $isDelete=false)
     {
 
         $index = null;
 
         for ($i=0; $i < count($children); $i++) {
-
             if ($childData['_id'] == $children[$i]["_id"]) {
                 $index = $i;
                 break;
             }
-
         }
 
         if ($index !== null) {
@@ -371,14 +444,6 @@ class BaseModel extends MongoModel
         }
 
         return $index;
-
-    }
-
-    public function shiftId(&$data)
-    {
-        $id = $data['_id'];
-        unset($data['_id']);
-        return $id;
     }
 
     public function addRelations($type,$relations)
@@ -441,7 +506,64 @@ class BaseModel extends MongoModel
         }
 
         return false;
-
     }
 
+    /**
+     * Filters the schema's validation by the keys of the input.
+     * Useful for partial updates.
+     *
+     * @param array $input
+     * @param boolean $isPartial
+     * @return \Validator
+     * @throws \Exception
+     */
+    protected function makeCustomValidator($input, $isPartial)
+    {
+        $validationInfo = [];
+        $schema = $this->getSchema();
+        $keys = array_keys($schema);
+        if ($isPartial) {
+            $keys = array_intersect($keys, array_keys($input));
+        }
+        array_map(function($k) use ($schema, $input, &$validationInfo){
+            $validationInfo[$k] = $schema[$k];
+        }, $keys);
+        if (empty($validationInfo)) {
+            throw new \Exception("No valid parameters sent");
+        }
+
+        return Validator::make($input, $validationInfo);
+    }
+
+    /**
+     * Is the given data valid for this model?
+     *
+     * @param array $data
+     * @return boolean
+     */
+    public function isValid($data, $isPartial = false)
+    {
+        $validator = $this->makeCustomValidator($data, $isPartial);
+        if ($validator->fails()) {
+            $this->validationMessages = $validator->messages();
+            return false;
+        }
+        return true;
+    }
+
+    public function getValidationMessages()
+    {
+        return $this->validationMessages;
+    }
+
+    public function setValidationMessages(MessageBag $validationMessages)
+    {
+        $this->validationMessages = $validationMessages;
+        return $this;
+    }
+
+    public function clearValidationMessages()
+    {
+        return $this->setValidationMessages(null);
+    }
 }

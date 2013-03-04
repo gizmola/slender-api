@@ -124,26 +124,8 @@ abstract class BaseController extends \Controller
 	{
         $input = $this->getJsonBodyData();
 
-        $schema = $this->model->getSchemaValidation();
-
-        $valid = [];
-
-        foreach ($schema as $k => $v) {
-            if (in_array($k, array_keys($input))) {
-                $valid[$k] = $v;
-            }
-        }
-        if (!$valid) {
-            throw new \Exception("No valid parameters sent");
-        }
-
-        $validator = Validator::make(
-            $input,
-            $valid
-        );
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, true)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
 		$entity = $this->model->update($id, $input);
@@ -168,8 +150,8 @@ abstract class BaseController extends \Controller
             $this->model->getSchemaValidation()
         );
 
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, false)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
 		$entity = $this->model->insert($input);
