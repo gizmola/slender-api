@@ -5,6 +5,9 @@ namespace Slender\API\Model;
 use Dws\Slender\Api\Resolver\ResourceResolver; // unused?
 use Dws\Slender\Api\Support\Util\UUID;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
+use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
+use Dws\Slender\Api\Support\Util\UUID;
+use Illuminate\Support\MessageBag;
 use LMongo\Database as Connection;
 
 /**
@@ -382,7 +385,7 @@ class BaseModel extends MongoModel
 
                     foreach ($results as $res) {
                         $this->updateParentData($entity, $res[$embedKey], $isDelete);
-                        $parentId = $this->shiftId($res);
+                        $parentId = ArrayUtil::shiftId($res);
                         $parentClass->getCollection()->where('_id', $parentId)->update($res);
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
                     }
@@ -427,14 +430,6 @@ class BaseModel extends MongoModel
         }
 
         return $index;
-
-    }
-
-    public function shiftId(&$data)
-    {
-        $id = $data['_id'];
-        unset($data['_id']);
-        return $id;
     }
 
     public function addRelations($type,$relations)
