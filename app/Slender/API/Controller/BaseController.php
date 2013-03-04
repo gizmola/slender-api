@@ -2,14 +2,16 @@
 
 namespace Slender\API\Controller;
 
-use Slender\API\Model\BaseModel;
-use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
-use Dws\Slender\Api\Validation\ValidationException;
-use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
-use Illuminate\Support\MessageBag;
+use \App;
 use \Input;
 use \Response;
 use \Validator;
+use Dws\Slender\Api\Auth\Permissions;
+use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
+// use Dws\Slender\Api\Validation\ValidationException;
+// use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
+use Illuminate\Support\MessageBag;
+use Slender\API\Model\BaseModel;
 
 /**
  * Base controller
@@ -41,6 +43,13 @@ abstract class BaseController extends \Controller
      * @var array
      */
     protected $bodyData;
+
+    /**
+     * The client user making the request
+     *
+     * @var array
+     */
+    protected $clientUser;
 
     /**
      * Constructor
@@ -115,24 +124,7 @@ abstract class BaseController extends \Controller
 	{
         $input = $this->getJsonBodyData();
 
-        $schema = $this->model->getSchemaValidation();
-
-        $valid = [];
-
-        foreach ($schema as $k => $v) {
-            if (in_array($k, array_keys($input))) {
-                $valid[$k] = $v;
-            }
-        }
-
-        if (!$valid) {
-            throw new \Exception("No valid parameters sent");
-        }
-
-        $validator = Validator::make(
-            $input,
-            $valid
-        );
+        $validator = $this->makeCostumeValidator($input); 
 
         if ($validator->fails()) {
             return $this->badRequest($validator->messages());
@@ -239,10 +231,22 @@ abstract class BaseController extends \Controller
             $messages = $messages->getMessages();
         }
 		return Response::json(array(
-            'messages' => array(
-                $messages,
-            ),
+            'messages' => $messages,
         ), 400);
+	}
+
+	// @TODO: try to find better way which works for App and PHPUnit
+	public function unauthorizedRequest($messages)
+    {
+		if ($messages instanceof MessageBag) {
+            $messages->setFormat(':message');
+            $messages = $messages->getMessages();
+        }
+		return Response::json([
+            'messages' => [
+                $messages,
+            ],
+        ], 401);
 	}
 
     public function getJsonBodyData()
@@ -259,4 +263,68 @@ abstract class BaseController extends \Controller
         return $this->bodyData;
     }
 
+    /**
+     * Get the client-user making the request
+     *
+     * @return array
+     */
+    public function getClientUser()
+    {
+        if (null === $this->clientUser) {
+            try {
+                $this->clientUser = App::make('client-user');
+            } catch (\Exception $e) {
+            }
+        }
+        return $this->clientUser;
+    }
+
+    /**
+     * Set the client user making the request
+     *
+     * @param array $clientUser
+     * @return \Slender\API\Controller\BaseController
+     */
+    public function setClientUser($clientUser)
+    {
+        $this->clientUser = $clientUser;
+        return $this;
+    }
+
+    protected function validatePayloadAgainstClient($input)
+    {
+        // get client user permissions
+        $clientUser = $this->getClientUser();
+
+        // The client-user is populated by the common-permission filter, which doesn't
+        // run during unit-tests. So, just skip this if he hasn't been populated.
+        if (!$clientUser) {
+            return true;
+        }
+        $clientPermissions = new Permissions($clientUser['permissions']);
+
+        $proposedPermissions = new Permissions($input['permissions']);
+
+        return $clientPermissions->isAtLeast($proposedPermissions);
+    }
+
+    protected function makeCostumeValidator($input){
+
+        $schema = $this->model->getSchemaValidation();
+
+        $valid = [];
+        foreach ($schema as $k => $v) {
+            if (in_array($k, array_keys($input))) {
+                $valid[$k] = $v;
+            }
+        }
+        if (!$valid) {
+            throw new \Exception("No valid parameters sent");
+        }
+
+        $validator = Validator::make(
+            $input,
+            $valid
+        );
+    }
 }

@@ -142,7 +142,7 @@ class CommonPermissions
         $qualifyingPermissionPaths = [
             implode('.', ['_global', $method]),
             // implode('.', ['core', '_global', $method]),
-            implode('.', ['core', '_global', $resource, $method]),
+            implode('.', ['core', $resource, $method]),
         ];
 
         $userPermissions = new Permissions($this->user['permissions']);

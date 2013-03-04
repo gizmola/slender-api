@@ -13,8 +13,6 @@ class Users extends BaseModel
         'email'         => ['required', 'email'],
         'password'      => ['required'],
         'active'      => ['in:0,1'],
-        'vendor-profiles' => [],
-        'customer-profiles' => [],
     ];
 
 }

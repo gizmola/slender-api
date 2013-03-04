@@ -111,7 +111,7 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers canWriteUerToSite
+     * @covers canWriteUserToSite
      * @dataProvider dataProviderTestCanWriteUsertoSite
      * @param array $permissionsData
      * @param string|null $site
@@ -427,7 +427,9 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
         $data[] = [
             [
                 'core' => [
-                    'users' => 1,
+                    'users' => [
+                        'write' => 1,
+                    ],
                 ],
                 'per-site' => [
                     'ai' => [
@@ -444,7 +446,9 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 'core' => [
-                    'users' => 1,
+                    'users' => [
+                        'write' => 1,
+                    ],
                 ],
                 'per-site' => [
                     'ai' => [
@@ -663,6 +667,39 @@ class PermissionsTest extends \PHPUnit_Framework_TestCase
                             'read' => 1,
                             'write' => 1,
                             'delete' => 0,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $data[] = [
+            [
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                '_global' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 0,
+                ],
+            ],
+            [
+                '_global' => [
+                    'read' => 1,
+                    'write' => 1,
+                    'delete' => 0,
+                ],
+                'per-site' => [
+                    'ai' => [
+                        'users' => [
+                            'write' => 1,
                         ],
                     ],
                 ],

@@ -1,6 +1,9 @@
 <?php
 
 use Dws\Slender\Api\Route\RouteException;
+
+use \Slender\API\Model\Users as UserModel;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Laravel Class Loader
@@ -17,7 +20,7 @@ use Dws\Slender\Api\Route\RouteException;
 |    app_path().'/models',
 |
 | ));
-| 
+|
 */
 
 /*
@@ -79,6 +82,16 @@ App::missing(function(\Exception $exception)
 	), 404);
 });
 
+
+// Initialize the user-model and client-user in the container
+
+App::singleton('user-model', function(){
+    return new UserModel();
+});
+App::singleton('client-user', function(){
+    return null;
+});
+
 /*
 |--------------------------------------------------------------------------
 | Require The Filters File
@@ -97,5 +110,6 @@ require __DIR__.'/../filters.php';
 * cast to a different data type and remain as
 * strings
 */
+
 $dontCast = ['zipcode','phone'];
 ParamsHelper::setDontCast($dontCast);

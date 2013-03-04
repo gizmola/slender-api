@@ -30,13 +30,14 @@ class Permissions
      *
      * @param array $permissions
      */
-    public function __construct($permissions)
+    public function __construct($permissions = [])
     {
         $keysToRemove = array_diff(array_keys($permissions), $this->topLevelKeys);
         foreach ($keysToRemove as $k) {
             unset($permissions[$k]);
         }
         $this->permissions = $permissions;
+        self::normalize($this->permissions);
     }
 
     /**
@@ -86,11 +87,14 @@ class Permissions
     /**
      * Are the current permissions at least as much as the given permissions?
      *
-     * @param \Dws\Slender\Api\Auth\Permissions $permissions
+     * @param array|\Dws\Slender\Api\Auth\Permissions $permissions
      * @return type
      */
-    public function isAtLeast(Permissions $permissions)
+    public function isAtLeast($permissions)
     {
+        if (is_array($permissions)) {
+            $permissions = new Permissions($permissions);
+        }
         $hisPermissionList = $permissions->createPermissionList();
         $myPermissionList = $this->createPermissionList();
         $diff = array_diff($hisPermissionList, $myPermissionList);
@@ -103,12 +107,25 @@ class Permissions
             // semantically include his specific ones.
             foreach ($diff as $hisSpecificPermission) {
                 $supercedingGlobals = self::getSupercedingGlobals($hisSpecificPermission);
-                if (!in_array($supercedingGlobals, $myPermissionList)) {
-                    return false;
+                $common = array_intersect($supercedingGlobals, $myPermissionList);
+                if (count($common) > 0) {
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
+    }
+
+    /**
+     * Are the given permissions effectively the same as the current ones?
+     * 
+     * @param array|\Dws\Slender\Api\Auth\Permissions $permissions
+     * @return boolean
+     */
+    public function isSameAs($permissions)
+    {
+        $permissions = new Permissions($permissions);
+        return $this->isAtleast($permissions) && $permissions->isAtLeast($this);
     }
 
     /**
@@ -172,16 +189,15 @@ class Permissions
     public function addPermissions($permissionsData)
     {
         $perms = $this->permissions;
-
         self::traverseGlobal($permissionsData, function($op, $isAllowed) use (&$perms){
             if ($isAllowed) {
-                $perms[$op] = 1;
+                $perms['_global'][$op] = 1;
             }
         });
 
         self::traverseCore($permissionsData, function($resource, $op, $isAllowed) use (&$perms){
             if ($isAllowed) {
-                $perms[$resource][$op] = 1;
+                $perms['core'][$resource][$op] = 1;
             }
         });
 
