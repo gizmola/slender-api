@@ -124,23 +124,7 @@ abstract class BaseController extends \Controller
 	{
         $input = $this->getJsonBodyData();
 
-        $schema = $this->model->getSchemaValidation();
-
-        $valid = [];
-
-        foreach ($schema as $k => $v) {
-            if (in_array($k, array_keys($input))) {
-                $valid[$k] = $v;
-            }
-        }
-        if (!$valid) {
-            throw new \Exception("No valid parameters sent");
-        }
-
-        $validator = Validator::make(
-            $input,
-            $valid
-        );
+        $validator = $this->makeCostumeValidator($input); 
 
         if ($validator->fails()) {
             return $this->badRequest($validator->messages());
@@ -330,5 +314,25 @@ abstract class BaseController extends \Controller
         $proposedPermissions = new Permissions($input['permissions']);
 
         return $clientPermissions->isAtLeast($proposedPermissions);
+    }
+
+    protected function makeCostumeValidator($input){
+
+        $schema = $this->model->getSchemaValidation();
+
+        $valid = [];
+        foreach ($schema as $k => $v) {
+            if (in_array($k, array_keys($input))) {
+                $valid[$k] = $v;
+            }
+        }
+        if (!$valid) {
+            throw new \Exception("No valid parameters sent");
+        }
+
+        $validator = Validator::make(
+            $input,
+            $valid
+        );
     }
 }
