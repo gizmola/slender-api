@@ -145,7 +145,12 @@ class RouteCreator
             throw new RouteException($msg);
         }
 
-        $connection = $this->getMongoManager()->connection($site);
+        try {
+            $connection = $this->getMongoManager()->connection($site);
+        } catch (\InvalidArgumentException $e) {
+            throw new RouteException($e->getMessage());
+        }
+
         if (!$connection) {
             $msg = sprintf('No connection configured for resource %s and site %s',
                         $resource, $site);
@@ -195,7 +200,11 @@ class RouteCreator
     public function addCoreRoutes()
     {
         $this->coreResources = $this->app['config']['app.core-resources'];
-        $connection = $this->getMongoManager()->connection('default');
+        try {
+            $connection = $this->getMongoManager()->connection('default');
+        } catch (\InvalidArgumentException $e) {
+            throw new RouteException($e->getMessage());
+        }
         foreach ($this->coreResources as $resource) {
             $this->addCoreRoute($resource, $connection);
         }

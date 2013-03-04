@@ -14,10 +14,8 @@ class UsersController extends BaseController
     {
         $input = $this->getJsonBodyData();
 
-        $validator = $this->makeCostumeValidator($input);   
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, true)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
         $input = $this->model->updateRolesAndPermissions($input);
@@ -40,13 +38,8 @@ class UsersController extends BaseController
     {
         $input = $this->getJsonBodyData();
 
-        $validator = Validator::make(
-            $input,
-            $this->model->getSchemaValidation()
-        );
-
-        if ($validator->fails()) {
-            return $this->badRequest($validator->messages());
+        if (!$this->model->isValid($input, false)) {
+            return $this->badRequest($this->model->getValidationMessages());
         }
 
         // add in all the roles and permissions
