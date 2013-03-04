@@ -12,7 +12,7 @@ class UsersController extends BaseController
 
     public function update($id)
     {
- $input = $this->getJsonBodyData();
+        $input = $this->getJsonBodyData();
 
         $schema = $this->model->getSchemaValidation();
 
