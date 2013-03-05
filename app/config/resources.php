@@ -172,12 +172,12 @@ return [
                    'vendor-profiles' => [
                        'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
                        'embed' => true,
-                       'embedKey' => 'vendor-profiles',
+                       'embedKey' => 'vendor_profiles',
                    ],
                    'customer-profiles' => [
                        'class' => 'Slender\API\Model\Site\Eb\CustomerProfiles',
                        'embed' => true,
-                       'embedKey' => 'customer-profiles',
+                       'embedKey' => 'customer_profiles',
                    ],
                 ],
             ],
