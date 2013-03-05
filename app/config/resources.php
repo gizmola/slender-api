@@ -112,9 +112,9 @@ return [
        'model' => [
            'children' => [
                'photos' => [
-                   // 'class' => 'Slender\API\Model\Photos',
-                   // 'embed' => true,
-                   // 'embedKey' => 'photos',
+                   'class' => 'Slender\API\Model\Photos',
+                   'embed' => true,
+                   'embedKey' => 'photos',
                ],
            ],
        ],
@@ -123,7 +123,7 @@ return [
        'model' => [
            'parents' => [
                'albums' => [
-                   // 'class' => 'Slender\API\Model\Albums',
+                   'class' => 'Slender\API\Model\Albums',
                ],
            ],
        ],
@@ -163,50 +163,50 @@ return [
             ],
             'users' => [
                 'controller' => [
-                  'class' => 'Slender\API\Controller\Site\Eb\UsersController',
+                    'class' => 'Slender\API\Controller\Site\Eb\UsersController',
                 ],
                 'model' => [
-                  'class' => 'Slender\API\Model\Site\Eb\Users',
-                ],
-                'children' => [
-                   'vendor-profiles' => [
-                       'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
-                       'embed' => true,
-                       'embedKey' => 'vendor_profiles',
-                   ],
-                   'customer-profiles' => [
-                       'class' => 'Slender\API\Model\Site\Eb\CustomerProfiles',
-                       'embed' => true,
-                       'embedKey' => 'customer_profiles',
-                   ],
+                    'class' => 'Slender\API\Model\Site\Eb\Users',
+                    'children' => [
+                       'vendor_profiles' => [
+                           'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
+                           'embed' => true,
+                           'embedKey' => 'vendor_profiles',
+                       ],
+                       'customer_profiles' => [
+                           'class' => 'Slender\API\Model\Site\Eb\CustomerProfiles',
+                           'embed' => true,
+                           'embedKey' => 'customer_profiles',
+                       ],
+                    ],
                 ],
             ],
             'keywords' => [
                 'controller' => [
-                  'class' => 'Slender\API\Controller\Site\Eb\KeywordsController',
+                    'class' => 'Slender\API\Controller\Site\Eb\KeywordsController',
                 ],
                 'model' => [
-                  'class' => 'Slender\API\Model\Site\Eb\Keywords',
-                ],
-                'parents' => [
-                   'users' => [
-                       'class' => 'Slender\API\Controller\Site\Eb\ServiceCategoriesController',
-                   ],
+                    'class' => 'Slender\API\Model\Site\Eb\Keywords',
+                    'parents' => [
+                       'users' => [
+                           'class' => 'Slender\API\Controller\Site\Eb\ServiceCategories',
+                       ],
+                    ],
                 ],
             ],
             'service-categories' => [
                 'controller' => [
-                  'class' => 'Slender\API\Controller\Site\Eb\ServiceCategoriesController',
+                    'class' => 'Slender\API\Controller\Site\Eb\ServiceCategoriesController',
                 ],
                 'model' => [
-                  'class' => 'Slender\API\Model\Site\Eb\ServiceCategories',
-                ],
-                'children' => [
-                   'vendor-profiles' => [
-                       'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
-                       'embed' => true,
-                       'embedKey' => 'vendor_profiles',
-                   ],
+                    'class' => 'Slender\API\Model\Site\Eb\ServiceCategories',
+                    'children' => [
+                       'keywords' => [
+                           'class' => 'Slender\API\Model\Site\Eb\Keywords',
+                           'embed' => true,
+                           'embedKey' => 'keywords',
+                       ],
+                    ],
                 ],
             ],
         ],
