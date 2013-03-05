@@ -50,7 +50,7 @@ class YoutubeClient {
     );
      * @return false|string response url
      */
-    public function insertVideo($videoData)
+    public function insertVideo($videoData, $playlist = '')
     {
         Zend_Loader::loadClass('Zend_Gdata_YouTube');
         Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
@@ -58,6 +58,7 @@ class YoutubeClient {
         Zend_Loader::loadClass('Zend_Http_Client_Adapter_Curl');
         Zend_Loader::loadClass('Zend_Gdata_Youtube_VideoEntry');
         Zend_Loader::loadClass('Zend_Gdata_Spreadsheets');
+        Zend_Loader::loadClass('Zend_Gdata_YouTube_PlaylistVideoEntry');
 
         $yt = new Zend_Gdata_YouTube($this->client, $this->apiName, 'Video Upload', $this->apiKey);
         $myVideoEntry = new Zend_Gdata_Youtube_VideoEntry();
@@ -79,6 +80,13 @@ class YoutubeClient {
         $videoThumbnails = $newEntry->getVideoThumbnails();
         $this->videoThumb = $videoThumbnails[1]['url'];
         $this->videoUrl = $newEntry->getVideoWatchPageUrl();
+
+        if ($playlist) {
+            $playlistPostUrl = "http://gdata.youtube.com/feeds/api/playlists/" . $playlist;
+            $videoEntryToAdd = $yt->getVideoEntry($newEntry->getVideoId());
+            $newPlaylistListEntry = $yt->newPlaylistListEntry($videoEntryToAdd->getDOM());
+            $yt->insertEntry($newPlaylistListEntry, $playlistPostUrl);
+        }
     }
 
     public function getVideoId() {

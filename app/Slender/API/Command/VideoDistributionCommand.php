@@ -7,11 +7,16 @@ use Slender\API\Model\Sites;
 use Slender\API\Model\Videodistributions;
 use Slender\API\Model\Videos;
 use Slender\API\Model\Youtubechannels;
+use Slender\API\Model\Youtubeplaylists;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
-//use Symfony\Component\Console\Input\InputArgument;
-//use Symfony\Component\HttpKernel\Client as BaseClient;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\HttpKernel\Client as BaseClient;
+use \App;
+use OpenCloud\OpencloudClient;
+use \Illuminate\Support\Facades\Config;
+use YoutubeClient;
 
 class VideoDistributionCommand extends Command
 {
@@ -45,6 +50,7 @@ class VideoDistributionCommand extends Command
         $videoDistributionModel = new Videodistributions();
         $videosModel = new Videos();
         $channelsModel = new Youtubechannels();
+        $playlistsModel = new Youtubeplaylists();
 
         //Getting list of sites to process video queues
         $sitesOption = $this->option('sites'); //Get --sites option from command line
@@ -66,30 +72,140 @@ class VideoDistributionCommand extends Command
         if (count($sites)) {
             foreach ($sites as $site) {
                 $this->info('Proccessing site: ' . $site['slug']);
-                //Setting up the current site
-                $videoDistributionModel->setSite($site['slug']);
-                $videosModel->setSite($site['slug']);
-                $channelsModel->setSite($site['slug']);
+
+                //Creating new mongo connection
+                $connection = App::make('mongo')->connection($site['slug']);
+
+                //Setting new connection
+                $videosModel->setConnection($connection);
+                $videoDistributionModel->setConnection($connection);
+                $channelsModel->setConnection($connection);
+                $playlistsModel->setConnection($connection);
 
                 $queuedDistrCursor = $videoDistributionModel->getCollection()
                     ->where('status', Videodistributions::STATUS_QUEUED)->get(); //TODO: or put statements to where
+
                 foreach ($queuedDistrCursor as $queuedDistr) {
                     if (true) { //TODO: statements (attempts, date etc)
                         $video = $videosModel->getCollection()           //Getting video of distribution
-                            ->where('slug', $queuedDistr['video_id'])
-                            ->first();
-                        $channel = $channelsModel->getCollection()       //Getting channel of distribution
-                            ->where('slug', $queuedDistr['distribution_id'])
+                            ->where('_id', $queuedDistr['video_id'])
                             ->first();
 
-                        $this->info('Video id' . $video['_id']);
-                        $this->info('Channel id' . $channel['_id']);
-                        if ($video['_id'] && $channel['_id']) {
-                            //TODO: upload video to youtube
-                            //TODO: if succes update distribution status with Videodistributions::STATUS_PUBLISHED
-                            //TODO: if error increment distribution attempts
+                        $playlist = $playlistsModel->getCollection()       //Getting playlist of distribution
+                            ->where('_id', $queuedDistr['distribution_id'])
+                            ->first();
+
+                        if ($playlist && $playlist['_id']) {
+                            $channel = $channelsModel->getCollection()       //Getting channel of distribution
+                                ->where('_id', $playlist['channel']['id'])
+                                ->first();
+                        }
+
+                        $this->info('Processing Video id: ' . $video['_id']);
+
+                        if (
+                            $video && $playlist && $channel &&
+                            $video['_id'] && $playlist['_id'] && $channel['_id']
+                        ) {
+                            if ($video['cloud_filename']) {
+                                $cloudConfig = Config::get('rackspace.opencloud');
+                                $path = $cloudConfig['localPath'] . DIRECTORY_SEPARATOR . $video['cloud_filename'];
+
+                                //Download video
+                                $rackspace = new OpencloudClient($cloudConfig);
+                                $rackspace->downloadFile(
+                                    $path,
+                                    $video['cloud_filename']
+                                );
+
+                                $videoData = array(
+                                    //path to file
+                                    'source' => $path,
+                                    'mime' => mime_content_type($path),
+                                    'slug' => basename($path),
+                                    'title' => basename($path),
+                                    'description' => 'Description',
+                                    //must be valid youtube video category
+                                    'category' => 'Autos',
+                                    // Please note that this must be a comma-separated string
+                                    // and that individual keywords cannot contain whitespace
+                                    'tags' => 'cars'
+                                );
+
+                                $youtubeClient = new YoutubeClient(
+                                    $channel['youtubeEmail'],
+                                    $channel['youtubePass'],
+                                    $channel['apiKey'],
+                                    $channel['apiName']
+                                );
+
+                                //Uploading video
+                                $youtubeClient->insertVideo($videoData, $playlist['alias']);
+
+                                $ytVidId = $youtubeClient->getVideoId();
+                                $ytVidUrl = $youtubeClient->getVideoUrl();
+                                $ytVidThumb = $youtubeClient->getVideoThumb();
+
+                                $this->info('Video was uploaded. Id: ' . $ytVidId);
+
+                                if ($ytVidId) {
+                                    $videoDistributionModel->update(
+                                        $queuedDistr['_id'],
+                                        array(
+                                            'status' => Videodistributions::STATUS_PUBLISHED,
+                                            'attempts' => 0,
+                                            'updated' => new \MongoDate()
+                                        )
+                                    );
+
+                                    $videosModel->update(
+                                        $video['_id'],
+                                        array(
+                                            'urls' => array(
+                                                'source' 	 => $ytVidUrl,
+                                                'streaming'  => $ytVidUrl,
+                                                'thumbnail'  => $ytVidThumb,
+                                            ),
+                                            'updated' => new \MongoDate()
+                                        )
+                                    );
+                                }
+                                else {
+                                    //Error incrementing attemtps
+                                    $videoDistributionModel->update(
+                                        $queuedDistr['_id'],
+                                        array(
+                                            'attempts' => (int)$queuedDistr['attempts'] + 1,
+                                            'updated' => new \MongoDate()
+                                        )
+                                    );
+
+                                    $this->error('Video wasn\'t uploaded to youtube');
+                                }
+                            }
+                            else {
+                                //Error incrementing attemtps
+                                $videoDistributionModel->update(
+                                    $queuedDistr['_id'],
+                                    array(
+                                        'attempts' => (int)$queuedDistr['attempts'] + 1,
+                                        'updated' => new \MongoDate()
+                                    )
+                                );
+
+                                $this->error('Video wasn\'t uploaded to cloud');
+                            }
                         }
                         else {
+                            //Error incrementing attemtps
+                            $videoDistributionModel->update(
+                                $queuedDistr['_id'],
+                                array(
+                                    'attempts' => (int)$queuedDistr['attempts'] + 1,
+                                    'updated' => new \MongoDate()
+                                )
+                            );
+
                             $this->error('Cannot find video or channel');
                         }
                     }

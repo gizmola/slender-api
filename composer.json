@@ -17,11 +17,12 @@
 		},
         "files": [
             "lib/dws/src/Dws/Gdata/YoutubeClient.php",
-            "lib/Zend/Loader.php"
+            "lib/Zend/Loader.php",
+            "lib/dws/src/Dws/Rackspace/OpencloudClient.php"
         ]
 
 	},
-    "include-path": ["lib"],
+    "include-path": ["lib","lib/Rackspace/php-opencloud/lib"],
 	"minimum-stability": "dev",
 
 	"require-dev": {

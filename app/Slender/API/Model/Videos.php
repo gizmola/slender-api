@@ -20,6 +20,7 @@ class Videos extends \Slender\API\Model\BaseModel
             'streaming'  => ['string'],
             'thumbnail'  => ['string'],
         ],
+        'cloud_filename' => ['string'],
         'availability'	=> [
     		'sunrise' 	=> ['datetime'],
     		'sunset'	=> ['datetime'],
