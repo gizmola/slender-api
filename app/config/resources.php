@@ -181,6 +181,34 @@ return [
                    ],
                 ],
             ],
+            'keywords' => [
+                'controller' => [
+                  'class' => 'Slender\API\Controller\Site\Eb\KeywordsController',
+                ],
+                'model' => [
+                  'class' => 'Slender\API\Model\Site\Eb\Keywords',
+                ],
+                'parents' => [
+                   'users' => [
+                       'class' => 'Slender\API\Controller\Site\Eb\ServiceCategoriesController',
+                   ],
+                ],
+            ],
+            'service-categories' => [
+                'controller' => [
+                  'class' => 'Slender\API\Controller\Site\Eb\ServiceCategoriesController',
+                ],
+                'model' => [
+                  'class' => 'Slender\API\Model\Site\Eb\ServiceCategories',
+                ],
+                'children' => [
+                   'vendor-profiles' => [
+                       'class' => 'Slender\API\Model\Site\Eb\VendorProfiles',
+                       'embed' => true,
+                       'embedKey' => 'vendor_profiles',
+                   ],
+                ],
+            ],
         ],
     ],
 ];
