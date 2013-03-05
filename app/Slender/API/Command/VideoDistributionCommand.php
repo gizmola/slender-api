@@ -87,6 +87,15 @@ class VideoDistributionCommand extends Command
 
                 foreach ($queuedDistrCursor as $queuedDistr) {
                     if (true) { //TODO: statements (attempts, date etc)
+                        $videoDistributionModel->update(
+                            $queuedDistr['_id'],
+                            array(
+                                'attempts' => (int)$queuedDistr['attempts'] + 1,
+                                'updated' => new \MongoDate(),
+                                'status' => Videodistributions::STATUS_IN_PROGRESS
+                            )
+                        );
+
                         $video = $videosModel->getCollection()           //Getting video of distribution
                             ->where('_id', $queuedDistr['video_id'])
                             ->first();
@@ -175,6 +184,7 @@ class VideoDistributionCommand extends Command
                                     $videoDistributionModel->update(
                                         $queuedDistr['_id'],
                                         array(
+                                            'status' => Videodistributions::STATUS_QUEUED,
                                             'attempts' => (int)$queuedDistr['attempts'] + 1,
                                             'updated' => new \MongoDate()
                                         )
@@ -188,6 +198,7 @@ class VideoDistributionCommand extends Command
                                 $videoDistributionModel->update(
                                     $queuedDistr['_id'],
                                     array(
+                                        'status' => Videodistributions::STATUS_QUEUED,
                                         'attempts' => (int)$queuedDistr['attempts'] + 1,
                                         'updated' => new \MongoDate()
                                     )
@@ -201,6 +212,7 @@ class VideoDistributionCommand extends Command
                             $videoDistributionModel->update(
                                 $queuedDistr['_id'],
                                 array(
+                                    'status' => Videodistributions::STATUS_QUEUED,
                                     'attempts' => (int)$queuedDistr['attempts'] + 1,
                                     'updated' => new \MongoDate()
                                 )
