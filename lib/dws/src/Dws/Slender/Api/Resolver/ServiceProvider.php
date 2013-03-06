@@ -26,16 +26,26 @@ class ServiceProvider extends BaseServiceProvider
 	public function register()
 	{
         $this->app['resource-resolver'] = $this->app->share(function($app){
+
+            // create the resource resolver
             $resourceResolver = new ResourceResolver($app['config']['resources']);
+
+            // add in the MongoManager
+            $mongoManager = $app['mongo'];
+            $resourceResolver->setMongoManager($mongoManager);
+
+            // set a default namespace
             $fallbackNamespace = $app['config']['app.fallbackNamespaces.resources'];
             $resourceResolver->setFallbackNamespace($fallbackNamespace);
+
+            // return
             return $resourceResolver;
         });
 
-        $this->app['permissions-resolver'] = $this->app->share(function($app){
-            $resourceResolver = $app->make('resource-resolver');
-            return new PermissionsResolver($resourceResolver);
-        });
+//        $this->app['permissions-resolver'] = $this->app->share(function($app){
+//            $resourceResolver = $app->make('resource-resolver');
+//            return new PermissionsResolver($resourceResolver);
+//        });
 	}
 
 	/**

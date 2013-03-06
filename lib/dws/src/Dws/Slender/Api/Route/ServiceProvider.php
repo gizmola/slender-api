@@ -28,8 +28,7 @@ class ServiceProvider extends BaseServiceProvider
 		$this->app['route-creator'] = $this->app->share(function($app)
 		{
             $resourceResolver = $app->make('resource-resolver');
-            $mongoManager = $app->make('mongo');
-			$routeCreator = new RouteCreator($resourceResolver, $app, $mongoManager);
+			$routeCreator = new RouteCreator($resourceResolver);
             return $routeCreator;
 		});
 	}

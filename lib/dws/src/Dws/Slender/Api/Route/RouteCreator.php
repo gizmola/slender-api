@@ -2,10 +2,8 @@
 
 namespace Dws\Slender\Api\Route;
 
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Request;
-use LMongo\LMongoManager;
-use Dws\Slender\Api\Resolver\ClassResolver;
+use \App;
+use Illuminate\Routing\Router;
 use Dws\Slender\Api\Resolver\ResourceResolver;
 
 /**
@@ -22,17 +20,12 @@ class RouteCreator
      */
     protected $resourceResolver;
 
-	/**
-	 * @var Application
-	 */
-	protected $app;
-
     /**
-     * A Mongo manager
-     *
-     * @var \LMongoManager
+     * The router to which we add the routes
+     * 
+     * @var Router
      */
-    protected $mongoManager;
+    protected $router;
 
     /**
      * @var Name of the filter to use
@@ -53,43 +46,73 @@ class RouteCreator
 		'optionsPlural' => 'options',
 	];
 
-	/**
-	 * Constructor
-	 *
-	 * @param \Illuminate\Foundation\Application $app
-	 */
-    public function __construct(ResourceResolver $resourceResolver, Application $app = null, LMongoManager $mongoManager = null)
+    /**
+     * Constructor
+     * 
+     * @param \Dws\Slender\Api\Resolver\ResourceResolver $resourceResolver
+     */
+    public function __construct(ResourceResolver $resourceResolver)
     {
         $this->resourceResolver = $resourceResolver;
-        if ($app){
-            $this->setApp($app);
-        }
-        if ($mongoManager){
-            $this->setMongoManager($mongoManager);
-        }
     }
 
+    /**
+     * Add all configured routes to the router. Primary entry point.
+     *
+     * @return void
+     */
     public function addRoutes()
     {
         $this->addCoreRoutes();
         $this->addSiteRoutes();
     }
 
+    /**
+     * Add site-specific routes
+     * 
+     * @return void
+     */
 	protected function addSiteRoutes()
 	{
+        $creator = $this;
+        $resolver = $this->resourceResolver;
+
 		$singularUrl = '{site}/{resource}/{id}';
-		$singularCallback = $this->buildSiteSingularCallback();
+		$singularCallback = function($site, $resource, $id) use ($creator, $resolver) {
+            $controller = $resolver->buildControllerInstance($resource, $site);
+            $method = $creator->buildControllerMethod('singular');
+			return $controller->$method($id);
+		};
 
 		$pluralUrl = '{site}/{resource}';
-		$pluralCallback = $this->buildSitePluralCallback();
+		$pluralCallback = function($site, $resource) use ($creator, $resolver) {
+            $controller = $resolver->buildControllerInstance($resource, $site);
+            $method = $creator->buildControllerMethod('plural');
+			return $controller->$method();
+		};
 
-        $this->addRoutesToRouter($this->getApp()['router'],
-                $singularUrl, $singularCallback,
-                $pluralUrl, $pluralCallback);
+        $this->addRoutesToRouter(
+                $singularUrl, 
+                array('before' => $this->auth, $singularCallback),
+                $pluralUrl, 
+                array('before' => $this->auth, $pluralCallback)
+        );
 	}
 
-    protected function addRoutesToRouter($router, $singularUrl, $singularCallback, $pluralUrl, $pluralCallback)
+    /**
+     * Utility method to add five method routes (GET, POSt, PUT, DELETE, OPTIONS)
+     * routes to the router with a given set of singular and plural urls and callbacks.
+     *
+     * @param type $router
+     * @param type $singularUrl
+     * @param type $singularCallback
+     * @param type $pluralUrl
+     * @param type $pluralCallback
+     */
+    protected function addRoutesToRouter($singularUrl, $singularCallback, $pluralUrl, $pluralCallback)
     {
+        $router = $this->getRouter();
+        
         // GET routes
 		$router->get($singularUrl, $singularCallback);
 		$router->get($pluralUrl, $pluralCallback);
@@ -107,72 +130,15 @@ class RouteCreator
 		$router->match('options', $pluralUrl, $pluralCallback);
     }
 
-	protected function buildSitePluralCallback()
-	{
-        $creator = $this;
-		$callback = function($site, $resource) use ($creator) {
-            $controller = $creator->buildSiteController($site, $resource);
-            $method = $creator->buildControllerMethod('plural');
-            return $controller->$method();
-		};
-		return array('before' => $this->auth, $callback);
-	}
-
-	public function buildSiteSingularCallback()
-	{
-        $creator = $this;
-		$callback = function($site, $resource, $id) use ($creator) {
-            $controller = $creator->buildSiteController($site, $resource);
-            $method = $creator->buildControllerMethod('singular');
-			return $controller->$method($id);
-		};
-		return array('before' => $this->auth, $callback);
-	}
-
-    public function buildSiteController($site, $resource)
-    {
-        $modelClass = $this->resourceResolver->getResourceModelClassForSite($resource, $site);
-        if (!$modelClass) {
-            $msg = sprintf('Unable to resolve model for resource %s and site %s',
-                        $resource, $site);
-            throw new RouteException($msg);
-        }
-
-        $controllerClass = $this->resourceResolver->getResourceControllerClassForSite($resource, $site);
-        if (!$controllerClass) {
-            $msg = sprintf('Unable to resolve controller for resource %s and site %s',
-                        $resource, $site);
-            throw new RouteException($msg);
-        }
-
-        try {
-            $connection = $this->getMongoManager()->connection($site);
-        } catch (\InvalidArgumentException $e) {
-            throw new RouteException($e->getMessage());
-        }
-
-        if (!$connection) {
-            $msg = sprintf('No connection configured for resource %s and site %s',
-                        $resource, $site);
-            throw new RouteException($msg);
-        }
-
-        $modelInstance = new $modelClass($connection);
-        $modelInstance->setRelations($this->resourceResolver->buildModelRelations($resource, $site));
-        $modelInstance->setSite($site);
-        $controller = new $controllerClass($modelInstance);
-
-        return $controller;
-    }
-
     /**
      *
      * @param string $type Values: 'singular' or 'plural'
      * @return string
      */
-    public function buildControllerMethod($type)
+    protected function buildControllerMethod($type)
     {
-        $httpMethod = $this->getApp()['request']->getMethod();
+        $httpMethod = App::make('request')->getMethod();
+        // $httpMethod = $this->getApp()['request']->getMethod();
         $method = $this->getMappedMethod($type, $httpMethod);
         return $method;
     }
@@ -185,7 +151,7 @@ class RouteCreator
      * @return string the name of the corresponding controller method
      * @throws RouteException
      */
-	public function getMappedMethod($type, $httpMethod)
+	protected function getMappedMethod($type, $httpMethod)
 	{
 		$type = strtolower($type);
         if (!in_array($type, array('singular', 'plural'))) {
@@ -197,16 +163,11 @@ class RouteCreator
     /**
      * Add all core routes from config
      */
-    public function addCoreRoutes()
+    protected function addCoreRoutes()
     {
-        $this->coreResources = $this->app['config']['app.core-resources'];
-        try {
-            $connection = $this->getMongoManager()->connection('default');
-        } catch (\InvalidArgumentException $e) {
-            throw new RouteException($e->getMessage());
-        }
+        $this->coreResources = $this->resourceResolver->getCoreResourceKeys();
         foreach ($this->coreResources as $resource) {
-            $this->addCoreRoute($resource, $connection);
+            $this->addCoreRoute($resource);
         }
     }
 
@@ -217,94 +178,57 @@ class RouteCreator
      * @param LMongo\MongoManager $connection
      * @return Creator
      */
-    public function addCoreRoute($resource, $connection)
+    protected function addCoreRoute($resource)
     {
         $creator = $this;
-
+        $resolver = $this->resourceResolver;
         $pluralUrl = $resource;
-        $pluralCallback = function() use ($connection, $resource, $creator) {
-
-            $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
-            $model = new $modelClass($connection);
-            $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
-            $model->setSite(null);
-
-            $controllerClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
-            $controller = new $controllerClass($model);
-
+        $pluralCallback = function() use ($resource, $creator, $resolver) {
+            $controller = $resolver->buildControllerInstance($resource, null);
             $method = $creator->buildControllerMethod('plural');
-
             return $controller->$method();
         };
 
         $singularUrl = $resource . '/{id}';
-        $singularCallback = function($id) use ($connection, $resource, $creator) {
-
-            $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
-            $model = new $modelClass($connection);
-            $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
-
-            $controllerClass = 'Slender\API\Controller\\' . ucfirst($resource) . 'Controller';
-            $controller = new $controllerClass($model);
-
+        $singularCallback = function($id) use ($resource, $creator, $resolver) {
+            $controller = $resolver->buildControllerInstance($resource, null);
             $method = $creator->buildControllerMethod('singular');
-
             return $controller->$method($id);
         };
 
-        $this->addRoutesToRouter($this->app['router'],
-                                    $singularUrl,
-                                    array('before' => $this->auth, $singularCallback),
-                                    $pluralUrl,
-                                    array('before' => $this->auth, $pluralCallback)
-                                );
+        $this->addRoutesToRouter(
+            $singularUrl,
+            array('before' => $this->auth, $singularCallback),
+            $pluralUrl,
+            array('before' => $this->auth, $pluralCallback)
+        );
 
         return $this;
     }
 
     /**
-     * Get the MongoDB manager
+     * Get the router
      *
-     * @return \LMongo\LMongoManager
+     * @return Router
      */
-    public function getMongoManager()
+    public function getRouter()
     {
-        if (null == $this->mongoManager) {
-            $this->mongoManager = $this->app->make('mongo');
+        if (null === $this->router) {
+            $this->router = App::make('router');
         }
-        return $this->mongoManager;
+        return $this->router;
     }
 
+
     /**
-     * Sets the MongoDb manager
-     *
-     * @param \LMongo\LMongoManager $mongoManager
+     * Set the router
+     * 
+     * @param \Illuminate\Routing\Router $router
      * @return \Dws\Slender\Api\Route\RouteCreator
      */
-    public function setMongoManager(LMongoManager $mongoManager)
+    public function setRouter(Router $router)
     {
-        $this->mongoManager = $mongoManager;
-        return $this;
-    }
-
-    /**
-     * @return Application
-     */
-    public function getApp()
-    {
-        if (!$this->app) {
-            $this->app = \App::instance();
-        }
-        return $this->app;
-    }
-
-    /**
-     * @param \Illuminate\Foundation\Application $app
-     * @return \Dws\Slender\Api\Route\RouteCreator
-     */
-    public function setApp(Application $app)
-    {
-        $this->app = $app;
+        $this->router = $router;
         return $this;
     }
 }

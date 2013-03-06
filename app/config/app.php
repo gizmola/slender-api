@@ -69,27 +69,6 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Core resources
-	|--------------------------------------------------------------------------
-    |
-    | The core resources listed here will be used to generate the top-level
-    | routes which are managed using the site-independent db connection.
-    |
-    | Defining them here in config makes them available in the IoC container.
-    |
-	*/
-
-    // Redundant? See resources.php.
-    // @todo chase any downstream usage
-    'core-resources' => array(
-    	// 'auth',
-        'sites',
-        'users',
-        'roles',
-    ),
-
-	/*
-	|--------------------------------------------------------------------------
 	| Autoloaded Service Providers
 	|--------------------------------------------------------------------------
 	|

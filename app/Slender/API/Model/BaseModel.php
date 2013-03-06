@@ -2,7 +2,9 @@
 
 namespace Slender\API\Model;
 
+use \App;
 use \Validator;
+use Dws\Slender\Api\Resolver\ResourceResolver;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
 use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
 use Dws\Slender\Api\Support\Util\UUID;
@@ -43,6 +45,11 @@ class BaseModel extends MongoModel
      * @var MessageBag
      */
     protected $validationMessages;
+
+    /**
+     * @var ResourceResolver
+     */
+    protected $resolver;
 
     /**
      * Constructor
@@ -310,21 +317,18 @@ class BaseModel extends MongoModel
     /**
      * Replaces a child ids with an embeded objects
      * in the passed array
+     * 
      * @param array $childIds
-     * @param ChildClassInstance $childIntsance
+     * @param ChildClassInstance $childInstance
      * @return void
      */
-    public function embedChildData(&$childIds,$childIntsance)
+    public function embedChildData(&$childIds, $childInstance)
     {
-
         for ($i = 0; $i < count($childIds); $i++) {
-
-            $child = $childIntsance->findById($childIds[$i]);
-
+            $child = $childInstance->findById($childIds[$i]);
             if ($child) {
                 $childIds[$i] = $child;
             }
-
         }
     }
 
@@ -392,9 +396,9 @@ class BaseModel extends MongoModel
             foreach ($parents as $resource => $config) {
 
                 $parentClass = $this->createRelatedClass($resource, $config);
-                $embeded = $parentClass->getEmbeddedRelations();
+                $embedded = $parentClass->getEmbeddedRelations();
 
-                $classConfig = $parentClass->getChildByClassName(get_class($this), $embeded);
+                $classConfig = $parentClass->getChildByClassName(get_class($this), $embedded);
                 if ($classConfig) {
 
                     $embedKey = $classConfig['embedKey'];
@@ -466,7 +470,7 @@ class BaseModel extends MongoModel
         return $this;
     }
 
-    public function getEmbeddedRelations($natural=true)
+    public function getEmbeddedRelations($natural = true)
     {
         $embedded = [];
 
@@ -525,7 +529,7 @@ class BaseModel extends MongoModel
         if ($isPartial) {
             $keys = array_intersect($keys, array_keys($input));
         }
-        array_map(function($k) use ($schema, $input, &$validationInfo){
+        array_map(function($k) use ($schema, &$validationInfo){
             $validationInfo[$k] = $schema[$k];
         }, $keys);
         if (empty($validationInfo)) {
@@ -566,4 +570,19 @@ class BaseModel extends MongoModel
     {
         return $this->setValidationMessages(null);
     }
+
+    public function getResolver()
+    {
+        if (null === $this->resolver) {
+            $this->resolver = App::make('resource-resolver');
+        }
+        return $this->resolver;
+    }
+
+    public function setResolver($resolver)
+    {
+        $this->resolver = $resolver;
+        return $this;
+    }
+
 }
