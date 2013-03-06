@@ -76,10 +76,7 @@ class BaseModelTest extends TestCase
 		$notEmbeddedChildren = $model->getEmbeddedRelations(false);
 		$this->assertEquals(1,count($notEmbeddedChildren));
 		$this->assertArrayHasKey('not-embedded-child', $notEmbeddedChildren);
-
 	}
-
-
 
 	public function testEmbedChildArray()
 	{
@@ -120,8 +117,8 @@ class BaseModelTest extends TestCase
 
 		$index = $model->updateParentData($childData, $parentData, true);
 
-		$this->assertEquals(1,count($parentData));
-		$this->assertEquals('123456',array_shift($parentData)['_id']);
+		$this->assertEquals(1, count($parentData));
+		$this->assertEquals('123456', array_shift($parentData)['_id']);
 	}
 
 	public function testCanGetEmbededChildParent()
@@ -143,9 +140,9 @@ class BaseModelTest extends TestCase
 		];
 
 		$model->addRelations('children',$relations);
-		$embedded = $model->getEmbeddedRelations();
-		$embededChild = $model->getChildByClassName('My\Child\Class\EmbeddedClass',$relations);
-		$this->assertSame($relations['embedded-child'],$embededChild);
+		// $embedded = $model->getEmbeddedRelations();  // unused?
+		$embeddedChild = $model->getChildByClassName('My\Child\Class\EmbeddedClass',$relations);
+		$this->assertSame($relations['embedded-child'],$embeddedChild);
 
 	}
 
@@ -157,10 +154,8 @@ class BaseModelTest extends TestCase
         ];
 
         $model = new PartialUpdateModel();
-        $this->assertTrue($model->isValid($data, true));  // isPartial = true
 
-        $model = new PartialUpdateModel();
+        $this->assertTrue($model->isValid($data, true));  // isPartial = true
         $this->assertFalse($model->isValid($data, false));   // isPartial = false
     }
-
 }
