@@ -4,8 +4,8 @@ namespace Slender\API\Model;
 
 use \Validator;
 use Dws\Slender\Api\Support\Query\FromArrayBuilder;
-use Dws\Slender\Api\Support\Util\Arrays as ArrayUtil;
-use Dws\Slender\Api\Support\Util\UUID;
+use Dws\Utils\Arrays as ArrayUtil;
+use Dws\Utils\UUID;
 use Illuminate\Support\MessageBag;
 use LMongo\Database as Connection;
 
@@ -401,10 +401,28 @@ class BaseModel extends MongoModel
                     $results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
 
                     foreach ($results as $res) {
-                        $this->updateParentData($entity, $res[$embedKey], $isDelete);
+                        /*
+                        * check if one-one (assoc) 
+                        * or one-many (indexed)
+                        */
+                        if (!ArrayUtil::isAssociative($res[$embedKey])) {
+
+                            $this->updateParentData($entity, $res[$embedKey], $isDelete);
+                            
+                        } else {
+
+                            if ($isDelete) {
+                                $res[$embedKey] = null;    
+                            } else {
+                                $res[$embedKey] = $entity;
+                            }
+
+                        }
+
                         $parentId = ArrayUtil::shiftId($res);
                         $parentClass->getCollection()->where('_id', $parentId)->update($res);
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
+
                     }
                 }
             }
