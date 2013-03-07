@@ -20,7 +20,7 @@ class AuthController extends \Slender\API\Controller\BaseController
      */
     public function post()
     {
-        $input = \Input::json(true);
+        $input = \Input::json();
         
         $email = isset($input['email']) ? $input['email'] : '';
         $password = isset($input['password']) ? $input['password'] : '';

@@ -1,6 +1,7 @@
 <?php
 
 use Dws\Slender\Api\Route\RouteException;
+
 use \Slender\API\Model\Users as UserModel;
 
 /*
