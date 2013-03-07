@@ -17,7 +17,7 @@ class Videodistributions extends \Slender\API\Model\BaseModel
         'status'         => ['required', 'string'],
         'created' => ['datetime'],
         'updated' => ['datetime'],
-        'attempts' => ['int']
+        'attempts' => ['string']
 	);
 
 }
