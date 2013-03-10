@@ -369,6 +369,7 @@ class BaseModel extends MongoModel
         $class = '\\' . $config['class'];
         $class = new $class($this->getConnection());
         $class->setRelations($resolver->buildModelRelations($resource, $this->site));
+        $class->setSite($this->site);
         return $class;
     }
 
@@ -387,6 +388,7 @@ class BaseModel extends MongoModel
             if (!$relations || !is_array($relations) || !array_key_exists('parents', $relations)) {
                 return true;
             }
+
             $parents = $relations['parents'];
 
             foreach ($parents as $resource => $config) {
@@ -420,8 +422,20 @@ class BaseModel extends MongoModel
                         }
 
                         $parentId = ArrayUtil::shiftId($res);
-                        $parentClass->getCollection()->where('_id', $parentId)->update($res);
+                        $parentClass->getCollection()->where('_id', $parentId)->update($res);                        
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
+                        /*
+                        * recursively update if current parent has parents
+                        */
+                        $parentRelations = $parentClass->getRelations();
+
+                        if ($parentRelations && is_array($parentRelations) && array_key_exists('parents', $parentRelations)) {
+                         
+                            //add back the _id for updating
+                            $res['_id'] = $parentId;
+                            return $parentClass->updateParents($res, $isDelete);
+                        
+                        }
 
                     }
                 }
