@@ -433,7 +433,7 @@ class BaseModel extends MongoModel
                          
                             //add back the _id for updating
                             $res['_id'] = $parentId;
-                            return $parentClass->updateParents($res, $isDelete);
+                            return $parentClass->updateParents($res);
                         
                         }
 
