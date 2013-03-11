@@ -10,7 +10,7 @@ class Videos extends \Slender\API\Model\BaseModel
         'title'             => ['required', 'string'],
         'description'       => ['string'],
         'slug'              => ['alpha_dash'],
-        'premiere_date'     => ['datetime'],
+        'premiere_date'     => ['date'],
         'rating'            => ['int'],
         'genre'             => ['string'],
         'episode_number' 	=> ['int'],
@@ -22,11 +22,11 @@ class Videos extends \Slender\API\Model\BaseModel
         ],
         'cloud_filename' => ['string'],
         'availability'	=> [
-    		'sunrise' 	=> ['datetime'],
-    		'sunset'	=> ['datetime'],
+    		'sunrise' 	=> ['date'],
+    		'sunset'	=> ['date'],
         ],
-        'created' 	=> ['datetime'],
-        'updated' 	=> ['datetime'],
+        'created' 	=> ['date'],
+        'updated' 	=> ['date'],
 	);
 
 }
