@@ -7,20 +7,20 @@ class Videos extends \Slender\API\Model\BaseModel
 	protected $collectionName = 'videos';
 
 	protected $schema = array(
-        'title'             => ['required', 'string'],
-        'description'       => ['string'],
+        'title'             => ['required'],
+        'description'       => [],
         'slug'              => ['alpha_dash'],
         'premiere_date'     => ['date'],
-        'rating'            => ['int'],
-        'genre'             => ['string'],
-        'episode_number' 	=> ['int'],
-        'season'            => ['int'],
+        'rating'            => ['integer'],
+        'genre'             => [],
+        'episode_number' 	=> ['integer'],
+        'season'            => ['integer'],
         'urls'	=> [
-            'source' 	 => ['string'],
-            'streaming'  => ['string'],
-            'thumbnail'  => ['string'],
+            'source' 	 => [],
+            'streaming'  => [],
+            'thumbnail'  => [],
         ],
-        'cloud_filename' => ['string'],
+        'cloud_filename' => [],
         'availability'	=> [
     		'sunrise' 	=> ['date'],
     		'sunset'	=> ['date'],
