@@ -9,7 +9,7 @@ class Videos extends \Slender\API\Model\BaseModel
 	protected $schema = array(
         'title'             => ['required', 'string'],
         'description'       => ['string'],
-        'slug'              => ['alpha_desh'],
+        'slug'              => ['alpha_dash'],
         'premiere_date'     => ['datetime'],
         'rating'            => ['int'],
         'genre'             => ['string'],
