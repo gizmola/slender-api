@@ -1,0 +1,40 @@
+{
+	"require": {
+		"laravel/framework": "4.0.*",
+		"navruzm/laravel-mongo-auth": "*",
+		"navruzm/lmongo": "dev-master#e0f1090a96757b656f7a7e836eb00d67b27cbb2c",
+		"kevinlebrun/slug.php": "0.*",
+        "dws/utils" : "dev-master"
+	},
+	
+	"autoload": {
+		"psr-0": {
+            "App\\Test" : "app/tests",
+            "Slender\\API\\Controller": "app",
+            "Slender\\API\\Model": "app",
+            "Slender\\API\\Command": "app",
+            "Slender\\API\\Database\\Migration": "app",
+			"Dws\\Slender\\Api": "lib/dws/src"
+		},
+        "files": [
+            "lib/dws/src/Dws/Gdata/YoutubeClient.php",
+            "lib/Zend/Loader.php",
+            "lib/dws/src/Dws/Rackspace/OpencloudClient.php"
+        ]
+
+	},
+    "include-path": ["lib","lib/Rackspace/php-opencloud/lib"],
+	"minimum-stability": "dev",
+
+	"require-dev": {
+		"phpunit/phpunit": "3.7.*"
+	},
+
+    "repositories" : [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dwsla/Utils.git"
+        }
+
+    ]
+}
