@@ -453,6 +453,7 @@ class BaseModel extends MongoModel
 
         $index = null;
 
+        //determine which of the children is the match
         for ($i=0; $i < count($children); $i++) {
             if ($childData['_id'] == $children[$i]["_id"]) {
                 $index = $i;
@@ -460,6 +461,7 @@ class BaseModel extends MongoModel
             }
         }
 
+        //delete or update the child
         if ($index !== null) {
             if ($isDelete) {
                 unset($children[$i]);
