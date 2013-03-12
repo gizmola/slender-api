@@ -1,12 +1,14 @@
 <?php
 
-return array(
+return [
 
-	'mongodb' => array(
-		'eb' => array(
-			'host' => 'localhost',
-			'port' => 27017,
-			'database' => 'slender_test_eb',
-		),
-	),		
-);
+	'mongodb' => [
+        
+        'default' => [
+            'host' => 'localhost',
+            'port' => 27017,
+            'database' => 'slender_test',
+        ],
+                
+	],		
+];
