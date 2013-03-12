@@ -204,23 +204,17 @@ class BaseModel extends MongoModel
         }
 
         $data['_id'] = UUID::v4();
-
-        //embed child data
-        $embeddedRelations = $this->getEmbeddedRelations();
-
-        foreach ($embeddedRelations as $resource => $config) {
-            $childIntsance = $this->createRelatedClass($resource, $config);
-            $this->embedChildData($data[$config['embedKey']], $childIntsance);
-        }
-
+        $this->embedChildren($data);
         $id = $this->getCollection()->insert($data);
         $entity = $this->findById($id);
-        if (\Config::get('cache.enabled'))
+
+        if (\Config::get('cache.enabled')) {
             \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
+        }
+
         return $entity;
 
     }
-
     /**
      * Update data of the record
      *
@@ -308,6 +302,24 @@ class BaseModel extends MongoModel
         return $this->getSchema();
     }
     /**
+     * Embedd all the embeddable children
+     * of a parent class
+     * @param array $data
+     * @return void
+     */
+    private function embedChildren(&$data)
+    {
+
+        //embed child data
+        $embeddedRelations = $this->getEmbeddedRelations();
+
+        foreach ($embeddedRelations as $resource => $config) {
+            $childIntsance = $this->createRelatedClass($resource, $config);
+            $this->embedChildData($data[$config['embedKey']], $childIntsance);
+        }
+
+    }
+    /**
      * Replaces a child ids with an embeded objects
      * in the passed array
      * @param array $childIds
@@ -319,15 +331,25 @@ class BaseModel extends MongoModel
 
         for ($i = 0; $i < count($childIds); $i++) {
 
-            $child = $childIntsance->findById($childIds[$i]);
+            /*
+            * to allow for adding new children
+            * to an existing parent, we check that
+            * the data type is not already and array
+            * which would signify an embeded object(s)
+            */
+            if (!is_array($childIds[$i])) {
 
-            if ($child) {
-                $childIds[$i] = $child;
+                $child = $childIntsance->findById($childIds[$i]);
+
+                if ($child) {
+                    $childIds[$i] = $child;
+                }
+
             }
 
         }
-    }
 
+    }
     /**
      *
      * @param type $with
@@ -336,6 +358,7 @@ class BaseModel extends MongoModel
     protected function embedWith($with,&$entities)
     {
         $emdbedded = [];
+        
         foreach ($with as $array) {
             $emdbedded[$array[0]] = $array[1];
         }
@@ -473,7 +496,7 @@ class BaseModel extends MongoModel
         return $index;
     }
 
-    public function addRelations($type,$relations)
+    public function addRelations($type, $relations)
     {
         if (!isset($this->relations[$type])) {
             $this->relations[$type] = [];
@@ -506,6 +529,16 @@ class BaseModel extends MongoModel
         }
 
         return $embedded;
+    }
+
+    public function getParentRelations()
+    {
+        
+        if (!$this->relations || !is_array($this->relations) || !array_key_exists('parents', $this->relations)) {
+            return [];
+        }
+
+        return $this->relations['parents'];
     }
 
     public function getSite()
