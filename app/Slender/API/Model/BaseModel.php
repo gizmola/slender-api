@@ -403,6 +403,7 @@ class BaseModel extends MongoModel
                     $results = $parentClass->getCollection()->where("{$embedKey}._id",$entity['_id'])->get();
 
                     foreach ($results as $res) {
+                        
                         /*
                         * check if one-one (assoc) 
                         * or one-many (indexed)
@@ -421,21 +422,13 @@ class BaseModel extends MongoModel
 
                         }
 
-                        $parentId = ArrayUtil::shiftId($res);
-                        $parentClass->getCollection()->where('_id', $parentId)->update($res);                        
-                        \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
                         /*
-                        * recursively update if current parent has parents
+                        * a call to the parent's update method should
+                        * recursively update grandparents if they exist
                         */
-                        $parentRelations = $parentClass->getRelations();
-
-                        if ($parentRelations && is_array($parentRelations) && array_key_exists('parents', $parentRelations)) {
-                         
-                            //add back the _id for updating
-                            $res['_id'] = $parentId;
-                            return $parentClass->updateParents($res);
-                        
-                        }
+                        $parentId = ArrayUtil::shiftId($res);
+                        $parentClass->update($parentId, $res);
+                        \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
 
                     }
                 }
