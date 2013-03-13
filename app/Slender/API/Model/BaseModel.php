@@ -590,16 +590,6 @@ class BaseModel extends MongoModel
         return $embedded;
     }
 
-    public function getParentRelations()
-    {
-        
-        if (!$this->relations || !is_array($this->relations) || !array_key_exists('parents', $this->relations)) {
-            return [];
-        }
-
-        return $this->relations['parents'];
-    }
-
     public function getSite()
     {
         return $this->site;
