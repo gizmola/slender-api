@@ -229,6 +229,22 @@ class BaseModel extends MongoModel
             $data['updated_at'] = new \MongoDate();
         }
 
+
+        /*
+        * a "_children" array has been passed
+        * add the new child ids, then run the 
+        * embedder
+        */
+
+        if (isset($data['_children'])) {
+            $entity = $this->findById($id, false);
+            $this->addNewChildIds($entity, $data['_children']);
+            $this->embedChildren($entity);
+            $parentId = ArrayUtil::shiftId($entity);
+            $this->getCollection()->where('_id', $parentId)->update($entity);
+            unset($data['_children']);
+        }
+
         $this->getCollection()->where('_id', $id)->update($data);
         $entity = $this->findById($id, true);
 
@@ -241,6 +257,30 @@ class BaseModel extends MongoModel
 
         return $entity;
     }
+
+    public function addNewChildIds(&$entity, $childList)
+    {
+
+        foreach ($childList as $k=> $v) {
+
+            if (!isset($entity[$k])) {
+                continue;
+            }
+
+            if (!is_array($entity[$k]) && is_array($v)) {
+                throw new \Exception("Entity attribute $k cannot be set to array");
+            }
+
+            if (!is_array($entity[$k])) {
+                $entity[$k] = $v;
+            } else {
+                $entity[$k] = array_merge($entity[$k], $v);    
+            }           
+
+        }
+
+    }
+
     /**
      * Delete record
      *
@@ -326,8 +366,25 @@ class BaseModel extends MongoModel
      * @param ChildClassInstance $childIntsance
      * @return void
      */
-    public function embedChildData(&$childIds,$childIntsance)
+    public function embedChildData(&$childIds, $childIntsance)
     {
+
+        /*
+        * if the relation is 1-1
+        * set the data to the child
+        * data
+        */
+        if (!is_array($childIds)) {
+
+            $child = $childIntsance->findById($childIds);
+
+            if ($child) {
+                $childIds = $child;
+            }
+
+            return;
+
+        }
 
         for ($i = 0; $i < count($childIds); $i++) {
 
@@ -418,8 +475,8 @@ class BaseModel extends MongoModel
 
                 $parentClass = $this->createRelatedClass($resource, $config);
                 $embeded = $parentClass->getEmbeddedRelations();
-
                 $classConfig = $parentClass->getChildByClassName(get_class($this), $embeded);
+
                 if ($classConfig) {
 
                     $embedKey = $classConfig['embedKey'];
@@ -454,7 +511,9 @@ class BaseModel extends MongoModel
                         \Cache::put($this->collectionName . "_" . $parentId, $res, \Config::get('cache.cache_time'));
 
                     }
+
                 }
+
             }
         } catch (\Exception $e) {
             return false;

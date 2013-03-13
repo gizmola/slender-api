@@ -163,4 +163,52 @@ class BaseModelTest extends TestCase
         $this->assertFalse($model->isValid($data, false));   // isPartial = false
     }
 
+    public function testCanAddNewChildIds() 
+    {
+
+    	$oldData = [
+    		'id' => 'id1',
+    		'name' => 'name',
+    		'key1' => [
+	    		['item1'=>'value1'],
+	    		['item2'=>'value2'],
+	    		['item3'=>'value3'],
+	    	],
+	    	'key2' => 'some-old-data'
+    	];
+
+    	$newData = [
+    		'key1' => ['id1','id2', 'id3'],
+    		'key2' => 'id4',
+    	];
+
+    	$model = new BaseModel;
+    	$model->addNewChildIds($oldData, $newData);
+    	$this->assertEquals('id4', $oldData['key2']);
+    	$this->assertEquals('id2', $oldData['key1'][4]);
+
+    }
+
+	public function testEmbedOneToOneChildArray()
+	{
+
+		$model = new BaseModel;
+
+		$parentData = [
+			'name' => 'album1',
+			'photos' => 1,
+		];
+
+		$modelSpy = $this->getMock('Slender\API\Model\BaseModel');
+		$modelSpy->expects($this->exactly(1))
+			->method('findById')
+			->with(1)
+			->will($this->returnValue(['name'=>'photo1', 'description' => 'a pretty pic']));
+		$model->embedChildData($parentData['photos'], $modelSpy);
+
+		$this->assertInternalType('array', $parentData['photos']);
+		$this->assertArrayHasKey('description', $parentData['photos']);
+
+	}
+
 }
