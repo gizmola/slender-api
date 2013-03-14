@@ -211,4 +211,35 @@ class BaseModelTest extends TestCase
 
 	}
 
+	public function testCanGetRelationsByType()
+	{
+
+        $parents = [
+           'users' => [
+               'class' => 'Slender\API\Model\Users',
+           ],
+           'profiles' => [
+               'class' => 'Slender\API\Model\Profiles',
+           ],
+        ];
+
+		$model = new BaseModel;
+
+		$model->addRelations('parents', $parents);
+		$parentRelations = $model->getParentRelations();
+		$this->assertArrayHasKey('users', $parentRelations);
+		$this->assertArrayHasKey('profiles', $parentRelations);
+
+
+		$model->addRelations('children', $parents);
+		$childRelations = $model->getChildRelations();
+		$this->assertArrayHasKey('users', $childRelations);
+		$this->assertArrayHasKey('profiles', $childRelations);
+
+
+	}
+
+
+
+
 }

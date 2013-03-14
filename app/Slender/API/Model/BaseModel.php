@@ -203,6 +203,11 @@ class BaseModel extends MongoModel
             $data['updated_at'] = new \MongoDate();
         }
 
+        $childrenSent = array_key_exists('_children', $data) ? $data['_children'] : null;
+        $parentsSent = array_key_exists('_parents', $data) ? $data['_parents'] : null;
+        unset($data['_children']);
+        unset($data['_parents']);
+
         $data['_id'] = UUID::v4();
         $this->embedChildren($data);
         $id = $this->getCollection()->insert($data);
@@ -210,6 +215,16 @@ class BaseModel extends MongoModel
 
         if (\Config::get('cache.enabled')) {
             \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
+        }
+
+        //embed existing children in this entity
+        if ($childrenSent) {
+            $entity = $this->embedNewChildrenInEntity($entity, $childrenSent);
+        }
+
+        //embed this entity to existing parents
+        if ($parentsSent) {
+            $this->embedEntityInNewParents($parentsSent, $entity);
         }
 
         return $entity;
@@ -225,62 +240,42 @@ class BaseModel extends MongoModel
     public function update($id, array $data)
     {
 
+        //collect parents or children to be embedded in, or embed, respectively
+        $childrenSent = array_key_exists('_children', $data) ? $data['_children'] : null;
+        $parentsSent = array_key_exists('_parents', $data) ? $data['_parents'] : null;
+        unset($data['_children']);
+        unset($data['_parents']);
+
         if($this->timestamp){
             $data['updated_at'] = new \MongoDate();
         }
 
-
-        /*
-        * a "_children" array has been passed
-        * add the new child ids, then run the 
-        * embedder
-        */
-
-        if (isset($data['_children'])) {
-            $entity = $this->findById($id, false);
-            $this->addNewChildIds($entity, $data['_children']);
-            $this->embedChildren($entity);
-            $parentId = ArrayUtil::shiftId($entity);
-            $this->getCollection()->where('_id', $parentId)->update($entity);
-            unset($data['_children']);
-        }
-
+        //first save any non-related data
         $this->getCollection()->where('_id', $id)->update($data);
         $entity = $this->findById($id, true);
 
+        //embed existing children in this entity
+        if ($childrenSent) {
+            $entity = $this->embedNewChildrenInEntity($entity, $childrenSent);
+        }
+
+        //cache the entity
         if (\Config::get('cache.enabled'))
             \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
 
+        //update current associated parents
         if (!$this->updateParents($entity)) {
             throw new \Exception("Error updating parent data");
         }
 
-        return $entity;
-    }
-
-    public function addNewChildIds(&$entity, $childList)
-    {
-
-        foreach ($childList as $k=> $v) {
-
-            if (!isset($entity[$k])) {
-                continue;
-            }
-
-            if (!is_array($entity[$k]) && is_array($v)) {
-                throw new \Exception("Entity attribute $k cannot be set to array");
-            }
-
-            if (!is_array($entity[$k])) {
-                $entity[$k] = $v;
-            } else {
-                $entity[$k] = array_merge($entity[$k], $v);    
-            }           
-
+        //embed this entity to existing parents
+        if ($parentsSent) {
+            $this->embedEntityInNewParents($parentsSent, $entity);
         }
 
-    }
+        return $entity;
 
+    }
     /**
      * Delete record
      *
@@ -354,59 +349,16 @@ class BaseModel extends MongoModel
         $embeddedRelations = $this->getEmbeddedRelations();
 
         foreach ($embeddedRelations as $resource => $config) {
-            $childIntsance = $this->createRelatedClass($resource, $config);
-            $this->embedChildData($data[$config['embedKey']], $childIntsance);
-        }
 
-    }
-    /**
-     * Replaces a child ids with an embeded objects
-     * in the passed array
-     * @param array $childIds
-     * @param ChildClassInstance $childIntsance
-     * @return void
-     */
-    public function embedChildData(&$childIds, $childIntsance)
-    {
-
-        /*
-        * if the relation is 1-1
-        * set the data to the child
-        * data
-        */
-        if (!is_array($childIds)) {
-
-            $child = $childIntsance->findById($childIds);
-
-            if ($child) {
-                $childIds = $child;
-            }
-
-            return;
-
-        }
-
-        for ($i = 0; $i < count($childIds); $i++) {
-
-            /*
-            * to allow for adding new children
-            * to an existing parent, we check that
-            * the data type is not already and array
-            * which would signify an embeded object(s)
-            */
-            if (!is_array($childIds[$i])) {
-
-                $child = $childIntsance->findById($childIds[$i]);
-
-                if ($child) {
-                    $childIds[$i] = $child;
-                }
-
-            }
+            if (array_key_exists($config['embedKey'], $data)) {
+                $childIntsance = $this->createRelatedClass($resource, $config);
+                $this->embedChildData($data[$config['embedKey']], $childIntsance);
+            }      
 
         }
 
     }
+
     /**
      *
      * @param type $with
@@ -590,6 +542,8 @@ class BaseModel extends MongoModel
         return $embedded;
     }
 
+
+
     public function getSite()
     {
         return $this->site;
@@ -675,4 +629,184 @@ class BaseModel extends MongoModel
     {
         return $this->setValidationMessages(null);
     }
+
+    public function getParentRelations()
+    {
+        
+        if (!$this->relations || !is_array($this->relations) || !array_key_exists('parents', $this->relations)) {
+            return [];
+        }
+
+        return $this->relations['parents'];
+    }
+
+    public function getChildRelations()
+    {
+        
+        if (!$this->relations || !is_array($this->relations) || !array_key_exists('children', $this->relations)) {
+            return [];
+        }
+
+        return $this->relations['children'];
+    }
+
+    /**
+     * Replaces a child ids with an embeded objects
+     * in the passed array
+     * @param array $childIds
+     * @param ChildClassInstance $childIntsance
+     * @return void
+     */
+    public function embedChildData(&$childIds, $childIntsance)
+    {
+
+        /*
+        * if the relation is 1-1
+        * set the data to the child
+        * data
+        */
+        if (!is_array($childIds)) {
+
+            $child = $childIntsance->findById($childIds);
+
+            if ($child) {
+                $childIds = $child;
+            }
+
+            return;
+
+        }
+
+        for ($i = 0; $i < count($childIds); $i++) {
+
+            /*
+            * to allow for adding new children
+            * to an existing parent, we check that
+            * the data type is not already and array
+            * which would signify an embeded object(s)
+            */
+            if (!is_array($childIds[$i])) {
+
+                $child = $childIntsance->findById($childIds[$i]);
+
+                if ($child) {
+                    $childIds[$i] = $child;
+                }
+
+            }
+
+        }
+
+    }
+
+    public function addNewChildIds(&$entity, $childList)
+    {
+
+        foreach ($childList as $k=> $v) {
+
+            if (!isset($entity[$k])) {
+                continue;
+            }
+
+            if (!is_array($entity[$k]) && is_array($v)) {
+                throw new \Exception("Entity attribute $k cannot be set to array");
+            }
+
+            if (!is_array($entity[$k])) {
+                $entity[$k] = $v;
+            } else {
+                $entity[$k] = array_merge($entity[$k], $v);    
+            }           
+
+        }
+
+    }
+
+    public function embedNewChildrenInEntity($entity, $children)
+    {
+        $this->addNewChildIds($entity, $children);
+        $this->embedChildren($entity);
+        $parentId = ArrayUtil::shiftId($entity);
+        return $this->update($parentId, $entity);
+    }
+
+    public function embedEntityInNewParents($parentList, $childData)
+    {
+
+        //get all the parents of the current child
+        $parentsRelations = $this->getParentRelations();
+
+        //check all resources before proceeding
+        foreach ($parentList as $k => $v) {
+            if (!array_key_exists($k, $parentsRelations)) {
+                throw new \Exception('Attempting to add child of class ' . get_class($this) . ' to non-existant parent resource ' . $k);
+            }            
+        }
+
+        /*
+        * loop through all the parent keys
+        * get the list of ids, and instantiante each correct parent
+        * append the child ids or set the child data
+        * run embed children if needed.
+        */
+        foreach ($parentList as $resource => $ids) {
+
+            //get the parent config from the relations
+            $parentConfig = $parentsRelations[$resource];
+            //get the generic parent class (basically a factory)
+            $parentClass = $this->createRelatedClass($resource, $parentConfig);
+            //get the child config from the parent for embed key and whether to embed
+            $childConfigFromParent = $parentClass->getChildByClassName(get_class($this));
+            $childEmbedKey = $childConfigFromParent["embedKey"];
+            $toEmbded = $childConfigFromParent['embed'];
+
+            /*
+            * instatntiate each individual parent
+            */
+
+            foreach($ids as $parentId) {
+                
+                //retrive the parent data from db
+                $parentEntity = $parentClass->findById($parentId, true);
+
+                //embed or add ids
+
+                /*
+                * @TODO: won't be able to tell the difference between empty arrays
+                * so assoc and indexed will look the same
+                */
+                if (is_array($parentEntity[$childEmbedKey]) && !ArrayUtil::isAssociative($parentEntity[$childEmbedKey])) {
+
+                    
+                    // one-many relation
+                    $childId = $childData['_id'];
+                    $parentClass->addNewChildIds($parentEntity, [$childEmbedKey => [$childId]]);
+
+                    // embedded one-many
+                    if ($toEmbded) {
+                        $parentClass->embedChildren($parentEntity);   
+                    }
+
+                } elseif (!$toEmbded) {
+
+                    // non-embedded one-one
+                    $parentEntity[$childEmbedKey] = $childData['_id'];
+                
+                } else {
+                
+                    // embedded one-one
+                    $parentEntity[$childEmbedKey] = $childData;   
+                
+                }
+
+            }
+
+            //update the parent's data
+            $parentId = ArrayUtil::shiftId($parentEntity);
+            $newParentData = $parentClass->update($parentId, $parentEntity);
+
+        }
+
+    }
+
 }
