@@ -211,10 +211,12 @@ class ResourceResolver
                     : sprintf('%s\Model\%s', $this->getFallbackNamespace(), StringUtil::camelize($childKey));
                 $embed = isset($childData['embed']) ? $childData['embed'] : false;
                 $embedKey = isset($childData['embed']) ? $childData['embedKey'] : $childKey;
+                $relationType = isset($childData['type']) ? $childData['type'] : false;
                 $relations[$childKey] = [
                     'class' => $childClass,
                     'embed' => $embed,
                     'embedKey' => $embedKey,
+                    'type' => $relationType,
                 ];
             }
             return $relations;
