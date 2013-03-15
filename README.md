@@ -82,3 +82,61 @@ curl -X POST -H Authentication:slender --data '{"zip":"90200", "_parents":{"prof
 
 curl -X PUT -H Authentication:slender --data '{"birthday" : "1/19/2005", "_children": {"locations":["e4373954-79a4-4309-8536-6a78a15fa8b7"]}}' http://localhost:80/eb/profiles/9a2b43f1-a8d3-46a3-9289-6289e91234e8
 ```
+
+#Query Parameters
+
+WHERE
+-----
+### select persons 40 yrs old:
+```
+/endpoint?where[]=age:40
+```
+### select persons older that 40 yrs old
+```
+/endpoint?where[]=age:gt:40
+```
+### select persons 40 or older
+```
+/endpoint?where[]=age:gte:40
+```
+### select persons 40 or older who own a red car (car is embeded object)
+```
+/endpoint?where[]=age:gte:40&car.color:red
+```
+FIELDS
+------
+
+### select age, gender and car color only (car is embeded object)
+```
+/endpoint?fields:age,gender,car.color
+```
+
+ORDER
+-----
+### order by last name ascending and first name descending
+```
+/endpoint?order=lastname:asc,firstname:desc
+```
+
+TAKE & SKIP
+----
+### select the first 10 documents
+```
+/endpoint?take=10
+```
+### select the second 10 documents
+```
+/endpoint?skip=10&take=10
+```
+
+Aggregates
+---------
+### count only requires on param
+```
+/endpoint?aggregate=count
+```
+
+### the rest require the field
+```
+/endpoint?aggregate=max:age
+```
