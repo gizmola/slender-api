@@ -47,3 +47,29 @@ from inside of vagrant
 
 #Parent Child Relations
 
+resource.php
+------
+Note that a parnt must must define a relation type for each child (has-many, has-one)
+```
+'profiles' => [
+    'controller' => [
+      'class' => 'Slender\API\Controller\ProfilesController',
+    ],
+    'model' => [
+        'class' => 'Slender\API\Model\Profiles',
+        'parents' => [
+           'users' => [
+               'class' => 'Slender\API\Model\Users',
+           ],
+        ],
+        'children' => [
+           'locations' => [
+               'class' => 'Slender\API\Model\Locations',
+               'embed' => true,
+               'embedKey' => 'locations',
+               'type' => 'has-many',
+           ],
+        ],
+    ],
+],
+```
