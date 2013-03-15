@@ -44,3 +44,6 @@ If you get Class 'MongoClient' not found
 try: sudo pecl install mongo
 ```
 from inside of vagrant
+
+#Parent Child Relations
+
