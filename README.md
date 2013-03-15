@@ -49,7 +49,7 @@ from inside of vagrant
 
 resource.php
 ------
-Note that a parnt must must define a relation type for each child (has-many, has-one)
+Note that a parent must must define a relation type for each child (has-many, has-one)
 ```
 'profiles' => [
     'controller' => [
@@ -72,4 +72,13 @@ Note that a parnt must must define a relation type for each child (has-many, has
         ],
     ],
 ],
+```
+
+Send Parent/Child data on PUT and POST
+--------------
+The format for both PUT and POST are identical. Simply provide a "_parents" or "_children" associative array. 
+```
+curl -X POST -H Authentication:slender --data '{"zip":"90200", "_parents":{"profiles":["9a2b43f1-a8d3-46a3-9289-6289e91234e8"]}}' http://localhost:80/eb/locations/e4373954-79a4-4309-8536-6a78a15fa8b7
+
+curl -X PUT -H Authentication:slender --data '{"birthday" : "1/19/2005", "_children": {"locations":["e4373954-79a4-4309-8536-6a78a15fa8b7"]}}' http://localhost:80/eb/profiles/9a2b43f1-a8d3-46a3-9289-6289e91234e8
 ```
