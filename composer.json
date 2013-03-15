@@ -15,15 +15,9 @@
             "Slender\\API\\Command": "app",
             "Slender\\API\\Database\\Migration": "app",
 			"Dws\\Slender\\Api": "lib/dws/src"
-		},
-        "files": [
-            "lib/dws/src/Dws/Gdata/YoutubeClient.php",
-            "lib/Zend/Loader.php",
-            "lib/dws/src/Dws/Rackspace/OpencloudClient.php"
-        ]
-
+		}
 	},
-    "include-path": ["lib","lib/Rackspace/php-opencloud/lib"],
+    "include-path": ["lib"],
 	"minimum-stability": "dev",
 
 	"require-dev": {
