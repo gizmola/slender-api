@@ -115,6 +115,7 @@ return [
                    'class' => 'Slender\API\Model\Photos',
                    'embed' => true,
                    'embedKey' => 'photos',
+                   'type' => 'has-many',
                ],
            ],
        ],
