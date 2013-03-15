@@ -76,3 +76,11 @@ Route::filter('auth-common-permissions', function($route, $request)
     }
 });
 
+Route::filter('csrf', function()
+{
+    if (Session::getToken() != Input::get('_token'))
+    {
+        throw new Illuminate\Session\TokenMismatchException;
+    }
+});
+
