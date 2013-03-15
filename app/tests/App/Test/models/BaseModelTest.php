@@ -5,6 +5,7 @@ namespace App\Test\Model;
 use Slender\API\Model\BaseModel;
 use App\Test\TestCase;
 use App\Test\Mock\Model\PartialUpdateWithValidation as PartialUpdateModel;
+use Dws\Utils;
 
 class BaseModelTest extends TestCase
 {
@@ -79,28 +80,6 @@ class BaseModelTest extends TestCase
 
 	}
 
-
-
-	public function testEmbedChildArray()
-	{
-
-		$model = new BaseModel;
-
-		$parentData = [
-			'name' => 'album1',
-			'photos' => [1],
-		];
-
-		$modelSpy = $this->getMock('Slender\API\Model\BaseModel');
-		$modelSpy->expects($this->exactly(1))
-			->method('findById')
-			->with(1)
-			->will($this->returnValue(['name'=>'photo1', 'description' => 'a pretty pic']));
-		$model->embedChildData($parentData['photos'], $modelSpy);
-		$this->assertInternalType('array', $parentData['photos'][0]);
-		$this->assertArrayHasKey('name', $parentData['photos'][0]);
-	}
-
 	public function testUpdateParentDataWithNewChildData()
 	{
 		$parentData = [
@@ -111,17 +90,14 @@ class BaseModelTest extends TestCase
 		$childData = ['_id' => '123', 'location' => 'new/path/to/file_123'];
 
 		$model = new BaseModel;
-
-		$index = $model->updateParentData($childData, $parentData);
-		$this->assertNotSame(null, $index);
-
+		$index = $model->updateParentData($childData, $parentData, 'has-many');
 		$this->assertNotSame($parentData[1], $childData);
 		$this->assertSame($parentData[0], $childData);
 
-		$index = $model->updateParentData($childData, $parentData, true);
-
+		$index = $model->updateParentData($childData, $parentData, 'has-many', true);
 		$this->assertEquals(1,count($parentData));
 		$this->assertEquals('123456',array_shift($parentData)['_id']);
+
 	}
 
 	public function testCanGetEmbededChildParent()
@@ -163,54 +139,6 @@ class BaseModelTest extends TestCase
         $this->assertFalse($model->isValid($data, false));   // isPartial = false
     }
 
-    public function testCanAddNewChildIds() 
-    {
-
-    	$oldData = [
-    		'id' => 'id1',
-    		'name' => 'name',
-    		'key1' => [
-	    		['item1'=>'value1'],
-	    		['item2'=>'value2'],
-	    		['item3'=>'value3'],
-	    	],
-	    	'key2' => 'some-old-data'
-    	];
-
-    	$newData = [
-    		'key1' => ['id1','id2', 'id3'],
-    		'key2' => 'id4',
-    	];
-
-    	$model = new BaseModel;
-    	$model->addNewChildIds($oldData, $newData);
-    	$this->assertEquals('id4', $oldData['key2']);
-    	$this->assertEquals('id2', $oldData['key1'][4]);
-
-    }
-
-	public function testEmbedOneToOneChildArray()
-	{
-
-		$model = new BaseModel;
-
-		$parentData = [
-			'name' => 'album1',
-			'photos' => 1,
-		];
-
-		$modelSpy = $this->getMock('Slender\API\Model\BaseModel');
-		$modelSpy->expects($this->exactly(1))
-			->method('findById')
-			->with(1)
-			->will($this->returnValue(['name'=>'photo1', 'description' => 'a pretty pic']));
-		$model->embedChildData($parentData['photos'], $modelSpy);
-
-		$this->assertInternalType('array', $parentData['photos']);
-		$this->assertArrayHasKey('description', $parentData['photos']);
-
-	}
-
 	public function testCanGetRelationsByType()
 	{
 
@@ -236,10 +164,76 @@ class BaseModelTest extends TestCase
 		$this->assertArrayHasKey('users', $childRelations);
 		$this->assertArrayHasKey('profiles', $childRelations);
 
+	}
+
+	public function testCanembeddedChildData()
+	{
+
+		$parentEntity = [
+			'_id' => '123',
+			'name' => 'parent',
+		];
+
+		$childEntity = [
+			'_id' => '123',
+			'name' => 'child',
+		];
+
+		$model = new BaseModel;
+		/*
+		* test case: parent has one embedded child
+		*/
+		$model->embeddedChildData($parentEntity, 'embedded-one', $childEntity, 'has-one');
+		$this->assertArrayHasKey('embedded-one', $parentEntity);
+		$this->assertArrayHasKey('name', $parentEntity['embedded-one']);
+		$this->assertSame('child', $parentEntity['embedded-one']['name']);
+		/*
+		* test case: parent has one non-embedded child
+		*/
+		$model->embeddedChildData($parentEntity, 'not-embedded-one', $childEntity["_id"], 'has-one');
+		$this->assertArrayHasKey('not-embedded-one', $parentEntity);
+		$this->assertTrue(!is_array($parentEntity['not-embedded-one']));
+		$this->assertSame('123', $parentEntity['not-embedded-one']);
+		/*
+		* test case: parent has many embedded children
+		*/
+		$model->embeddedChildData($parentEntity, 'embedded-many', $childEntity, 'has-many');
+		$this->assertArrayHasKey('embedded-many', $parentEntity);
+		$this->assertTrue(Utils\Arrays::isIndexed($parentEntity['embedded-many']));
+		$this->assertSame('child', $parentEntity['embedded-many'][0]['name']);
+		$model->embeddedChildData($parentEntity, 'embedded-many', $childEntity, 'has-many');
+		$this->assertTrue(Utils\Arrays::isIndexed($parentEntity['embedded-many']));
+		$this->assertSame(2, count($parentEntity['embedded-many']));
 
 	}
 
+	public function getEntities()
+	{
+		$model = new BaseModel;
+		$modelSpy = $this->getMock('Slender\API\Model\BaseModel');
+		$modelSpy->expects($this->any())
+			->method('findById')
+			->will($this->returnValue(['name'=>'photo1', 'description' => 'a pretty pic']));
+		$entities = $model->getChildEntities($modelSpy, [1,2,3,4]);		
+		$this->assertEquals(4, count($entities));
+	}
 
+	public function testCanCreateRelatedClass()
+	{
+		
+		$model = new BaseModel;
 
+		$relations = [
+			'albums' => [
+				'class' => 'Slender\API\Model\Albums',
+				'embed' => true, // or false
+				'embedKey' => 'albums',
+			],
+		];
+
+		$class = $model->createRelatedClass('albums', $relations['albums']);
+		$this->assertInstanceOf('Slender\API\Model\Albums',$class);
+
+	}
 
 }
