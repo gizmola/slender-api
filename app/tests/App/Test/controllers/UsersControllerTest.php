@@ -2,7 +2,7 @@
 
 namespace App\Test\Controller;
 
-use \App;
+use \App, \Hash;
 use App\Test\TestCase;
 use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Roles;
@@ -185,4 +185,77 @@ class UsersControllerTest extends TestCase
         $response = $this->call('POST', '/users', array(), array(), array(), json_encode($userData));
         $this->assertEquals(401, $response->getStatusCode());
     }
+
+
+    public function testUpdatePassword()
+    {
+
+        $input = [
+            'name' => 'Admin Role',
+            'permissions' => [
+                'global' => [
+                    'users' => [
+                        'read'      => 1,
+                        'write'     => 1,
+                        'delete'    => 1,
+                    ],
+                    'roles' => [
+                        'read'      => 1,
+                        'write'     => 1,
+                        'delete'    => 1,
+                    ],
+                    'sites' => [
+                        'read'      => 1,
+                        'write'     => 1,
+                        'delete'    => 1,
+                    ],
+                ]
+            ]
+        ];
+
+        $role = $this->call('POST', '/roles', array(), array(), array(), json_encode($input));
+        $role = json_decode($role->getContent(), true);
+        $this->assertInternalType('array', $role);
+        $this->assertArrayHasKey('roles', $role);
+        $this->assertArrayHasKey(0, $role['roles']);
+        $role = $role['roles'][0];
+        $this->refreshApplication();
+
+        $input = [
+            'first_name'    => 'John',
+            'last_name'     => 'Doe',
+            'email'         => 'john@doe.no',
+            'password'      => 'required',
+            'roles'         => [$role['_id']]
+        ];
+
+        $user = $this->call('POST', '/users', array(), array(), array(), json_encode($input));
+        $user = json_decode($user->getContent(), true);
+        $this->assertInternalType('array', $user);
+        $this->assertArrayHasKey('users', $user);
+        $this->assertArrayHasKey(0, $user['users']);
+
+        $user = $user['users'][0];
+        $id = $user['_id'];
+
+        $new_password = 'test';
+
+        $input = [
+            'password'      => $new_password,
+        ];
+        $this->refreshApplication();
+        $user2 = $this->call('PUT', "/users/{$id}", array(), array(), array(), json_encode($input));
+        $user2 = json_decode($user2->getContent(), true);
+        $this->assertInternalType('array', $user2);
+        $this->assertArrayHasKey('users', $user2);
+        $this->assertArrayHasKey(0, $user2['users']);
+        $user2 = $user2['users'][0];
+
+        $this->assertTrue(Hash::check($new_password, $user2['password']), "Faild updating(HTTP: PUT) single user field (password)");
+        $this->assertEquals($id, $user2['_id']);
+        $this->assertEquals('John', $user2['first_name']);
+
+
+    }
+
 }

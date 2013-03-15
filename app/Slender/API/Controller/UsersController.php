@@ -20,12 +20,14 @@ class UsersController extends BaseController
 
         $input = $this->model->updateRolesAndPermissions($input);
 
-        if (!$this->validatePayloadAgainstClient($input)) {
-            return $this->unauthorizedRequest([
-                'Unauthorized: proposed user permissions in excess of client permissions',
-            ]);
+        if(isset($input['permissions'])){
+            if (!$this->validatePayloadAgainstClient($input)) {
+                return $this->unauthorizedRequest([
+                    'Unauthorized: proposed user permissions in excess of client permissions',
+                ]);
+            }
         }
-
+        
 		$entity = $this->model->update($id, $input);
 		return Response::json(array(
 			$this->getReturnKey() => array(
