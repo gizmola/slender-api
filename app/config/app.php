@@ -86,6 +86,7 @@ return array(
         'sites',
         'users',
         'roles',
+        'audit',
     ),
 
 	/*

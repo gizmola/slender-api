@@ -47,6 +47,13 @@ class BaseModel extends MongoModel
     protected $resolver;
 
     /**
+     * The client user making the request
+     *
+     * @var array
+     */
+    protected $clientUser;
+
+    /**
      * Constructor
      *
      * @param \LMongo\Database $connection
@@ -229,6 +236,8 @@ class BaseModel extends MongoModel
             $this->addToParentEntities($entity, $parentsSent);
         }
 
+        $this->audit($entity);
+
         return $entity;
 
     }
@@ -252,6 +261,8 @@ class BaseModel extends MongoModel
         if($this->timestamp){
             $data['updated_at'] = new \MongoDate();
         }
+
+        $before = $this->getCollection()->where('_id', $id)->first();
 
         //first save any non-related data
         $this->getCollection()->where('_id', $id)->update($data);
@@ -280,6 +291,8 @@ class BaseModel extends MongoModel
         if ($parentsSent) {
             $this->addToParentEntities($entity, $parentsSent);
         }
+
+        $this->audit($entity, $before);
 
         return $entity;
 
@@ -746,6 +759,32 @@ class BaseModel extends MongoModel
     public function clearValidationMessages()
     {
         return $this->setValidationMessages(null);
+    }
+
+    /**
+     * Get the client-user making the request
+     *
+     * @return array
+     */
+    public function getClientUser()
+    {
+        if (null === $this->clientUser) {
+            try {
+                $this->clientUser = \App::make('client-user');
+            } catch (\Exception $e) {
+            }
+        }
+        return $this->clientUser;
+    }
+
+
+    private function audit($after, $before = null){
+        $audit = new Audit;
+        return $audit->insert([
+            'type'      => get_class($this),
+            'before'    => $before,
+            'after'     => $after,
+        ]);
     }
 
 }

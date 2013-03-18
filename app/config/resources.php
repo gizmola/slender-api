@@ -74,7 +74,7 @@
  * in app/config/app.php under the key 'fallback-namespaces.resources'
  *
  * The ResourceResolver is populated with this data and then is able to construct
- * (with proper fallbacks) classnames for models, controlllers, and relations.
+ * (with proper fallbacks) classnames for models, controllers, and relations.
  *
  * The RouteCreator uses this ResourceResolver to construct routes and callbacks
  * corresponding to this resource data.
@@ -101,6 +101,8 @@ return [
         'users' => [],
 
         'sites' => [],
+        
+        'audit' => [],
     ],
 
     // Base non-core resources.
