@@ -306,7 +306,7 @@ class BaseModel extends MongoModel
     public function delete($id)
     {
         $this->getCollection()->where('_id', $id)->delete();
-        $this->updateParents($id);
+        $this->updateParents(["_id" => $id]);
         if (\Config::get('cache.enabled'))
             \Cache::forget($this->collectionName . "_" . $id);
         return true;
