@@ -58,6 +58,9 @@ class BaseModel extends MongoModel
      *
      * @param \LMongo\Database $connection
      */
+
+    const UPDATE_METHOD_DELETE = true;
+
     public function __construct(Connection $connection = null)
     {
         parent::__construct($connection);
@@ -306,7 +309,7 @@ class BaseModel extends MongoModel
     public function delete($id)
     {
         $this->getCollection()->where('_id', $id)->delete();
-        $this->updateParents(["_id" => $id]);
+        $this->updateParents(["_id" => $id], self::UPDATE_METHOD_DELETE);
         if (\Config::get('cache.enabled'))
             \Cache::forget($this->collectionName . "_" . $id);
         return true;
@@ -555,6 +558,8 @@ class BaseModel extends MongoModel
             if ($index !== null) {
                 if ($isDelete) {
                     unset($children[$i]);
+                    //reset the array keys
+                    $children = array_values($children);
                 } else {
                     $children[$i] = $childData;
                 }

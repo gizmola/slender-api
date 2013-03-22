@@ -94,9 +94,10 @@ class BaseModelTest extends TestCase
 		$this->assertNotSame($parentData[1], $childData);
 		$this->assertSame($parentData[0], $childData);
 
-		$index = $model->updateParentData($childData, $parentData, 'has-many', true);
+		$model->updateParentData($childData, $parentData, 'has-many', $model::UPDATE_METHOD_DELETE);
 		$this->assertEquals(1,count($parentData));
-		$this->assertEquals('123456',array_shift($parentData)['_id']);
+		//test that the array keys were reset
+		$this->assertEquals('123456',$parentData[0]['_id']);
 
 	}
 
