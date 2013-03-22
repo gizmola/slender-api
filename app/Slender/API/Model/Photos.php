@@ -9,18 +9,12 @@ class Photos extends \Slender\API\Model\BaseModel
 	protected $schema = [
 
         'title' => ['required'],
-        'meta' => [
-            'title' => [],
-            'keywords' => [],
-        ],
         'slug' => ['alpha_dash','required'],
-        'photos' => [],
-        'availability'  => [
-            'sunrise' => ['datetime'],
-            'sunset'  => ['datetime'],
+        'meta' => [
+            'keywords' => ['array'],
+            'description' => [],
         ],
-        'created' => ['datetime'],
-        'updated' => ['datetime'],
+        'versions' => ['array'],
 
     ];
 
