@@ -131,6 +131,23 @@ return [
            ],
        ],
     ],
+    'categories' => [
+       'model' => [
+           'children' => [
+               'categories' => [
+                   'class' => 'Slender\API\Model\Categories',
+                   'embed' => true,
+                   'embedKey' => 'categories',
+                   'type' => 'has-many',
+               ],
+           ],
+           'parents' => [
+               'categories' => [
+                   'class' => 'Slender\API\Model\Categories',
+               ],
+           ],
+       ],
+    ],
     'news' => [],
     'pages' => [],
     'videos' => [],
