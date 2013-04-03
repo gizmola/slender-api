@@ -72,7 +72,7 @@ return array(
 			'password' => '',
 			'charset'  => 'utf8',
 			'prefix'   => '',
-            'schema'   => 'public',
+			'schema'   => 'public',
 		),
 
 		'sqlsrv' => array(

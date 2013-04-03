@@ -250,7 +250,7 @@ abstract class BaseController extends \Controller
     public function getJsonBodyData()
     {
         if (null === $this->bodyData) {
-            $data = Input::json();
+            $data = Input::json()->all();
             if (null === $data) {
                 $this->badRequest([
                     'Empty/invalid JSON body',
