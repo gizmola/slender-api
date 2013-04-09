@@ -31,6 +31,7 @@ class BaseModelTest extends TestCase
 		$model->setRelations($relations);
 		$children = $model->getRelations()['children'];
 		$this->assertArrayHasKey('my-child-1', $children);
+
 	}
 
 	public function testCanAddRelation()
@@ -208,14 +209,14 @@ class BaseModelTest extends TestCase
 
 	}
 
-	public function getEntities()
+	public function testGetEntities()
 	{
 		$model = new BaseModel;
 		$modelSpy = $this->getMock('Slender\API\Model\BaseModel');
 		$modelSpy->expects($this->any())
 			->method('findById')
 			->will($this->returnValue(['name'=>'photo1', 'description' => 'a pretty pic']));
-		$entities = $model->getChildEntities($modelSpy, [1,2,3,4]);		
+		$entities = $model->getEntities($modelSpy, [1,2,3,4]);		
 		$this->assertEquals(4, count($entities));
 	}
 
@@ -234,6 +235,180 @@ class BaseModelTest extends TestCase
 
 		$class = $model->createRelatedClass('albums', $relations['albums']);
 		$this->assertInstanceOf('Slender\API\Model\Albums',$class);
+
+	}
+	/*
+	* SUT
+	* BaseModel::embedChildEntities()
+	* which is called when a new entity
+	* is created and existing children
+	* are to be embedded
+	*/
+	public function testEmbedChildEntities()
+	{
+
+		//build and model and set relations
+		$model = new BaseModel;
+		$relations = [
+			'children' => [
+			   'photos' => [
+			       'class' => 'Slender\API\Model\Photos',
+			       'embed' => true,
+			       'embedKey' => 'photos',
+			       'type' => 'has-many',
+			   ],
+			],
+		];
+		$model->setRelations($relations);
+		/*
+		* build a mock child class that will return a data
+		* set representing a child entity when Model::findById($id)
+		* is called
+		*/
+		$childModelMock = $this->getMock('Slender\API\Model\BaseModel');
+		$childModelMock->expects($this->any())
+			->method('findById')
+			->will($this->returnValue(['_id'=>'1324', 'title' => "a child photo"]));
+		/*
+		* a mock resolver class allows use to 
+		* alert the application that the system
+		* is under test by returning an instance of
+		* ChildModelMock
+		*/
+		$resolverMock = $this->getMock(
+			'Dws\Slender\Api\Resolver\ResourceResolver',
+			array('buildModelRelations'),
+			array(),
+			'MyResolverMock',
+			false
+		);
+		$resolverMock->expects($this->any())
+			->method('buildModelRelations')
+			->will($this->returnValue($childModelMock));
+		$model->setResolver($resolverMock);
+
+		//run the actual test
+		/*
+		* The child list is a mock list of child 
+		* ids to be embedded in the parent
+		*/
+		$childList = ['photos' => [1]];
+		/*
+		* data for a mock parent entity into which
+		* the child data will be embedded
+		*/
+		$parentEntity = [
+			'_id' => '1234',
+			'photos' => [],
+		];
+		$model->embedChildEntities($parentEntity, $childList);
+		$this->assertSame(1, count($parentEntity['photos']));
+
+	}
+	/*
+	* SUT
+	* BaseModel::addToParentEntities()
+	* which is called when a child entity
+	* is created or updated and has been 
+	* assigned to existing parent(s)
+	*/
+	public function testAddToParentEntities()
+	{
+
+		/*
+		* stub child data to be embedded in the parent entity
+		*/
+		$childEntity = ['_id'=>'1324', 'title' => "a child photo"];
+		/*
+		* stub list of parent ids
+		*/
+		$parentList = ['albums' => [1]];
+		/*
+		* build a mock parent
+		*/
+		$parentModelMock = $this->getMock('Slender\API\Model\BaseModel');
+		/*
+		* set up the child model and its relation
+		* to the mock parent class
+		*/
+		$model = new BaseModel;
+		$parentRelations = [
+			'parents' => [
+		    	'albums' => [
+		        	'class' => get_class($parentModelMock),
+		        ],
+		    ],
+		];
+		$model->setRelations($parentRelations);
+		/*
+		* stub child relations
+		* to be returned by 
+		* parentModelMock::getChildRelations()
+		*/
+		$relations = [
+			'children' => [
+			   'photos' => [
+			       'class' => get_class($model),
+			       'embed' => true,
+			       'embedKey' => 'photos',
+			       'type' => 'has-many',
+			   ],
+			],
+		];
+		/*
+		* stub data to be returned by parentModelMock
+		* when findById($id) is called
+		*/
+		$parentEntity = [
+			'_id' => '1234',
+			'photos' => [],
+		];
+		/*
+		* mock parent class will return $parentEntity
+		* when Model::findById($id) is called
+		* and $relations when parentModelMock::getChildRelations() is called
+		*/
+		$parentModelMock->expects($this->any())
+			->method('getChildRelations')
+			->will($this->returnValue($relations['children']));
+		$parentModelMock->expects($this->any())
+			->method('findById')
+			->will($this->returnValue($parentEntity));
+		/*
+		* a mock resolver class allows us to 
+		* alert the application that the system
+		* is under test by returning an instance of
+		* parentModelMock
+		*/
+		$resolverMock = $this->getMock(
+			'Dws\Slender\Api\Resolver\ResourceResolver',
+			array('buildModelRelations'),
+			array(),
+			'MyResolverMock',
+			false
+		);
+		$resolverMock->expects($this->any())
+			->method('buildModelRelations')
+			->will($this->returnValue($parentModelMock));
+		$model->setResolver($resolverMock);
+		/*
+		* Since the SUT does not return or modify and observable data, we must
+		* inspect the data via an observer
+
+		* data that is expected to be 
+		* passed to update function
+		*/
+		$equalToParentId = '1234';
+		$equalToParent = [
+			'photos' => [$childEntity],
+		];
+		$parentModelMock->expects($this->any())
+			->method('update')
+			->with($this->equalTo($equalToParentId), $this->equalTo($equalToParent));
+		/*
+		* run the test
+		*/
+		$model->addToParentEntities($childEntity, $parentList);
 
 	}
 
