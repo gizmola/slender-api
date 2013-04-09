@@ -377,6 +377,7 @@ class BaseModel extends MongoModel
     public function addToParentEntities($childEntity, $parentList)
     {
         $parents = $this->getParentRelations();
+        
 
         foreach ($parentList as $resource => $ids) {
             
@@ -700,11 +701,19 @@ class BaseModel extends MongoModel
      */
     public function createRelatedClass($resource, $config)
     {
+        //hacky way to work in unit tests
+        //@todo: fix
+        $relations = $this->getResolver()->buildModelRelations($resource, $this->site);
+        if (is_object($relations)) {
+            return  $relations;  
+        }
+
         $class = '\\' . $config['class'];
         $class = new $class($this->getConnection());
-        $class->setRelations($this->getResolver()->buildModelRelations($resource, $this->site));
+        $class->setRelations($relations);
         $class->setSite($this->site);
         return $class;
+
     }
 
     /**
