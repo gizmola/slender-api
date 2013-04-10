@@ -140,3 +140,10 @@ Aggregates
 ```
 /endpoint?aggregate=max:age
 ```
+
+Dates
+---------
+### parameter in date should be an unix timestamp integer
+```
+/endpoint?where[]=startdate:gte:Date(123456)
+```

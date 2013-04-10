@@ -55,17 +55,17 @@ class Params{
 
 			$valueStore = count($where[$i]) -1;
 			$key = $where[$i][0];
+			$value = $where[$i][$valueStore];
 
 			if (!in_array($key, self::getDontCast())) {
 
-				//double and int types
 				if (is_numeric($where[$i][$valueStore])) {
+					//double and int types
 					$where[$i][$valueStore] = (float)$where[$i][$valueStore];	
+				} elseif (strstr($value, "Date")) {
+					//date types
+					$where[$i][$valueStore] = self::castToMongoDate($where[$i][$valueStore]);
 				}
-
-				/**
-				* @todo date types
-				*/
 
 			}
 
@@ -162,6 +162,30 @@ class Params{
 	public static function getDontCast()
 	{
 		return self::$dontCast;
+	}
+
+	public static function castToMongoDate($date)
+	{
+		/*
+		* cast dates values to the MongoDate class
+		* dates should be passed as Date(int)
+		* escaped Date%28int%29
+		*/
+
+		preg_match("/\(.*\)/", $date, $matches);
+
+		if (empty($matches[0])) {
+			throw new \Exception("Malformed date. Please use format Date(int)");
+		}
+
+		$date = substr($matches[0], 1, -1);
+
+		if (!is_numeric($date)) {
+			throw new \Exception("Malformed date. Please use format Date(int)");
+		}
+
+		return new \MongoDate((int)$date);
+
 	}
 
 
