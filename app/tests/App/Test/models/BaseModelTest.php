@@ -412,4 +412,141 @@ class BaseModelTest extends TestCase
 
 	}
 
+	/*
+	* SUT
+	* BaseModel::updateParents()
+	* Which is called any time an
+	* entity is updated
+	*/
+	public function testUpdateParents()
+	{
+		//echo "\n" . __FUNCTION__ . "\n";
+		$model = new BaseModel;
+		//$model = new \Slender\API\Model\Photos;
+		/*
+		* build a mock parent
+		*/
+		$parentModelMock = $this->getMock(
+			'Slender\API\Model\BaseModel',
+			[
+				'getChildRelations',
+				'getChildByClassName',
+				'update',
+				'getCollection',
+				'where',
+				'get'
+			]
+		);
+		/*
+		* stub child data to be updated to
+		*/
+		$childEntity = ['_id'=>'1324', 'title' => "a new child photo title"];
+		/*
+		* stub data to be returned 
+		* by mockConnection
+		* when get() is called
+		*/
+		$parentEntities = [
+			[
+				'_id' => '1234',
+				'photos' => [
+					[
+						'_id'=>'1324', 
+						'title' => "an old child photo title"
+					],
+				],
+			]
+		];
+		/*
+		* the expected data to be passed
+		* to parentModel::update()
+		*/
+		$expectedUpdatedParentId = $parentEntities[0]['_id'];
+		$expectedUpdatedParentData = [
+			'photos' => [
+				$childEntity
+			],
+		];
+		/*
+		* stub child relations
+		* to be returned by 
+		* parentModelMock::getChildRelations()
+		*/
+		$parentChildRelations = [
+			'children' => [
+			   'photos' => [
+			       'class' => get_class($model),
+			       'embed' => true,
+			       'embedKey' => 'photos',
+			       'type' => 'has-many',
+			   ],
+			],
+		];
+		/*
+		* set up the child model and its relation
+		* to the mock parent class
+		*/
+		$childParentRelations = [
+			'parents' => [
+		    	'albums' => [
+		        	'class' => get_class($parentModelMock),
+		        ],
+		    ],
+		];
+		$model->setRelations($childParentRelations);
+		/*
+		* a mock resolver class allows us to 
+		* alert the application that the system
+		* is under test by returning an instance of
+		* parentModelMock
+		*/
+		$resolverMock = $this->getMock(
+			'Dws\Slender\Api\Resolver\ResourceResolver',
+			array('buildModelRelations'),
+			array(),
+			'MyResolverMock',
+			false
+		);
+		$resolverMock->expects($this->any())
+			->method('buildModelRelations')
+			->will($this->returnValue($parentModelMock));
+		$model->setResolver($resolverMock);
+		/*
+		* mock parent class will return $parentEntity
+		* when Model::findById($id) is called
+		* and $relations when parentModelMock::getChildRelations() is called
+		*/
+		$parentModelMock->expects($this->any())
+			->method('getChildRelations')
+			->will($this->returnValue($parentChildRelations['children']));
+		$parentModelMock->expects($this->any())
+			->method('getChildByClassName')
+			->will($this->returnValue($parentChildRelations['children']['photos']));
+		/*
+		* updateParents uses the Lmongo connection to find parents
+		* therefore we mock the calls to it
+		*/
+		$parentModelMock->expects($this->any())
+			->method('getCollection')
+			->will($this->returnValue($parentModelMock));
+		$parentModelMock->expects($this->any())
+			->method('where')
+			->will($this->returnValue($parentModelMock));
+		$parentModelMock->expects($this->any())
+			->method('get')
+			->will($this->returnValue($parentEntities));
+		/*
+		* Since the SUT does not return or modify and observable data, we must
+		* inspect the data via an observer
+		*/
+		$parentModelMock->expects($this->any())
+			->method('update')
+			->with($this->equalTo("1234"), $this->equalTo($expectedUpdatedParentData));
+		/*
+		* RUN THE TEST
+		*/
+		$model->updateParents($childEntity, false);
+
+	}
+
 }
