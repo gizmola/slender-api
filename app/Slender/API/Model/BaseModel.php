@@ -101,10 +101,10 @@ class BaseModel extends MongoModel
      * @param type $limit
      * @param type $offset
      */
-    public function findMany($qm,  &$meta)
+    public function findMany($qm)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
-            return $this->findManyQuery($qm,  $meta);
+            return $this->findManyQuery($qm);
         } else {
             /*
             * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
@@ -120,7 +120,7 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($qm,  &$meta){ return $this->findManyQuery($qm,  $meta);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($qm){ return $this->findManyQuery($qm);});
         }
 
     }
@@ -137,7 +137,7 @@ class BaseModel extends MongoModel
      * @param type $with
      * @return type
      */
-    protected function findManyQuery($qm,  &$meta)
+    protected function findManyQuery($qm)
     {
 
         $builder = $this->getCollection();

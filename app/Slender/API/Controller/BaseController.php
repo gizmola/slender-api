@@ -93,8 +93,7 @@ abstract class BaseController extends \Controller
 	{
 
         $qm = $this->getQueryManager()->setParams(ParamsHelper::all());
-		$meta = [];
-		$records = $this->model->findMany($qm, $meta);
+		$records = $this->model->findMany($qm);
 
 		$result = [
 			$this->getReturnKey() => $records
