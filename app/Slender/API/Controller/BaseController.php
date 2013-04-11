@@ -99,11 +99,8 @@ abstract class BaseController extends \Controller
 		$result = [
 			$this->getReturnKey() => $records
 		];
-
-		if($meta)
-		{
-			$result['meta'] = $meta;
-		}
+        
+        $result['meta'] = $qm->getMeta();
 
 		return Response::json($result);
 

@@ -141,66 +141,9 @@ class BaseModel extends MongoModel
     {
 
         $builder = $this->getCollection();
-        $where = $qm->get('where');
-        $aggregate = $qm->get('aggregate');
-        $orders = $qm->get('orders');
-        $take = $qm->get('take');
-        $skip = $qm->get('skip');
-        $fields = $qm->get('fields');
-        $with = $qm->get('with');
-
-        if ($where) {
-            $builder = FromArrayBuilder::buildWhere($builder, $where);
-        }
-
-        if ($aggregate) {
-
-            /*
-            determine the type of aggregate function
-            end run the correct execution
-            return the aggregate data via ref $meta
-            */
-
-            if ($aggregate[0] == 'count') {
-                $results = $builder->count();
-            } else {
-                $results = $builder->$aggregate[0]($aggregate[1]);
-                $meta['count'] = null;
-            }
-
-
-            $meta[$aggregate[0]] = $results;
-
-            return [];
-        }
-
-        if ($orders) {
-            $builder = FromArrayBuilder::buildOrders($builder,$orders);
-        }
-
-        if ($take) {
-            $builder = $builder->take($take);
-        }
-
-        if ($skip) {
-            $builder = $builder->skip($skip);
-        }
-
-        if ($fields) {
-            $result = $builder->get($fields);
-        } else {
-            $result = $builder->get();
-        }
-
-        /*
-        * the count() function calls get
-        * internally which precludes setting
-        * the "columns" when using get($fields)
-        * so we must call count after
-        * alternatively we could add a "setColumns"
-        * function to our MongoModel
-        */
-        $meta['count'] = $builder->count();
+        $qm->setBuilder($builder);
+        $result = $qm->translate();
+        $meta = $qm->getMeta();
         
         $entities = [];
 
@@ -208,8 +151,8 @@ class BaseModel extends MongoModel
             $entities[] = $entity;
         }
 
-        if ($with) {
-            $this->embedWith($with, $entities);
+        if ($qm->get('with')) {
+            $this->embedWith($qm->get('with'), $entities);
         }
 
         return $entities;
