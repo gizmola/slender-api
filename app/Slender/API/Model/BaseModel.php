@@ -101,10 +101,10 @@ class BaseModel extends MongoModel
      * @param type $limit
      * @param type $offset
      */
-    public function findMany($qm)
+    public function findMany($queryTranslator)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
-            return $this->findManyQuery($qm);
+            return $this->findManyQuery($queryTranslator);
         } else {
             /*
             * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
@@ -120,7 +120,12 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($qm){ return $this->findManyQuery($qm);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), 
+                function() use ($queryTranslator) 
+                { 
+                    return $this->findManyQuery($queryTranslator);
+                }
+            );
         }
 
     }
@@ -137,13 +142,13 @@ class BaseModel extends MongoModel
      * @param type $with
      * @return type
      */
-    protected function findManyQuery($qm)
+    protected function findManyQuery($queryTranslator)
     {
 
         $builder = $this->getCollection();
-        $qm->setBuilder($builder);
-        $result = $qm->translate();
-        $meta = $qm->getMeta();
+        $queryTranslator->setBuilder($builder);
+        $result = $queryTranslator->translate();
+        $meta = $queryTranslator->getMeta();
         
         $entities = [];
 
@@ -151,8 +156,8 @@ class BaseModel extends MongoModel
             $entities[] = $entity;
         }
 
-        if ($qm->get('with')) {
-            $this->embedWith($qm->get('with'), $entities);
+        if ($queryTranslator->get('with')) {
+            $this->embedWith($queryTranslator->get('with'), $entities);
         }
 
         return $entities;

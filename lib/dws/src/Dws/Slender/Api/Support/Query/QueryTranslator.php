@@ -1,6 +1,6 @@
 <?php namespace Dws\Slender\Api\Support\Query;
 
-class QueryManager {
+class QueryTranslator {
     
     protected $params;
     protected $builder;
@@ -88,7 +88,7 @@ class QueryManager {
             $this->meta[$aggregate[0]] = $results;
 
             return [];
-            
+
         }
 
         if ($orders) {

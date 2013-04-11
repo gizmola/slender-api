@@ -12,7 +12,7 @@ use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 // use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
 use Illuminate\Support\MessageBag;
 use Slender\API\Model\BaseModel;
-use Dws\Slender\Api\Support\Query\QueryManager;
+use Dws\Slender\Api\Support\Query\QueryTranslator;
 
 /**
  * Base controller
@@ -52,6 +52,8 @@ abstract class BaseController extends \Controller
      */
     protected $clientUser;
 
+    protected $queryTranslator;
+
     /**
      * Constructor
      *
@@ -60,7 +62,7 @@ abstract class BaseController extends \Controller
 	public function __construct(BaseModel $model)
 	{
 		$this->model = $model;
-        $this->queryManager = new QueryManager;
+        $this->queryTranslator = new QueryTranslator;
 	}
 
     /**
@@ -92,14 +94,14 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
-        $qm = $this->getQueryManager()->setParams(ParamsHelper::all());
-		$records = $this->model->findMany($qm);
+        $qt = $this->getQueryTranslator()->setParams(ParamsHelper::all());
+		$records = $this->model->findMany($qt);
 
 		$result = [
 			$this->getReturnKey() => $records
 		];
         
-        $result['meta'] = $qm->getMeta();
+        $result['meta'] = $qt->getMeta();
 
 		return Response::json($result);
 
@@ -297,13 +299,13 @@ abstract class BaseController extends \Controller
         return $clientPermissions->isAtLeast($proposedPermissions);
     }
 
-    public function getQueryManager()
+    public function getQueryTranslator()
     {
-        return $this->queryManager;
+        return $this->queryTranslator;
     }
 
-    public function setQueryManager($manager)
+    public function setQueryTranslator($translator)
     {
-        $this->queryManager = $manager;
+        $this->queryTranslator = $translator;
     }
 }
