@@ -12,6 +12,7 @@ use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 // use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
 use Illuminate\Support\MessageBag;
 use Slender\API\Model\BaseModel;
+use Dws\Slender\Api\Support\Query\QueryManager;
 
 /**
  * Base controller
@@ -59,6 +60,7 @@ abstract class BaseController extends \Controller
 	public function __construct(BaseModel $model)
 	{
 		$this->model = $model;
+        $this->queryManager = new QueryManager;
 	}
 
     /**
@@ -90,6 +92,7 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
+        /*
 		$where = (ParamsHelper::getWhere()) ? ParamsHelper::getWhere() : [];
 		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : [];
 		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : [];
@@ -97,10 +100,11 @@ abstract class BaseController extends \Controller
 		$take = ParamsHelper::getTake();
 		$skip = ParamsHelper::getSkip();
 		$with = ParamsHelper::getWith();
+        */
 
+        $qm = $this->getQueryManager()->setParams(ParamsHelper::all());
 		$meta = [];
-
-		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
+		$records = $this->model->findMany($qm, $meta);
 
 		$result = [
 			$this->getReturnKey() => $records
@@ -110,6 +114,8 @@ abstract class BaseController extends \Controller
 		{
 			$result['meta'] = $meta;
 		}
+
+        print_r($meta);
 
 		return Response::json($result);
 	}
@@ -304,5 +310,15 @@ abstract class BaseController extends \Controller
         $proposedPermissions = new Permissions($input['permissions']);
 
         return $clientPermissions->isAtLeast($proposedPermissions);
+    }
+
+    public function getQueryManager()
+    {
+        return $this->queryManager;
+    }
+
+    public function setQueryManager($manager)
+    {
+        $this->queryManager = $manager;
     }
 }

@@ -101,11 +101,10 @@ class BaseModel extends MongoModel
      * @param type $limit
      * @param type $offset
      */
-    public function findMany(array $where, array $fields, array $orders, &$meta,
-                             array $aggregate = null, $take = null, $skip = null, $with = null)
+    public function findMany($qm,  &$meta)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
-            return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
+            return $this->findManyQuery($qm,  $meta);
         } else {
             /*
             * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
@@ -121,7 +120,7 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, &$meta, $aggregate, $take, $skip, $with){ return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($qm,  &$meta){ return $this->findManyQuery($qm,  $meta);});
         }
 
     }
@@ -138,11 +137,17 @@ class BaseModel extends MongoModel
      * @param type $with
      * @return type
      */
-    protected function findManyQuery(array $where, array $fields, array $orders, &$meta,
-                             array $aggregate = null, $take = null, $skip = null, $with = null)
+    protected function findManyQuery($qm,  &$meta)
     {
 
         $builder = $this->getCollection();
+        $where = $qm->get('where');
+        $aggregate = $qm->get('aggregate');
+        $orders = $qm->get('orders');
+        $take = $qm->get('take');
+        $skip = $qm->get('skip');
+        $fields = $qm->get('fields');
+        $with = $qm->get('with');
 
         if ($where) {
             $builder = FromArrayBuilder::buildWhere($builder, $where);
@@ -196,7 +201,7 @@ class BaseModel extends MongoModel
         * function to our MongoModel
         */
         $meta['count'] = $builder->count();
-
+        
         $entities = [];
 
         foreach ($result as $entity) {

@@ -154,6 +154,19 @@ class Params{
 		return self::parse($input, ":");	
 	}
 
+	public static function all()
+	{
+		return [
+			'where' => self::getWhere(),
+			'orders' => self::getOrders(),
+			'fields' => self::getFields(),
+			'take' => self::getTake(),
+			'skip' => self::getSkip(),
+			'aggregate' => self::getAggregate(),
+			'with' => self::getWith(),
+		];
+	}
+
 	public static function setDontCast(Array $array)
 	{
 		self::$dontCast = $array;
