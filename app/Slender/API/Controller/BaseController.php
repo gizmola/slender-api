@@ -92,16 +92,6 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
-        /*
-		$where = (ParamsHelper::getWhere()) ? ParamsHelper::getWhere() : [];
-		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : [];
-		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : [];
-		$aggregate = (ParamsHelper::getAggregate()) ? ParamsHelper::getAggregate() : [];
-		$take = ParamsHelper::getTake();
-		$skip = ParamsHelper::getSkip();
-		$with = ParamsHelper::getWith();
-        */
-
         $qm = $this->getQueryManager()->setParams(ParamsHelper::all());
 		$meta = [];
 		$records = $this->model->findMany($qm, $meta);
@@ -115,9 +105,8 @@ abstract class BaseController extends \Controller
 			$result['meta'] = $meta;
 		}
 
-        print_r($meta);
-
 		return Response::json($result);
+
 	}
 
     /**
