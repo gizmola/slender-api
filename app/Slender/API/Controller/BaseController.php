@@ -59,10 +59,10 @@ abstract class BaseController extends \Controller
      *
      * @param \App\Controller\BaseModel $model
      */
-	public function __construct(BaseModel $model)
+	public function __construct(BaseModel $model, QueryTranslator $qt)
 	{
 		$this->model = $model;
-        $this->queryTranslator = new QueryTranslator;
+        $this->queryTranslator = $qt;
 	}
 
     /**
