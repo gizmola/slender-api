@@ -35,9 +35,15 @@ class CacheService
     
     }
 
-    public function setConfig($config)
+    public function setConfig($config, $name = null)
     {
-        $this->config = $config;   
+        
+        if ($name) {
+            $this->config[$name] = $config;
+        } else {
+            $this->config  = $config;  
+        }
+          
     }
 
     public function setEnabled($bool)
