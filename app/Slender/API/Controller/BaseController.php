@@ -76,6 +76,7 @@ abstract class BaseController extends \Controller
      */
 	public function view($id)
 	{
+        $this->setUpCache();
 		$record = $this->model->findById($id);
 		// @TODO: make it work with unit test
 		// if($record)
@@ -97,9 +98,7 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
-        print_r($this->cacheService->getConfig());
-        print_r($this->cacheService->getRequestPath());
-        die();
+        $this->setUpCache();
         $qt = $this->getQueryTranslator()->setParams(ParamsHelper::all());
 		$records = $this->model->findMany($qt);
 
@@ -314,4 +313,26 @@ abstract class BaseController extends \Controller
     {
         $this->queryTranslator = $translator;
     }
+
+    public function getCacheService()
+    {
+        return $this->cacheService;
+    }
+
+    public function setCacheService($cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
+    public function setUpCache()
+    {
+        if (\Input::get('no_cache')) {
+            $this->getCacheService()->setEnabled(false);
+        }
+
+        if (\Input::get('purge_cache')) {
+            $this->getCacheService()->setPurge(true);    
+        }
+    }
+
 }

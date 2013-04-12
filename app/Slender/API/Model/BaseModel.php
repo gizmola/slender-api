@@ -85,13 +85,18 @@ class BaseModel extends MongoModel
      */
     public function findById($id, $no_cache = false)
     {
-        if (!\Config::get('cache.enabled') OR \Input::get('no_cache') OR $no_cache) {
+        
+        $cache = $this->getCacheService();
+
+        if (empty($cache) || !$cache->enabled() || $no_cache) {
 
             return parent::find($id);
 
         } else {
 
-            return \Cache::remember($this->collectionName . "_" . $id, \Config::get('cache.cache_time'), function() use($id){return parent::find($id);});
+            $rememberBy = $this->collectionName . "_" . $id;
+            $callback = function() use ($id) {return parent::find($id);};
+            return $cache->getData($rememberBy, $callback);
 
         }
     }
@@ -106,44 +111,29 @@ class BaseModel extends MongoModel
      */
     public function findMany($queryTranslator)
     {
-        if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
-            return $this->findManyQuery($queryTranslator);
-        } else {
-            /*
-            * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
-            * we get the params as array, remove unused params, sort it and make it into a string again
-            */
-            $query = \Input::all();
-            unset($query['purge_cache']);
-            unset($query['no_cache']);
-            asort($query);
-            $query = \Request::path() . http_build_query($query);
 
-            if(\Input::get('purge_cache')) {
-                \Cache::forget($query);
-            }
-            //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), 
-                function() use ($queryTranslator) 
-                { 
-                    return $this->findManyQuery($queryTranslator);
-                }
-            );
+        $cache = $this->getCacheService();
+
+
+        if (empty($cache) || !$cache->enabled()) {
+
+            return $this->findManyQuery($queryTranslator);
+        
+        } else {
+
+            $rememberBy = $cache->buildRememberByFindMany();
+            $callback = function() use ($queryTranslator) 
+            { 
+                return $this->findManyQuery($queryTranslator);
+            };
+            return $cache->getData($rememberBy, $callback);
+
         }
 
     }
-
     /**
      *
-     * @param array $where
-     * @param array $fields
-     * @param array $orders
-     * @param type $meta
-     * @param array $aggregate
-     * @param type $take
-     * @param type $skip
-     * @param type $with
-     * @return type
+     * @param array $queryTranslator
      */
     protected function findManyQuery($queryTranslator)
     {
@@ -152,7 +142,6 @@ class BaseModel extends MongoModel
         $queryTranslator->setBuilder($builder);
         $result = $queryTranslator->translate();
         $meta = $queryTranslator->getMeta();
-        
         $entities = [];
 
         foreach ($result as $entity) {
@@ -194,8 +183,11 @@ class BaseModel extends MongoModel
         $id = $this->getCollection()->insert($data);
         $entity = $this->findById($id);
 
-        if (\Config::get('cache.enabled')) {
-            \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
+        $cache = $this->getCacheService();
+        
+        if (!empty($cache) && $cache->enabled()) {
+            $rememberBy = $this->collectionName . "_" . $id;
+            $cache->putData($rememberBy, $entity);
         }
 
         //embed this entity to existing parents
@@ -246,8 +238,12 @@ class BaseModel extends MongoModel
 
 
         //cache the entity
-        if (\Config::get('cache.enabled'))
-            \Cache::put($this->collectionName . "_" . $id, $entity, \Config::get('cache.cache_time'));
+        $cache = $this->getCacheService();
+
+        if (!empty($cache) && $cache->enabled()) {
+            $rememberBy = $this->collectionName . "_" . $id;
+            $cache->putData($rememberBy, $entity);
+        }
 
         //update current associated parents
         if (!$this->updateParents($entity)) {
@@ -274,8 +270,10 @@ class BaseModel extends MongoModel
     {
         $this->getCollection()->where('_id', $id)->delete();
         $this->updateParents(["_id" => $id], self::UPDATE_METHOD_DELETE);
-        if (\Config::get('cache.enabled'))
-            \Cache::forget($this->collectionName . "_" . $id);
+        $cache = $this->getCacheService();
+
+        if (!empty($cache) && $cache->enabled())
+            $cache->forget($this->collectionName . "_" . $id);
         return true;
     }
 
@@ -763,6 +761,16 @@ class BaseModel extends MongoModel
             'before'    => $before,
             'after'     => $after,
         ]);
+    }
+
+    public function getCacheService()
+    {
+        return $this->cacheService;
+    }
+
+    public function setCacheService($cacheService)
+    {
+        $this->cacheService = $cacheService;
     }
 
 }

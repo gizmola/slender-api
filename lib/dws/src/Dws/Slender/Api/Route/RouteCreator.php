@@ -159,7 +159,7 @@ class RouteCreator
             throw new RouteException($msg);
         }
 
-        $cacheService = new CacheService(Request::path(), \Config::get('cache'));
+        $cacheService = new CacheService(Request::path(), \Config::get('cache'), \Input::all());
         $modelInstance = new $modelClass($connection, $cacheService);
         $modelInstance->setRelations($this->resourceResolver->buildModelRelations($resource, $site));
         $modelInstance->setSite($site);
@@ -227,7 +227,7 @@ class RouteCreator
         $pluralUrl = $resource;
         $pluralCallback = function() use ($connection, $resource, $creator) {
             
-            $cacheService = new CacheService(Request::path(), \Config::get('cache'));
+            $cacheService = new CacheService(Request::path(), \Config::get('cache'), \Input::all());
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
             $model = new $modelClass($connection, $cacheService);
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
@@ -244,7 +244,7 @@ class RouteCreator
         $singularUrl = $resource . '/{id}';
         $singularCallback = function($id) use ($connection, $resource, $creator) {
 
-            $cacheService = new CacheService(Request::path(), \Config::get('cache'));
+            $cacheService = new CacheService(Request::path(), \Config::get('cache'), \Input::all());
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
             $model = new $modelClass($connection, $cacheService);
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
