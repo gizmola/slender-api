@@ -156,8 +156,8 @@ class BaseModel extends MongoModel
             $entities[] = $entity;
         }
 
-        if ($queryTranslator->get('with')) {
-            $this->embedWith($queryTranslator->get('with'), $entities);
+        if ($queryTranslator->getParam('with')) {
+            $this->embedWith($queryTranslator->getParam('with'), $entities);
         }
 
         return $entities;

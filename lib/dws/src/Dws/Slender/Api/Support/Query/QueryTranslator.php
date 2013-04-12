@@ -11,7 +11,7 @@ class QueryTranslator {
         return $this->params;
     }
 
-    public function get($name)
+    public function getParam($name)
     {
         return (!empty($this->params[$name])) ? $this->params[$name] : null;
     }
@@ -56,13 +56,13 @@ class QueryTranslator {
 
     public function translate()
     {
-        $where = $this->get('where');
-        $aggregate = $this->get('aggregate');
-        $orders = $this->get('orders');
-        $take = $this->get('take');
-        $skip = $this->get('skip');
-        $fields = $this->get('fields');
-        $with = $this->get('with');
+        $where = $this->getParam('where');
+        $aggregate = $this->getParam('aggregate');
+        $orders = $this->getParam('orders');
+        $take = $this->getParam('take');
+        $skip = $this->getParam('skip');
+        $fields = $this->getParam('fields');
+        $with = $this->getParam('with');
         $builder = $this->getBuilder();
 
         if ($where) {
