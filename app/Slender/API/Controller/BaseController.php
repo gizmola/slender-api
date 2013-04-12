@@ -13,6 +13,7 @@ use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Illuminate\Support\MessageBag;
 use Slender\API\Model\BaseModel;
 use Dws\Slender\Api\Support\Query\QueryTranslator;
+use Dws\Slender\Api\Cache\CacheService;
 
 /**
  * Base controller
@@ -53,16 +54,18 @@ abstract class BaseController extends \Controller
     protected $clientUser;
 
     protected $queryTranslator;
+    protected $cacheService;
 
     /**
      * Constructor
      *
      * @param \App\Controller\BaseModel $model
      */
-	public function __construct(BaseModel $model, QueryTranslator $qt)
+	public function __construct(BaseModel $model, QueryTranslator $qt, CacheService $cacheService)
 	{
 		$this->model = $model;
         $this->queryTranslator = $qt;
+        $this->cacheService = $cacheService;
 	}
 
     /**
@@ -94,6 +97,9 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
+        print_r($this->cacheService->getConfig());
+        print_r($this->cacheService->getRequestPath());
+        die();
         $qt = $this->getQueryTranslator()->setParams(ParamsHelper::all());
 		$records = $this->model->findMany($qt);
 

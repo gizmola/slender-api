@@ -8,6 +8,7 @@ use LMongo\LMongoManager;
 use Dws\Slender\Api\Resolver\ClassResolver;
 use Dws\Slender\Api\Resolver\ResourceResolver;
 use Dws\Slender\Api\Support\Query\QueryTranslator;
+use Dws\Slender\Api\Cache\CacheService;
 
 /**
  * An object to create REST routes for site-based resources
@@ -158,10 +159,11 @@ class RouteCreator
             throw new RouteException($msg);
         }
 
-        $modelInstance = new $modelClass($connection);
+        $cacheService = new CacheService(Request::path(), \Config::get('cache'));
+        $modelInstance = new $modelClass($connection, $cacheService);
         $modelInstance->setRelations($this->resourceResolver->buildModelRelations($resource, $site));
         $modelInstance->setSite($site);
-        $controller = new $controllerClass($modelInstance, new QueryTranslator);
+        $controller = new $controllerClass($modelInstance, new QueryTranslator, $cacheService);
 
         return $controller;
     }
@@ -224,14 +226,15 @@ class RouteCreator
 
         $pluralUrl = $resource;
         $pluralCallback = function() use ($connection, $resource, $creator) {
-
+            
+            $cacheService = new CacheService(Request::path(), \Config::get('cache'));
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
-            $model = new $modelClass($connection);
+            $model = new $modelClass($connection, $cacheService);
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
             $model->setSite(null);
 
             $controllerClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
-            $controller = new $controllerClass($model, new QueryTranslator);
+            $controller = new $controllerClass($model, new QueryTranslator, $cacheService);
 
             $method = $creator->buildControllerMethod('plural');
 
@@ -241,12 +244,13 @@ class RouteCreator
         $singularUrl = $resource . '/{id}';
         $singularCallback = function($id) use ($connection, $resource, $creator) {
 
+            $cacheService = new CacheService(Request::path(), \Config::get('cache'));
             $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
-            $model = new $modelClass($connection);
+            $model = new $modelClass($connection, $cacheService);
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
 
             $controllerClass = 'Slender\API\Controller\\' . ucfirst($resource) . 'Controller';
-            $controller = new $controllerClass($model, new QueryTranslator);
+            $controller = new $controllerClass($model, new QueryTranslator, $cacheService);
 
             $method = $creator->buildControllerMethod('singular');
 

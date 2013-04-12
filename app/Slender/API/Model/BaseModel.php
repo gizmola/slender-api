@@ -8,6 +8,7 @@ use Dws\Utils\Arrays as ArrayUtil;
 use Dws\Utils\UUID;
 use Illuminate\Support\MessageBag;
 use LMongo\Database as Connection;
+use Dws\Slender\Api\Cache\CacheService;
 
 /**
  * Base Model
@@ -52,6 +53,7 @@ class BaseModel extends MongoModel
      * @var array
      */
     protected $clientUser;
+    protected $cacheService;
 
     /**
      * Constructor
@@ -61,7 +63,7 @@ class BaseModel extends MongoModel
 
     const UPDATE_METHOD_DELETE = true;
 
-    public function __construct(Connection $connection = null)
+    public function __construct(Connection $connection = null, CacheService $cacheService = null)
     {
         parent::__construct($connection);
         /*
@@ -71,6 +73,7 @@ class BaseModel extends MongoModel
         */
         $this->setSchema(array_merge($this->schema, $this->extendedSchema));
         $this->resolver = \App::make('resource-resolver');
+        $this->cacheService = $cacheService;
     }
 
     /**
