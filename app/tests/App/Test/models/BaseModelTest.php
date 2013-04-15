@@ -7,6 +7,8 @@ use App\Test\TestCase;
 use App\Test\Mock\Model\PartialUpdateWithValidation as PartialUpdateModel;
 use Dws\Utils;
 use Dws\Slender\Api\Cache\CacheService;
+use LMongo\Query\Builder;
+use Dws\Slender\Api\Support\Query\QueryTranslator;
 
 class BaseModelTest extends TestCase
 {
@@ -630,6 +632,48 @@ class BaseModelTest extends TestCase
 		$cache->putData($rememberBy, $cachedData);
 		$rtnData = $model->findById($id);
 		$this->assertSame($cachedData,$rtnData);
+
+	}
+
+	/*
+	* SUT
+	* BaseModel::findManyQuery()
+	*/
+	public function testFindManyQuery()
+	{
+		
+
+		$where = [
+			[
+				'season:gte:10',
+				'lastname:doe'
+			],
+		];
+
+		$model = new BaseModel;
+		$mockBuilder = $this->getMock('Builder', ['get','count', 'where']);
+		$mockBuilder->expects($this->any())
+			->method('get')
+			->will($this->returnValue(['test']));
+		$mockBuilder->expects($this->any())
+			->method('count')
+			->will($this->returnValue(1));
+		$mockBuilder->expects($this->any())
+			->method('where')
+			->with($this->equalTo($where[0][0]), $this->equalTo($where[0][1]))
+			->will($this->returnValue($mockBuilder));
+		$mockConnection = $this->getMockConnection(['collection' => $mockBuilder]);
+
+
+
+		$queryTranslator = new QueryTranslator;
+		$params = ['where' => $where];
+		$queryTranslator->setParams($params);
+		$model->setConnection($mockConnection);
+
+
+
+		$entities = $model->findManyQuery($queryTranslator);
 
 	}
 
