@@ -50,10 +50,10 @@ class AdminCommand extends Command
         //Get password from console
         while (!$confirmed) {
             if (!$password) {
-                $password = $this->ask('Enter Password: ');
+                $password = $this->secret('Enter Password: ');
             }
 
-            $password2 = $this->ask('Confirm Password: ');
+            $password2 = $this->secret('Confirm Password: ');
             if ($password == $password2) {
                 $confirmed = true;
             } else {
