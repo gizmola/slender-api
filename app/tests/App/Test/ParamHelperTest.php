@@ -59,6 +59,11 @@ class ParamHelperTest extends TestCase
 		$output = array(array('season', 'gte', (float)10), array('lastname','doe'));
 		$params = ParamsHelper::getWhere($input);
 		$this->assertSame($output,$params);
+
+		$input = array('birthday:gte:Date(123456)');
+		$params = ParamsHelper::getWhere($input);
+		$this->assertInstanceOf('MongoDate', $params[0][2]);
+
 	}
 
 	public function testDoesNotCastExcluded()

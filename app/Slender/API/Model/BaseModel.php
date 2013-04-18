@@ -121,7 +121,7 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with){ return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, &$meta, $aggregate, $take, $skip, $with){ return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
         }
 
     }
@@ -173,8 +173,6 @@ class BaseModel extends MongoModel
             $builder = FromArrayBuilder::buildOrders($builder,$orders);
         }
 
-        $meta['count'] = $builder->count();
-
         if ($take) {
             $builder = $builder->take($take);
         }
@@ -188,6 +186,16 @@ class BaseModel extends MongoModel
         } else {
             $result = $builder->get();
         }
+
+        /*
+        * the count() function calls get
+        * internally which precludes setting
+        * the "columns" when using get($fields)
+        * so we must call count after
+        * alternatively we could add a "setColumns"
+        * function to our MongoModel
+        */
+        $meta['count'] = $builder->count();
 
         $entities = [];
 
@@ -377,6 +385,7 @@ class BaseModel extends MongoModel
     public function addToParentEntities($childEntity, $parentList)
     {
         $parents = $this->getParentRelations();
+        
 
         foreach ($parentList as $resource => $ids) {
             
@@ -700,11 +709,19 @@ class BaseModel extends MongoModel
      */
     public function createRelatedClass($resource, $config)
     {
+        //hacky way to work in unit tests
+        //@todo: fix
+        $relations = $this->getResolver()->buildModelRelations($resource, $this->site);
+        if (is_object($relations)) {
+            return  $relations;  
+        }
+
         $class = '\\' . $config['class'];
         $class = new $class($this->getConnection());
-        $class->setRelations($this->getResolver()->buildModelRelations($resource, $this->site));
+        $class->setRelations($relations);
         $class->setSite($this->site);
         return $class;
+
     }
 
     /**
