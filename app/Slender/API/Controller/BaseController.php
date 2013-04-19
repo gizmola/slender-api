@@ -12,6 +12,7 @@ use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 // use Dws\Slender\Api\Route\SiteBasedResources\RouteException;
 use Illuminate\Support\MessageBag;
 use Slender\API\Model\BaseModel;
+use Dws\Slender\Api\Support\Query\QueryTranslator;
 
 /**
  * Base controller
@@ -51,14 +52,17 @@ abstract class BaseController extends \Controller
      */
     protected $clientUser;
 
+    protected $queryTranslator;
+
     /**
      * Constructor
      *
      * @param \App\Controller\BaseModel $model
      */
-	public function __construct(BaseModel $model)
+	public function __construct(BaseModel $model, QueryTranslator $qt)
 	{
 		$this->model = $model;
+        $this->queryTranslator = $qt;
 	}
 
     /**
@@ -90,28 +94,17 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
-		$where = (ParamsHelper::getWhere()) ? ParamsHelper::getWhere() : [];
-		$fields = (ParamsHelper::getFields()) ? ParamsHelper::getFields() : [];
-		$orders = (ParamsHelper::getOrders()) ? ParamsHelper::getOrders() : [];
-		$aggregate = (ParamsHelper::getAggregate()) ? ParamsHelper::getAggregate() : [];
-		$take = ParamsHelper::getTake();
-		$skip = ParamsHelper::getSkip();
-		$with = ParamsHelper::getWith();
-
-		$meta = [];
-
-		$records = $this->model->findMany($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
+        $qt = $this->getQueryTranslator()->setParams(ParamsHelper::all());
+		$records = $this->model->findMany($qt);
 
 		$result = [
 			$this->getReturnKey() => $records
 		];
-
-		if($meta)
-		{
-			$result['meta'] = $meta;
-		}
+        
+        $result['meta'] = $qt->getMeta();
 
 		return Response::json($result);
+
 	}
 
     /**
@@ -304,5 +297,15 @@ abstract class BaseController extends \Controller
         $proposedPermissions = new Permissions($input['permissions']);
 
         return $clientPermissions->isAtLeast($proposedPermissions);
+    }
+
+    public function getQueryTranslator()
+    {
+        return $this->queryTranslator;
+    }
+
+    public function setQueryTranslator($translator)
+    {
+        $this->queryTranslator = $translator;
     }
 }

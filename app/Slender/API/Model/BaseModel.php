@@ -101,11 +101,10 @@ class BaseModel extends MongoModel
      * @param type $limit
      * @param type $offset
      */
-    public function findMany(array $where, array $fields, array $orders, &$meta,
-                             array $aggregate = null, $take = null, $skip = null, $with = null)
+    public function findMany($queryTranslator)
     {
         if (!\Config::get('cache.enabled') OR \Input::get('no_cache')) {
-            return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);
+            return $this->findManyQuery($queryTranslator);
         } else {
             /*
             * To distiunqish between ?foo=bar&a=b and ?a=b&foo=bar(same query)
@@ -121,7 +120,12 @@ class BaseModel extends MongoModel
                 \Cache::forget($query);
             }
             //@TODO: Line below is not pretty
-            return \Cache::remember($query, \Config::get('cache.cache_time'), function() use ($where, $fields, $orders, &$meta, $aggregate, $take, $skip, $with){ return $this->findManyQuery($where, $fields, $orders, $meta, $aggregate, $take, $skip, $with);});
+            return \Cache::remember($query, \Config::get('cache.cache_time'), 
+                function() use ($queryTranslator) 
+                { 
+                    return $this->findManyQuery($queryTranslator);
+                }
+            );
         }
 
     }
@@ -138,73 +142,22 @@ class BaseModel extends MongoModel
      * @param type $with
      * @return type
      */
-    protected function findManyQuery(array $where, array $fields, array $orders, &$meta,
-                             array $aggregate = null, $take = null, $skip = null, $with = null)
+    protected function findManyQuery($queryTranslator)
     {
 
         $builder = $this->getCollection();
-
-        if ($where) {
-            $builder = FromArrayBuilder::buildWhere($builder, $where);
-        }
-
-        if ($aggregate) {
-
-            /*
-            determine the type of aggregate function
-            end run the correct execution
-            return the aggregate data via ref $meta
-            */
-
-            if ($aggregate[0] == 'count') {
-                $results = $builder->count();
-            } else {
-                $results = $builder->$aggregate[0]($aggregate[1]);
-                $meta['count'] = null;
-            }
-
-
-            $meta[$aggregate[0]] = $results;
-
-            return [];
-        }
-
-        if ($orders) {
-            $builder = FromArrayBuilder::buildOrders($builder,$orders);
-        }
-
-        if ($take) {
-            $builder = $builder->take($take);
-        }
-
-        if ($skip) {
-            $builder = $builder->skip($skip);
-        }
-
-        if ($fields) {
-            $result = $builder->get($fields);
-        } else {
-            $result = $builder->get();
-        }
-
-        /*
-        * the count() function calls get
-        * internally which precludes setting
-        * the "columns" when using get($fields)
-        * so we must call count after
-        * alternatively we could add a "setColumns"
-        * function to our MongoModel
-        */
-        $meta['count'] = $builder->count();
-
+        $queryTranslator->setBuilder($builder);
+        $result = $queryTranslator->translate();
+        $meta = $queryTranslator->getMeta();
+        
         $entities = [];
 
         foreach ($result as $entity) {
             $entities[] = $entity;
         }
 
-        if ($with) {
-            $this->embedWith($with, $entities);
+        if ($queryTranslator->getParam('with')) {
+            $this->embedWith($queryTranslator->getParam('with'), $entities);
         }
 
         return $entities;

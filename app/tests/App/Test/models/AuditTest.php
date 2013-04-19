@@ -6,6 +6,7 @@ use App\Test\TestCase;
 use Slender\API\Model\Audit;
 use Dws\Utils\UUID;
 use Slender\API\Model\Users;
+use Dws\Slender\Api\Support\Query\QueryTranslator;
 
 
 /**
@@ -31,6 +32,7 @@ class AuditTest extends TestCase
         parent::setUp();
         $this->auditModel = new Audit();
         $this->usersModel = new Users();
+        $this->QueryTranslator = new QueryTranslator();
     }
 
 
@@ -70,10 +72,21 @@ class AuditTest extends TestCase
 
         $userId = $user['_id'];
 
+        $where = [
+            'where' => [
+                ['after.last_name', $anchor],
+                ['after._id', $userId],
+            ]
+        ];
+
+        $this->QueryTranslator->setParams($where);
+        /*
         $log = $this->auditModel->findMany([
                     ['after.last_name', $anchor],
                     ['after._id', $userId],
                 ], [], [], $meta);
+        */
+        $log = $this->auditModel->findMany($this->QueryTranslator);
 
         $log = $log[0];
         $this->assertEquals(null, $log['before']);
@@ -99,11 +112,22 @@ class AuditTest extends TestCase
             'last_name' => $anchor,
             'email' => 'john@exmaple.com',
         ]);
-        $meta = [];
+
+        $where = [
+            'where' => [
+                ['after.last_name', $anchor],
+                ['after._id', $userId],
+            ]
+        ];
+
+        $this->QueryTranslator->setParams($where);
+        /*
         $log = $this->auditModel->findMany([
                     ['after.last_name', $anchor],
                     ['after._id', $userId],
                 ], [], [], $meta);
+        */
+        $log = $this->auditModel->findMany($this->QueryTranslator);
 
         $log = $log[0];
 

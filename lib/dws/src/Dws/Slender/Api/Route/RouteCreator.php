@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Request;
 use LMongo\LMongoManager;
 use Dws\Slender\Api\Resolver\ClassResolver;
 use Dws\Slender\Api\Resolver\ResourceResolver;
+use Dws\Slender\Api\Support\Query\QueryTranslator;
 
 /**
  * An object to create REST routes for site-based resources
@@ -160,7 +161,7 @@ class RouteCreator
         $modelInstance = new $modelClass($connection);
         $modelInstance->setRelations($this->resourceResolver->buildModelRelations($resource, $site));
         $modelInstance->setSite($site);
-        $controller = new $controllerClass($modelInstance);
+        $controller = new $controllerClass($modelInstance, new QueryTranslator);
 
         return $controller;
     }
@@ -230,7 +231,7 @@ class RouteCreator
             $model->setSite(null);
 
             $controllerClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
-            $controller = new $controllerClass($model);
+            $controller = new $controllerClass($model, new QueryTranslator);
 
             $method = $creator->buildControllerMethod('plural');
 
@@ -245,7 +246,7 @@ class RouteCreator
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
 
             $controllerClass = 'Slender\API\Controller\\' . ucfirst($resource) . 'Controller';
-            $controller = new $controllerClass($model);
+            $controller = new $controllerClass($model, new QueryTranslator);
 
             $method = $creator->buildControllerMethod('singular');
 
