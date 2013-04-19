@@ -6,9 +6,42 @@ use Slender\API\Model\BaseModel;
 use App\Test\TestCase;
 use App\Test\Mock\Model\PartialUpdateWithValidation as PartialUpdateModel;
 use Dws\Utils;
+use Dws\Slender\Api\Cache\CacheService;
+use LMongo\Query\Builder;
+use Dws\Slender\Api\Support\Query\QueryTranslator;
 
 class BaseModelTest extends TestCase
 {
+ 	
+ 	private function getMockConnection($data)
+ 	{
+
+ 		$methods = array('collection','where', 'first', 'get');
+ 		$mockConnection = $this->getMock('stdClass', $methods);
+		
+		foreach ($methods as $m) {
+			if (empty($data[$m])) {
+				$data[$m] = $mockConnection;
+			}	
+		}
+
+		$mockConnection->expects($this->any())
+			->method('collection')
+			->will($this->returnValue($data['collection']));
+		$mockConnection->expects($this->any())
+			->method('where')
+			->will($this->returnValue($data['where']));
+		$mockConnection->expects($this->any())
+			->method('first')
+			->will($this->returnValue($data['first']));
+		$mockConnection->expects($this->any())
+			->method('get')
+			->will($this->returnValue($data['get']));
+
+		return $mockConnection;
+
+ 	}
+
  	public function testCanAddChildRelation()
 	{
 
@@ -546,6 +579,101 @@ class BaseModelTest extends TestCase
 		* RUN THE TEST
 		*/
 		$model->updateParents($childEntity, false);
+
+	}
+	/*
+	* SUT
+	* BaseModel::findById()
+	*/
+	public function testFindById()
+	{
+		
+		/*
+		* data to be used in the test
+		*/
+		$id = 1;
+		$data = [ 
+			'first' => [
+				'data' => 'this is not cached data',
+			],
+		];
+		/*
+		* Set up CacheService
+		*/
+		$requestPath = "test/url";
+		$cacheConfig = ['enabled' => false, 'cache_time' => 1];
+		$params = [];
+		$cache = new CacheService($requestPath, $cacheConfig, $params);
+		/*
+		* Create a model, mock its connection
+		* and set the the cache service
+		*/
+		$model = new BaseModel;
+		$mockConnection = $this->getMockConnection($data);
+		$model->setConnection($mockConnection);
+		$model->setCacheService($cache);
+		/*
+		* forget any previous cache
+		*/
+		$rememberBy = $model->getCollectionName() . "_" . $id;
+		$cache->forget($rememberBy);
+		/*
+		* This should get data from the mock connection
+		*/
+		$rtnData = $model->findById($id);
+		$this->assertSame($data['first'],$rtnData);
+		/*
+		* now lets see if we can pull from cache instead
+		*/
+		$cachedData = [
+			'data' => 'this IS cached data',
+		];
+		$cache->setConfig(true, 'enabled');
+		$cache->putData($rememberBy, $cachedData);
+		$rtnData = $model->findById($id);
+		$this->assertSame($cachedData,$rtnData);
+
+	}
+
+	/*
+	* SUT
+	* BaseModel::findManyQuery()
+	*/
+	public function testFindManyQuery()
+	{
+		
+
+		$where = [
+			[
+				'season:gte:10',
+				'lastname:doe'
+			],
+		];
+
+		$model = new BaseModel;
+		$mockBuilder = $this->getMock('Builder', ['get','count', 'where']);
+		$mockBuilder->expects($this->any())
+			->method('get')
+			->will($this->returnValue(['test']));
+		$mockBuilder->expects($this->any())
+			->method('count')
+			->will($this->returnValue(1));
+		$mockBuilder->expects($this->any())
+			->method('where')
+			->with($this->equalTo($where[0][0]), $this->equalTo($where[0][1]))
+			->will($this->returnValue($mockBuilder));
+		$mockConnection = $this->getMockConnection(['collection' => $mockBuilder]);
+
+
+
+		$queryTranslator = new QueryTranslator;
+		$params = ['where' => $where];
+		$queryTranslator->setParams($params);
+		$model->setConnection($mockConnection);
+
+
+
+		$entities = $model->findManyQuery($queryTranslator);
 
 	}
 

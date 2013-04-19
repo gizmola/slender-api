@@ -13,6 +13,7 @@ use Dws\Slender\Api\Controller\Helper\Params as ParamsHelper;
 use Illuminate\Support\MessageBag;
 use Slender\API\Model\BaseModel;
 use Dws\Slender\Api\Support\Query\QueryTranslator;
+use Dws\Slender\Api\Cache\CacheService;
 
 /**
  * Base controller
@@ -53,16 +54,18 @@ abstract class BaseController extends \Controller
     protected $clientUser;
 
     protected $queryTranslator;
+    protected $cacheService;
 
     /**
      * Constructor
      *
      * @param \App\Controller\BaseModel $model
      */
-	public function __construct(BaseModel $model, QueryTranslator $qt)
+	public function __construct(BaseModel $model, QueryTranslator $qt, CacheService $cacheService)
 	{
 		$this->model = $model;
         $this->queryTranslator = $qt;
+        $this->cacheService = $cacheService;
 	}
 
     /**
@@ -73,6 +76,7 @@ abstract class BaseController extends \Controller
      */
 	public function view($id)
 	{
+        $this->setUpCache();
 		$record = $this->model->findById($id);
 		// @TODO: make it work with unit test
 		// if($record)
@@ -94,6 +98,7 @@ abstract class BaseController extends \Controller
 	public function index()
 	{
 
+        $this->setUpCache();
         $qt = $this->getQueryTranslator()->setParams(ParamsHelper::all());
 		$records = $this->model->findMany($qt);
 
@@ -308,4 +313,26 @@ abstract class BaseController extends \Controller
     {
         $this->queryTranslator = $translator;
     }
+
+    public function getCacheService()
+    {
+        return $this->cacheService;
+    }
+
+    public function setCacheService($cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
+    public function setUpCache()
+    {
+        if (\Input::get('no_cache')) {
+            $this->getCacheService()->setEnabled(false);
+        }
+
+        if (\Input::get('purge_cache')) {
+            $this->getCacheService()->setPurge(true);    
+        }
+    }
+
 }
