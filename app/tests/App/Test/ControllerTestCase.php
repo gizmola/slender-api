@@ -164,6 +164,40 @@ class ControllerTestCase extends TestCase
 
     }
 
+    public function doUpdateWithParent($child, $parent, $update)
+    {
+
+
+        $response = $this->doPostResponseTest($parent['endpoint'], $parent['input']);
+        $parentId = $response['_id'];
+
+        $this->refreshApplication();
+        $response = $this->doPostResponseTest($child['endpoint'], $child['input']);
+        $childId = $response['_id'];
+
+        $update['_parents'] = [$parent['key'] => [$parentId]];
+
+        $this->refreshApplication();
+        $response = $this->doPutResponseTest($child['endpoint'], $childId, $update);
+
+        $this->refreshApplication();
+        $response = $this->doGetSingleResponseTest($parent['endpoint'], $parentId);
+        $this->assertInternalType('array', $response);
+        $this->assertArrayHasKey($child['key'], $response);
+        $this->assertInternalType('array', $response[$child['key']]);
+
+        $childData = (Utils\Arrays::isIndexed($response[$child['key']])) ?
+            $response[$child['key']][0] :
+            $response[$child['key']];
+
+
+        $this->assertArrayHasKey('_id', $childData);
+        $this->assertSame($childId, $childData['_id']); 
+
+
+
+    }
+
     private function removeUntestableKeys(&$array, $keys = ['_id', 'created_at','updated_at'])
     {
 
