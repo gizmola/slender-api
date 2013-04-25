@@ -167,36 +167,74 @@ class ControllerTestCase extends TestCase
     public function doUpdateWithParent($child, $parent, $update)
     {
 
-
+        /**
+        * first we insert the parent
+        */
         $response = $this->doPostResponseTest($parent['endpoint'], $parent['input']);
         $parentId = $response['_id'];
-
+        /**
+        * next we insert the child w/o the parent
+        */
         $this->refreshApplication();
         $response = $this->doPostResponseTest($child['endpoint'], $child['input']);
         $childId = $response['_id'];
-
+        /**
+        * then we update the child w/ parent
+        */
         $update['_parents'] = [$parent['key'] => [$parentId]];
-
         $this->refreshApplication();
         $response = $this->doPutResponseTest($child['endpoint'], $childId, $update);
-
+        /**
+        * now retrieve the parent
+        * and check that this child was embedded
+        */
         $this->refreshApplication();
         $response = $this->doGetSingleResponseTest($parent['endpoint'], $parentId);
         $this->assertInternalType('array', $response);
         $this->assertArrayHasKey($child['key'], $response);
         $this->assertInternalType('array', $response[$child['key']]);
-
         $childData = (Utils\Arrays::isIndexed($response[$child['key']])) ?
             $response[$child['key']][0] :
             $response[$child['key']];
-
-
         $this->assertArrayHasKey('_id', $childData);
         $this->assertSame($childId, $childData['_id']); 
 
+    }
 
+    public function doUpdateWithChild($child, $parent, $update)
+    {
+
+        /**
+        * first we insert the child
+        */
+        $response = $this->doPostResponseTest($child['endpoint'], $child['input']);
+        $childId = $response['_id'];
+        /**
+        * next we insert the parent w/o the child
+        */
+        $this->refreshApplication();
+        $response = $this->doPostResponseTest($parent['endpoint'], $parent['input']);
+        $parentId = $response['_id'];
+        /**
+        * then we update the parent w/ child
+        */
+        $update['_children'] = [$child['key'] => [$childId]];
+        $this->refreshApplication();
+        $response = $this->doPutResponseTest($parent['endpoint'], $parentId, $update);
+        $this->assertInternalType('array', $response);
+        $this->assertArrayHasKey($child['key'], $response);
+        $this->assertInternalType('array', $response[$child['key']]);
+        /**
+        * check that child exists
+        */
+        $childData = (Utils\Arrays::isIndexed($response[$child['key']])) ?
+            $response[$child['key']][0] :
+            $response[$child['key']];
+        $this->assertArrayHasKey('_id', $childData);
+        $this->assertSame($childId, $childData['_id']); 
 
     }
+
 
     private function removeUntestableKeys(&$array, $keys = ['_id', 'created_at','updated_at'])
     {
