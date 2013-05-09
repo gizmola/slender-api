@@ -139,9 +139,9 @@ abstract class BaseController extends \Controller
      *
      * @return mixed
      */
-	public function insert()
-	{
-        $input = $this->getJsonBodyData();
+    public function insert($input = null)
+    {
+        $input = $input ?: $this->getJsonBodyData();
 
         $validator = Validator::make(
             $input,
@@ -152,13 +152,13 @@ abstract class BaseController extends \Controller
             return $this->badRequest($this->model->getValidationMessages());
         }
 
-		$entity = $this->model->insert($input);
-		return Response::json(array(
-			$this->getReturnKey() => array(
-				$entity,
-			),
-		), self::HTTP_POST_OK);
-	}
+        $entity = $this->model->insert($input);
+        return Response::json(array(
+            $this->getReturnKey() => array(
+                $entity,
+            ),
+        ), self::HTTP_POST_OK);
+    }
 
     /**
      * Handles HTTP DELETE method on a singular endpoint
