@@ -141,23 +141,22 @@ abstract class BaseController extends \Controller
      */
     public function insert($input = null)
     {
+
         $input = $input ?: $this->getJsonBodyData();
 
-        $validator = Validator::make(
-            $input,
-            $this->model->getSchemaValidation()
-        );
 
         if (!$this->model->isValid($input, false)) {
             return $this->badRequest($this->model->getValidationMessages());
         }
 
         $entity = $this->model->insert($input);
+
         return Response::json(array(
             $this->getReturnKey() => array(
                 $entity,
             ),
         ), self::HTTP_POST_OK);
+
     }
 
     /**
