@@ -26,7 +26,8 @@ class ServiceProvider extends BaseServiceProvider
 	public function register()
 	{
         $this->app['resource-resolver'] = $this->app->share(function($app){
-            $resourceResolver = new ResourceResolver($app['config']['resources']);
+            $resources = $app->make('config-manager')->getResourceConfig();
+            $resourceResolver = new ResourceResolver($resources);
             $fallbackNamespace = $app['config']['app.fallbackNamespaces.resources'];
             $resourceResolver->setFallbackNamespace($fallbackNamespace);
             return $resourceResolver;
