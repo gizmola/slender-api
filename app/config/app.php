@@ -102,12 +102,12 @@ return array(
 
 	'providers' => array(
 
+        //LARAVEL PROVIDERS
 		'Illuminate\Foundation\Providers\ArtisanServiceProvider',
-		// 'Illuminate\Auth\AuthServiceProvider',
-		'MongoAuth\MongoAuthServiceProvider',
-		'LMongo\LMongoServiceProvider',
+		//'Illuminate\Auth\AuthServiceProvider',
 		'Illuminate\Cache\CacheServiceProvider',
 		'Illuminate\Foundation\Providers\CommandCreatorServiceProvider',
+		'Illuminate\Session\CommandsServiceProvider',
 		'Illuminate\Foundation\Providers\ComposerServiceProvider',
 		'Illuminate\Routing\ControllerServiceProvider',
 		'Illuminate\Cookie\CookieServiceProvider',
@@ -115,26 +115,35 @@ return array(
 		'Illuminate\Encryption\EncryptionServiceProvider',
 		'Illuminate\Filesystem\FilesystemServiceProvider',
 		'Illuminate\Hashing\HashServiceProvider',
+		'Illuminate\Html\HtmlServiceProvider',
 		'Illuminate\Foundation\Providers\KeyGeneratorServiceProvider',
 		'Illuminate\Log\LogServiceProvider',
 		'Illuminate\Mail\MailServiceProvider',
 		'Illuminate\Database\MigrationServiceProvider',
+		'Illuminate\Foundation\Providers\OptimizeServiceProvider',
 		'Illuminate\Pagination\PaginationServiceProvider',
 		'Illuminate\Foundation\Providers\PublisherServiceProvider',
+		'Illuminate\Queue\QueueServiceProvider',
 		'Illuminate\Redis\RedisServiceProvider',
+		'Illuminate\Auth\Reminders\ReminderServiceProvider',
+		'Illuminate\Foundation\Providers\RouteListServiceProvider',
 		'Illuminate\Database\SeedServiceProvider',
 		'Illuminate\Foundation\Providers\ServerServiceProvider',
 		'Illuminate\Session\SessionServiceProvider',
 		'Illuminate\Foundation\Providers\TinkerServiceProvider',
 		'Illuminate\Translation\TranslationServiceProvider',
-		// 'Illuminate\Validation\ValidationServiceProvider',
-		'Dws\Slender\Api\Validation\ValidationServiceProvider',
+		//'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
-		// App-specific registrations
+		// App-specific providers
 		'Dws\Slender\Api\Resolver\ServiceProvider',
 		'Dws\Slender\Api\Route\ServiceProvider',
+		'MongoAuth\MongoAuthServiceProvider',
+		'LMongo\LMongoServiceProvider',
+		'Dws\Slender\Api\Validation\ValidationServiceProvider',
+		'Dws\Slender\Api\Config\ConfigServiceProvider',
+
 	),
 
 	/*
