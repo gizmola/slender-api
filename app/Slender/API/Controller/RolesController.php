@@ -31,7 +31,7 @@ class RolesController extends \Slender\API\Controller\BaseController
 		), self::HTTP_PUT_OK);
     }
 
-    public function insert()
+    public function insert($input = null)
     {
         $input = $this->getJsonBodyData();
 
