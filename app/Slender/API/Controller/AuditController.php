@@ -12,7 +12,7 @@ class AuditController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function update($id)
+    public function update($id, $input = null)
     {
         return $this->unauthorizedRequest([
             'Unauthorized: cannot update/insert audit log',

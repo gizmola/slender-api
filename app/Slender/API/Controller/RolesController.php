@@ -9,9 +9,9 @@ class RolesController extends \Slender\API\Controller\BaseController
 {
 	protected $returnKey = 'roles';
 
-    public function update($id)
+    public function update($id, $input = null)
     {
-        $input = $this->getJsonBodyData();
+        $input = $input ?: $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, true)) {
             return $this->badRequest($this->model->getValidationMessages());
@@ -33,7 +33,7 @@ class RolesController extends \Slender\API\Controller\BaseController
 
     public function insert($input = null)
     {
-        $input = $this->getJsonBodyData();
+        $input = $input ?: $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, false)) {
             return $this->badRequest($this->model->getValidationMessages());

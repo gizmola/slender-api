@@ -10,9 +10,9 @@ class UsersController extends BaseController
 {
 	protected $returnKey = 'users';
 
-    public function update($id)
+    public function update($id, $input = null)
     {
-        $input = $this->getJsonBodyData();
+        $input = $input ?: $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, true)) {
             return $this->badRequest($this->model->getValidationMessages());
@@ -38,7 +38,7 @@ class UsersController extends BaseController
 
     public function insert($input = null)
     {
-        $input = $this->getJsonBodyData();
+        $input = $input ?: $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, false)) {
             return $this->badRequest($this->model->getValidationMessages());
