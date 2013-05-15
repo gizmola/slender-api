@@ -18,7 +18,8 @@ Vagrant::Config.run do |config|
 	chef.add_recipe("slender-api::memcached")
 	chef.add_recipe("slender-api::php")
 	chef.add_recipe("slender-api::mongo")
-	chef.add_recipe("slender-api::apache")
+    chef.add_recipe("slender-api::apache")
+	chef.add_recipe("slender-api::composer")
   end
 
 end
