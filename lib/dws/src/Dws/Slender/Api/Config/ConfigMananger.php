@@ -10,8 +10,9 @@ class ConfigMananger
         $this->config = $config;
     }
 
-    public function getConfig()
+    public function getConfig($name = null)
     {
+        if ($name) return (!empty($this->config[$name])) ? $this->config[$name] : null;
         return $this->config;
     }
     /**
