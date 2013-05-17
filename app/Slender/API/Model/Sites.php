@@ -12,7 +12,7 @@ class Sites extends \Slender\API\Model\BaseModel
     protected $timestamp = true;
 
     protected $schema = [
-        'url'       => ['required', 'url'],
+        'url'       => ['required', 'url', 'label' => 'URL', 'description' => 'Site URL startting with http://'],
         'title'     => ['required'],
         'slug'     => [],
     ];
