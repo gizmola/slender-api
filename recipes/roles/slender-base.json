@@ -1,11 +1,12 @@
 {
-  "name": "web",
+  "name": "slender-base",
   "default_attributes": { },
   "override_attributes": { },
   "json_class": "Chef::Role",
   "description": "web server role",
   "chef_type": "role",
   "run_list": [
+    "recipe[bashrc]", 
     "recipe[apt]", 
     "recipe[build-essential]", 
     "recipe[chef-dotdeb]", 
@@ -18,19 +19,15 @@
     "recipe[ntp]",
     "recipe[memcached]",
     "recipe[git]",
-    "recipe[slender::hostname]",
     "recipe[curl]",
     "recipe[composer]",
-    "recipe[mongodb::10gen_repo]",
-    "recipe[mongodb]",
+    "recipe[php::module_devel]",
     "recipe[php::module_curl]",
     "recipe[php::module_memcached]",
     "recipe[php::module_mbstring]",
     "recipe[php::module_mcrypt]",
     "recipe[php::module_xml]",
-    "recipe[php::module_devel]",
     "recipe[php::module_xdebug]",
-    "recipe[php::pear_mongo]",
     "recipe[php::module_memcached]"
   ]
 }

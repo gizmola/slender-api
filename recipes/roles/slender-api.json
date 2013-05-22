@@ -1,0 +1,14 @@
+{
+  "name": "slender-api",
+  "default_attributes": { },
+  "override_attributes": { },
+  "json_class": "Chef::Role",
+  "description": "web server role",
+  "chef_type": "role",
+  "run_list": [
+    "recipe[mongodb::10gen_repo]",
+    "recipe[mongodb]",
+    "recipe[php::pear_mongo]",
+    "recipe[slender::hostname]"
+  ]
+}
