@@ -40,7 +40,7 @@ class ResourceListCommand extends AbstractResourceCommand {
 	{
 
 		$resource = $this->argument('resource');
-		$resources = $this->getResources($resource);
+		$resources = $this->getResourcesOrDie($resource);
 		$dotKeys = $this->buildDotKeys($resources);
 
 		if (empty($dotKeys)) {
@@ -56,25 +56,6 @@ class ResourceListCommand extends AbstractResourceCommand {
 			}
 
 		}
-
-	}
-
-	public function getResources($resource = null) {
-
-		$resources = parent::getResources();
-
-		if (!is_null($resource)) {
-
-			$resources = array_get($resources, $resource);
-			
-			if (is_null($resources)) {
-				$this->error('The provided resource does not exist');
-				die();			
-			}
-
-		}
-
-		return $resources;
 
 	}
 

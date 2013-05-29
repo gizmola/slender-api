@@ -44,10 +44,28 @@ abstract class AbstractResourceCommand extends Command {
     {
 
         if ($name) {
-            return (!empty($this->resources[$name])) ? $this->resources[$name] : null;
+            return array_get($this->resources, $name);
         }
 
         return $this->resources;
+
+    }
+    /**
+     * return resource configuration data, but die if it doesn't exist.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getResourcesOrDie($name = null) {
+
+        $resources = $this->getResources($name);
+        
+        if (is_null($resources)) {
+            $this->error('The provided resource $name does not exist');
+            die();          
+        }
+
+        return $resources;
 
     }
 
