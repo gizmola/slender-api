@@ -24,13 +24,22 @@ abstract class AbstractResourceCommand extends Command {
     protected $dotKeys = array();
 
     /**
+     * fallback namespace to use when one isn't provided.
+     *
+     * @var string
+     */
+    protected $fallbackNamespace = null;
+
+    /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct($config = null)
+    public function __construct($config = null, $fallbackNamespace = null)
     {
-        $this->resources = $config ?: App::make('config-manager')->getResourceConfig();
+        $manager = App::make('config-manager');
+        $this->resources = $config ?: $manager->getConfig('resources');
+        $this->fallbackNamespace = $fallbackNamespace ?: $manager->getConfig('app.fallbackNamespaces.resources');
         parent::__construct();
     }
 
@@ -106,6 +115,24 @@ abstract class AbstractResourceCommand extends Command {
         
         return $dotKeys;
 
+    }
+
+    /**
+    * get the fallback namespace
+    * @return string
+    */
+    public function getFallbackNamespace()
+    {
+        return $this->fallbackNamespace;
+    }
+
+    /**
+    * get the fallback namespace
+    * @param string $namespace
+    */
+    public function setFallbackNamespace($namespace)
+    {
+        $this->fallbackNamespace = $namespace;
     }
 
 }

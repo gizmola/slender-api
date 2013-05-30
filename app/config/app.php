@@ -143,6 +143,7 @@ return array(
 		'LMongo\LMongoServiceProvider',
 		'Dws\Slender\Api\Validation\ValidationServiceProvider',
 		'Dws\Slender\Api\Config\ConfigServiceProvider',
+		'Dws\Slender\Api\Resource\ResourceServiceProvider',
 
 	),
 
