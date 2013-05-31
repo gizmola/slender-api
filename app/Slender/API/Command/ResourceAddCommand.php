@@ -50,21 +50,6 @@ class ResourceAddCommand extends AbstractResourceCommand {
 	public function fire()
 	{
 
-		/*
-		$model = [
-			'class' => 'Slender\Api\Model\Site\Demo\Albums',
-			'collection' => 'test',
-			'extends' => 'Slender\Api\Model\Albums',
-		];
-
-		$controller = [
-			'class' => 'Slender\Api\Controller\Site\Demo\AlbumsController',
-			'return-key' => 'test',
-			'extends' => 'Slender\Api\Controller\Albums',
-		];
-		*/
-
-
 		$resource = $this->argument('resource');
 		$resources = $this->getResourcesOrdie($resource);
 		$name = $this->ask("What name would would you like to use for this resource? (alphanumeric and dash only)");
@@ -84,48 +69,95 @@ class ResourceAddCommand extends AbstractResourceCommand {
 		* ask for a controller name,
 		* use fallback if not provided
 		*/
-		$controller['class'] = $this->ask('What\'s the controller class (blank for fallback)?');
+		$controller['class'] = $this->ask('What\'s the controller class (blank for base controller)?');
 		$controller['class'] = $controller['class'] ?: $this->getFallBackClassName(ucfirst($name), 'Controller');
 
 		/*
 		* ask the controller's return key
 		*/
-		$controller['return-key'] = $this->ask("What's the contoller return key? (Namepace\Classname)");
+		$controller['return-key'] = $this->ask("What's the contoller return key?");
 
 		/*
 		* ask if the controller extends an existing one
 		*/
-		$controller['extends'] = $this->ask('Is there a parent class? (Namepace\Classname)');
-
-
+		$controller['extends'] = $this->ask('Does this controller extend and existing one? (Namepace\Classname)');
 
 		/**
 		* ask for a model name,
 		* use fallback if not provided
 		*/
-		$model['class'] = $this->ask('What\'s the model class (blank for fallback)?');
+		$model['class'] = $this->ask('What\'s the model class (blank for base model)?');
 
+		/*
+		* if a model was user defined, 
+		* ask the collections as well
+		* as if it extends an existing class
+		*/
 		if ($model['class']) {
+
 			$model['collection'] = $this->ask('What\'s the model\'s collection)?');	
+			$model['extends'] = $this->ask('Does this model extend and existing one? (Namepace\Classname)');
+		
 		}
 
+		/*
+		* finalize the class name
+		*/
 		$model['class'] = $model['class'] ?: $this->getFallBackClassName(ucfirst($name), 'Model');
+		
+
+		/*
+		* ask about relations
+		*/
 		$model['children'] = $this->askChildren();
 		$model['parents'] = $this->askParents();
-		$resources[$name] = [
-				'controller' => $controller,
-				'model' => $model,
-		];
 
-		if ($resource) {
-			$allResources = $this->getResources();
-			$allResources[$resource] = $resources;
-			$resources = $allResources;	
-		}
-
+		/*
+		* write the model and controller
+		*/
 		$this->getWriter()->writeClass($model);
 		$this->getWriter()->writeClass($controller);
+
+		/*
+		* unset varriables not needed for config
+		*/
+		unset( 
+			$controller['extends'],
+			$controller['return-key'],
+			$model['extends'],
+			$model['collection']
+		);
+
+		/*
+		* set up the resources for writing
+		*/
+		$resources[$name] = [
+			'controller' => $controller,
+			'model' => $model,
+		];
+
+		/*
+		* if we have only been looking at a subset
+		* of resources, grab the full list and update
+		* the subset 
+		*/
+		if ($resource) {
+
+			/*
+			* use the laravel helper to set array
+			* item value using dot notation
+			*/
+			$allResources = $this->getResources();
+			array_set($allResources, $resource, $resources);
+			$resources = $allResources;	
+
+		}
+
+		/*
+		* write the config file
+		*/
 		$this->getWriter()->writeConfig($resources);
+		$this->info("resource {$name} written successfully");
 
 
 	}
@@ -152,7 +184,7 @@ class ResourceAddCommand extends AbstractResourceCommand {
 		$child['embed'] = (strtolower($child['embed'][0]) == 'y') ? true : false;
 		$child['embedKey'] = $this->ask("Is $hasMoreChildren's embed key?");
 		$child['type'] = $this->ask("What type of relations is it? [has-one, has-many]");
-		$children[] = $child;
+		$children[$hasMoreChildren] = $child;
 
 		return $this->askChildren($children);
 
@@ -173,9 +205,8 @@ class ResourceAddCommand extends AbstractResourceCommand {
 			return $parents;
 		}
 
-		$parent = [];
 		$parent['class'] = $this->ask("What is $hasMoreParents's class?");
-		$parents[] = $parent;
+		$parents[$hasMoreParents] = $parent;
 
 		return $this->askParents($parents);
 
