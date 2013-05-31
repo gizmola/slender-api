@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use App;
 use Dws\Utils;
 
-abstract class AbstractResourceCommand extends Command {
+abstract class AbstractResourceCommand extends AbstractSlenderCommand {
 
     
     /**

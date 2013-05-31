@@ -45,6 +45,28 @@ class ResourceNamespaceManager
     /**
     * tell me if the namesapce is valid
     */
+    public function validPrefix($namespace, $suffix = null)
+    {
+        
+        /*
+        * append any provided suffix
+        */
+        $prefixes = array_map(function($x) use ($suffix) {
+            $namespace = $suffix ? Utils\NamespaceHelper::extend($x, $suffix) : $x;
+            return str_replace("\\", "\\\\", $namespace);
+        }, $this->getConfig('valid-prefixes'));
+
+        foreach ($prefixes as $pre) {
+
+            $pattern = "/^$pre/";
+            preg_match($pattern, $namespace, $matches);
+            if (count($matches)) return true;
+
+        }
+
+        return false;
+
+    }
 
 
 }
