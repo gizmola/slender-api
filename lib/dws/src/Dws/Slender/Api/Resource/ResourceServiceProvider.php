@@ -32,6 +32,12 @@ class ResourceServiceProvider extends ServiceProvider {
             $config['fallback-namespace'] = array_get($app['config'], 'app.fallbackNamespaces.resources');
             return new ResourceWriter($config);
         });
+
+        $this->app['resource-namespace-manager'] = $this->app->share(function($app){
+            $config = array_get($app['config'], 'resource-namespace');
+            return new ResourceNamespaceManager($config);
+        });
+
     }
 
     /**
