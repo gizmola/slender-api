@@ -5,7 +5,7 @@
   "json_class": "Chef::Role",
   "description": "web server role",
   "chef_type": "role",
-  "run_list": [
+  "run_list": [ 
     "recipe[bashrc]", 
     "recipe[apt]", 
     "recipe[build-essential]", 
@@ -28,6 +28,7 @@
     "recipe[php::module_mcrypt]",
     "recipe[php::module_xml]",
     "recipe[php::module_xdebug]",
-    "recipe[php::module_memcached]"
+    "recipe[php::module_memcached]",
+    "recipe[phing]"
   ]
 }
