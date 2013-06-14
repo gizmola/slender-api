@@ -1,7 +1,8 @@
 <?php
 
 namespace Slender\API\Command;
-
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 use Dws\Slender\Api\Auth\Permissions;
 use Slender\API\Model\Roles;
 use Slender\API\Model\Users;
@@ -35,33 +36,56 @@ class AdminCommand extends Command
 	 */
 	public function fire()
 	{
-        $this->info('Generating superadmin user');
+        
         $confirmed = false;
         $password = null;
 
+        $file = $this->argument('file');
 
+        if ($file) {
+            
+            $data = file_get_contents($file);
 
-        //Get email from console
-        $first_name = $this->ask('Enter First Name: ');
-        $last_name = $this->ask('Enter Last Name: ');
-        $email = $this->ask('Enter Email: ');
-
-
-        //Get password from console
-        while (!$confirmed) {
-            if (!$password) {
-                $password = $this->secret('Enter Password: ');
+            /*
+            * if the file doesn't exist, exit out
+            * with a code other than success (0)
+            */
+            if ($data === false) {
+                die(1); 
             }
 
-            $password2 = $this->secret('Confirm Password: ');
-            if ($password == $password2) {
-                $confirmed = true;
-            } else {
-                $this->error('The passwords you entered do not match');
-                if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]')) {
-                    $password = null;
+            $data = json_decode($data,true);
+            $first_name = $data['first_name'];
+            $last_name = $data['last_name'];
+            $email = $data['email'];
+            $password = $data['password'];
+
+        } else {
+
+            $this->info('Generating superadmin user');
+            //Get email from console
+            $first_name = $this->ask('Enter First Name: ');
+            $last_name = $this->ask('Enter Last Name: ');
+            $email = $this->ask('Enter Email: ');
+
+
+            //Get password from console
+            while (!$confirmed) {
+                if (!$password) {
+                    $password = $this->secret('Enter Password: ');
+                }
+
+                $password2 = $this->secret('Confirm Password: ');
+                if ($password == $password2) {
+                    $confirmed = true;
+                } else {
+                    $this->error('The passwords you entered do not match');
+                    if (!$this->confirm('Do you wish to reconfirm? [yes - reconfirm password|no - reenter password]')) {
+                        $password = null;
+                    }
                 }
             }
+
         }
 
         $adminPermissions = [
@@ -99,24 +123,36 @@ class AdminCommand extends Command
         $entity = $users->insert($userData);
 
         if ($entity['key']){
-            $this->info('*---------------------------------------------------------------------------*');
-            $this->info('');
-            $this->info('User has been successfully created!');
-            $this->info('Your Auth Key is: '. $entity['key']);
-            $this->info('');
-            $this->info('*---------------------------------------------------------------------------*');
+
+            if ($file) {
+
+                $this->info($entity['key']);
+                
+            } else {
+
+                $this->info('*---------------------------------------------------------------------------*');
+                $this->info('');
+                $this->info('User has been successfully created!');
+                $this->info('Your Auth Key is: '. $entity['key']);
+                $this->info('');
+                $this->info('*---------------------------------------------------------------------------*');
+
+            }
+
         }
 	}
 
-	/**
-	 * Get the console command arguments.
-	 *
-	 * @return array
-	 */
-	protected function getArguments()
-	{
-		return array();
-	}
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return array(
+            array('file', InputArgument::OPTIONAL, 'Provide a preconfigured user', null),
+        );
+    }
 
 	/**
 	 * Get the console command options.
