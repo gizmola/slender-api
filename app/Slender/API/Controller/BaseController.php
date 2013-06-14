@@ -22,24 +22,24 @@ use Dws\Slender\Api\Cache\CacheService;
  */
 abstract class BaseController extends \Controller
 {
-	const HTTP_GET_OK = 200;
-	const HTTP_POST_OK = 201;
-	const HTTP_PUT_OK = 201;
-	const HTTP_DELETE_OK = 200;
-	const HTTP_UPDATE_OK = 204;
-	// const HTTP_DELETE_OK = 204;
-	const HTTP_OPTIONS_OK = 200;
+    const HTTP_GET_OK = 200;
+    const HTTP_POST_OK = 201;
+    const HTTP_PUT_OK = 201;
+    const HTTP_DELETE_OK = 200;
+    const HTTP_UPDATE_OK = 204;
+    // const HTTP_DELETE_OK = 204;
+    const HTTP_OPTIONS_OK = 200;
 
-	/**
-	 * @var BaseModel
-	 */
-	protected $model;
+    /**
+     * @var BaseModel
+     */
+    protected $model;
 
     /**
      *
      * @var string
      */
-	protected $returnKey;
+    protected $returnKey;
 
     /**
      * @var array
@@ -61,12 +61,12 @@ abstract class BaseController extends \Controller
      *
      * @param \App\Controller\BaseModel $model
      */
-	public function __construct(BaseModel $model, QueryTranslator $qt, CacheService $cacheService)
-	{
-		$this->model = $model;
+    public function __construct(BaseModel $model, QueryTranslator $qt, CacheService $cacheService)
+    {
+        $this->model = $model;
         $this->queryTranslator = $qt;
         $this->cacheService = $cacheService;
-	}
+    }
 
     /**
      * Handles HTTP GET method on a singular endpoint
@@ -74,43 +74,42 @@ abstract class BaseController extends \Controller
      * @param string $id
      * @return mixed
      */
-	public function view($id)
-	{
+    public function view($id)
+    {
         $this->setUpCache();
-		$record = $this->model->findById($id);
-		// @TODO: make it work with unit test
-		// if($record)
-		// {
-			return Response::json(array(
-				$this->getReturnKey() => ($record ? array($record) : array()),
-			));
-		// }else{
-		// 	$msg = sprintf('Unable to find record %s for %s', $id, $this->getReturnKey());
-		// 	throw new RouteException($msg);
-		// }
-	}
+        $record = $this->model->findById($id);
+        // @TODO: make it work with unit test
+        // if($record)
+        // {
+            return Response::json(array(
+                $this->getReturnKey() => ($record ? array($record) : array()),
+            ));
+        // }else{
+        //  $msg = sprintf('Unable to find record %s for %s', $id, $this->getReturnKey());
+        //  throw new RouteException($msg);
+        // }
+    }
 
     /**
      * Handles HTTP GET method on a plural-endpoint
      *
      * @return mixed
      */
-	public function index()
-	{
-
+    public function index()
+    {
         $this->setUpCache();
         $qt = $this->getQueryTranslator()->setParams(ParamsHelper::all());
-		$records = $this->model->findMany($qt);
+        $records = $this->model->findMany($qt);
 
-		$result = [
-			$this->getReturnKey() => $records
-		];
+        $result = [
+            $this->getReturnKey() => $records
+        ];
         
         $result['meta'] = $qt->getMeta();
 
-		return Response::json($result);
+        return Response::json($result);
 
-	}
+    }
 
     /**
      * Handles HTTP PUT method in a singular endpoint
@@ -118,45 +117,41 @@ abstract class BaseController extends \Controller
      * @param string $id
      * @return mixed
      */
-	public function update($id, $input = null)
-	{
-        $input = $input ?: $this->getJsonBodyData();
+    public function update($id)
+    {
+        $input = $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, true)) {
             return $this->badRequest($this->model->getValidationMessages());
         }
 
-		$entity = $this->model->update($id, $input);
-		return Response::json(array(
-			$this->getReturnKey() => array(
-				$entity,
-			),
-		), self::HTTP_PUT_OK);
-	}
+        $entity = $this->model->update($id, $input);
+        return Response::json(array(
+            $this->getReturnKey() => array(
+                $entity,
+            ),
+        ), self::HTTP_PUT_OK);
+    }
 
     /**
      * Handles HTTP POST method on a plural endpoint
      *
      * @return mixed
      */
-    public function insert($input = null)
+    public function insert()
     {
-
-        $input = $input ?: $this->getJsonBodyData();
-
+        $input = $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, false)) {
             return $this->badRequest($this->model->getValidationMessages());
         }
 
         $entity = $this->model->insert($input);
-
         return Response::json(array(
             $this->getReturnKey() => array(
                 $entity,
             ),
         ), self::HTTP_POST_OK);
-
     }
 
     /**
@@ -165,84 +160,84 @@ abstract class BaseController extends \Controller
      * @param string $id
      * @return type mixed
      */
-	public function delete($id)
-	{
-		$this->getModel()->delete($id);
-		return Response::json(array(
-			'messages' => array(
-				'ok',
-			),
-		), self::HTTP_DELETE_OK);
-	}
+    public function delete($id)
+    {
+        $this->getModel()->delete($id);
+        return Response::json(array(
+            'messages' => array(
+                'ok',
+            ),
+        ), self::HTTP_DELETE_OK);
+    }
 
     /**
      * Handles HTTP OPTIONS method on plural endpoint
      *
      * @return mixed
      */
-	public function options()
-	{
-		$options = $this->model->options();
-		return Response::json(array(
-			'PUT' => $options,
-		), self::HTTP_OPTIONS_OK);
-	}
-
-	public function getModel()
-	{
-		if (null == $this->model) {
-			throw new \Exception('Model not set');
-			// @todo: extract from classame
-		}
-		return $this->model;
-	}
-
-	public function setModel($model)
-	{
-		$this->model = $model;
-		return $model;
-	}
-
-	public function getReturnKey()
-	{
-		if (null == $this->returnKey) {
-			throw new \Exception('Return key not set');
-			// @todo: extract from classame
-		}
-		return $this->returnKey;
-	}
-
-	public function setReturnKey($returnKey)
-	{
-		$this->returnKey = (string) $returnKey;
-		return $this;
-	}
-
-	// @TODO: try to find better way which works for App and PHPUnit
-	public function badRequest($messages)
+    public function options()
     {
-		if ($messages instanceof MessageBag) {
+        $options = $this->model->options();
+        return Response::json(array(
+            'PUT' => $options,
+        ), self::HTTP_OPTIONS_OK);
+    }
+
+    public function getModel()
+    {
+        if (null == $this->model) {
+            throw new \Exception('Model not set');
+            // @todo: extract from classame
+        }
+        return $this->model;
+    }
+
+    public function setModel($model)
+    {
+        $this->model = $model;
+        return $model;
+    }
+
+    public function getReturnKey()
+    {
+        if (null == $this->returnKey) {
+            throw new \Exception('Return key not set');
+            // @todo: extract from classame
+        }
+        return $this->returnKey;
+    }
+
+    public function setReturnKey($returnKey)
+    {
+        $this->returnKey = (string) $returnKey;
+        return $this;
+    }
+
+    // @TODO: try to find better way which works for App and PHPUnit
+    public function badRequest($messages)
+    {
+        if ($messages instanceof MessageBag) {
             $messages->setFormat(':message');
             $messages = $messages->getMessages();
         }
-		return Response::json(array(
+        return Response::json(array(
             'messages' => $messages,
         ), 400);
-	}
+    }
 
-	// @TODO: try to find better way which works for App and PHPUnit
-	public function unauthorizedRequest($messages)
+    // @TODO: try to find better way which works for App and PHPUnit
+    public function unauthorizedRequest($messages)
     {
-		if ($messages instanceof MessageBag) {
+        if ($messages instanceof MessageBag) {
             $messages->setFormat(':message');
             $messages = $messages->getMessages();
         }
-		return Response::json([
+        return Response::json([
             'messages' => [
                 $messages,
             ],
         ], 401);
-	}
+    }
 
     public function getJsonBodyData()
     {

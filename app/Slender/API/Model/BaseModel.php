@@ -552,17 +552,6 @@ class BaseModel extends MongoModel
         $this->schema = $schema;
     }
 
-    /**
-     * Get the schema
-     *
-     * @deprecated use getSchema()
-     * @return type
-     */
-    public function getSchemaValidation()
-    {
-        return $this->getSchema();
-    }
-
     public function getRelations()
     {
         return $this->relations;
@@ -682,27 +671,31 @@ class BaseModel extends MongoModel
      * Filters the schema's validation by the keys of the input.
      * Useful for partial updates.
      *
-     * @param array $input
+     * @param array $data
      * @param boolean $isPartial
      * @return \Validator
      * @throws \Exception
      */
-    protected function makeCustomValidator($input, $isPartial)
+    protected function makeCustomValidator($data, $isPartial)
     {
-        $validationInfo = [];
-        $schema = $this->getSchema();
-        $keys = array_keys($schema);
-        if ($isPartial) {
-            $keys = array_intersect($keys, array_keys($input));
-        }
-        array_map(function($k) use ($schema, $input, &$validationInfo){
-            $validationInfo[$k] = $schema[$k];
-        }, $keys);
-        if (empty($validationInfo)) {
-            throw new \Exception("No valid parameters sent");
-        }
+        $validationRules = [];
 
-        return Validator::make($input, $validationInfo);
+        $schema = $this->getSchema();
+
+        /**
+        *   Keep only Laravel validation rules from schema (not all additional info)
+        *   in case of partial insert/update use rules only for fields passed for processing
+        */
+        foreach ($schema as $key => $value) {
+            if(isset($data[$key]) || !$isPartial){
+                foreach ($value as $id => $rule) {
+                    if(is_numeric($id)){
+                        $validationRules[$key][] = $rule;
+                    }
+                }
+            }
+        }
+        return Validator::make($data, $validationRules);
     }
 
     /**
