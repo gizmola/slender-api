@@ -12,6 +12,8 @@ class Pages extends \Slender\API\Model\BaseModel
         'title'  => ['required'],
         'slug' => ['required'],
         'description' => [],
+        'image' => [],
+        'type' => [],
         'sections' => [],
         'created_at' => ['datetime'],
         'updated_at' => ['datetime'],
