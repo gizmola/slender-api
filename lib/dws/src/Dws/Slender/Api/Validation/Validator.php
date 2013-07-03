@@ -145,4 +145,31 @@ class Validator extends LaravelValidator
         }
     }
 
+    /**
+     * Validate an attribute is greater than a given value.
+     *
+     * @param  string  $attribute
+     * @param  mixed   $value
+     * @param  array   $parameters
+     * @return bool
+     */
+    protected function validateGreater($attribute, $value, $parameters)
+    {
+        return $value > $parameters[0];
+    }
+
+    /**
+     * Replace all place-holders for the greater rule.
+     *
+     * @param  string  $message
+     * @param  string  $attribute
+     * @param  string  $rule
+     * @param  array   $parameters
+     * @return string
+     */
+    protected function replaceGreater($message, $attribute, $rule, $parameters)
+    {
+        return str_replace(':greater', $parameters[0], $message);
+    }
+
 }

@@ -4,6 +4,7 @@ namespace Slender\API\Controller;
 
 use \Response;
 use \Validator;
+use \Config;
 
 class RolesController extends \Slender\API\Controller\BaseController
 {
@@ -52,5 +53,24 @@ class RolesController extends \Slender\API\Controller\BaseController
 			),
 		), self::HTTP_POST_OK);
 
+    }
+
+    /**
+     * Handles HTTP OPTIONS method on role endpoint
+     *
+     * @return mixed
+     */
+    public function options()
+    {
+        $resources = [];
+        $per_site = Config::get('resources.per-site');
+        foreach ($per_site as $site => $value) {
+            $resources[$site] = array_keys($value);
+        }
+        $options = $this->model->options();
+        return Response::json(array(
+            'PUT' => $options,
+            'endpoints' => $resources
+        ), self::HTTP_OPTIONS_OK);
     }
 }
