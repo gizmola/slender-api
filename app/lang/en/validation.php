@@ -59,6 +59,7 @@ return array(
 	),
 	"unique"          => "The :attribute has already been taken.",
 	"url"             => "The :attribute format is invalid.",
+	'greater' => 'The :attribute field must be greater than :greater',
 
 	/*
 	|--------------------------------------------------------------------------
