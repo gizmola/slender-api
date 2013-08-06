@@ -4,6 +4,13 @@ use Request;
 
 class RequestInspector {
 
+    /**
+    * allow site to be set globally for all instances
+    * helpful for command line when there is no request
+    * @var string $staticSite 
+    */
+    protected static $staticSite = null;
+
     public function __construct($presets = [])
     {
         foreach ($presets as $preset) {
@@ -29,10 +36,16 @@ class RequestInspector {
 
     public function getSite()
     {
-        
-        if (empty($this->site)) {
+
+        if (!is_null(self::$staticSite)) {
+
+            $this->site = self::$staticSite;
+
+        } elseif (empty($this->site)) {
+          
             $segments = explode('/', $this->getPath());
-            $this->site = $segments[0];
+            $this->site = $segments[0] ?: null;
+        
         }
 
         return $this->site;
@@ -42,6 +55,14 @@ class RequestInspector {
     public function setSite($site)
     {
         $this->site = $site;   
+    }
+
+    /**
+    * @param string $site
+    */
+    public static function setStaticSite($site)
+    {
+        self::$staticSite = $site;
     }
 
 }
