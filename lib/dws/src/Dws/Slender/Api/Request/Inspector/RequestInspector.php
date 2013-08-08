@@ -44,7 +44,7 @@ class RequestInspector {
         } elseif (empty($this->site)) {
           
             $segments = explode('/', $this->getPath());
-            $this->site = $segments[0];
+            $this->site = $segments[0] ?: null;
         
         }
 

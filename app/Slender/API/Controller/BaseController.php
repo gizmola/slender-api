@@ -117,9 +117,9 @@ abstract class BaseController extends \Controller
      * @param string $id
      * @return mixed
      */
-    public function update($id)
+    public function update($id, $input = null)
     {
-        $input = $this->getJsonBodyData();
+        $input = $input ?: $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, true)) {
             return $this->badRequest($this->model->getValidationMessages());
@@ -138,9 +138,9 @@ abstract class BaseController extends \Controller
      *
      * @return mixed
      */
-    public function insert()
+    public function insert($input = null)
     {
-        $input = $this->getJsonBodyData();
+        $input = $input ?: $this->getJsonBodyData();
 
         if (!$this->model->isValid($input, false)) {
             return $this->badRequest($this->model->getValidationMessages());
