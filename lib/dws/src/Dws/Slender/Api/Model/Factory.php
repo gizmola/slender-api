@@ -139,17 +139,20 @@ class Factory
 	* @param string $name
 	* @param string $site
 	*/
-	public function build($name, $site = null)
+	public function build($name, $site = null, $relations = null)
 	{
-		/*
-		* find the right config
-		*/
-		$config = $this->findConfig($name, $site);
+		if (!$relations) {
+
+			$config = $this->findConfig($name, $site);
+			$class = array_get($config, "model.class");
+
+		} else {
+			
+			$config = $relations[$name];	
+			$class = array_get($config, "class");
 		
-		/*
-		* instantiate the model
-		*/
-		$class = array_get($config, "model.class");
+		}
+
 		$connection = $this->getConnection($site);
 		$model = new $class($connection);
 		
@@ -160,8 +163,9 @@ class Factory
 			'children' => array_get($config, "model.children"),	
 			'parents' => array_get($config, "model.parents"),
 		];
-		$model->setRelations($relations);
 
+		$model->setRelations($relations);
+		$model->setSite($site);
 		return $model;
 
 	}
