@@ -75,4 +75,4 @@ Note that a parent must must define a relation type for each child (has-many, ha
 ```
 
 #CONSUMERS
-<a ref="https://github.com/dwsla/slender-api/wiki/Client-Consumers">client consumers guide</a>
+<a href="https://github.com/dwsla/slender-api/wiki/Client-Consumers">client consumers guide</a>
