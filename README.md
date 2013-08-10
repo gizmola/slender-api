@@ -74,6 +74,8 @@ Note that a parent must must define a relation type for each child (has-many, ha
 ],
 ```
 
+#CONSUMERS
+
 Send Parent/Child data on PUT and POST
 --------------
 The format for both PUT and POST are identical. Simply provide a "_parents" or "_children" associative array. 
