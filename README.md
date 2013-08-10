@@ -203,8 +203,7 @@ The return data of the above post is:
             "_id": "5766bf84-065d-4ca2-911f-94cdc9f255d3", 
             "app-users": {
                 "_id": "a3b93637-e48f-4c9e-a74f-4ea43034a7d1", 
-                "feeds": "52ad2c09-23dc-4740-abd6-267d3cb14a60", 
-  …
+                ...
         }
 }
 ```
