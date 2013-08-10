@@ -147,3 +147,83 @@ Dates
 ```
 /endpoint?where[]=startdate:gte:Date(123456)
 ```
+
+Meta Data
+=========
+
+Currently the only meta data returned by get request on the base endpoint is the “count” parameter. This contains the number of results matching the criteria passed in the request as if any skip or take parameters were not sent. This data can be used for pagination.
+
+example: /get/posts?skip=100,take=10
+
+```
+    "meta": {
+        "count": 10000
+    },
+    “posts”:{
+      // posts 101-110
+    }
+```
+
+Auto Embedding Data
+===================
+
+To embed existing data upon insert or update pass the “_children” and/or “_parents” array along with you POST/PUT data. When “_children” is used, all the existing objects (identified by id), will be automatically embedded into the new/updated object. When “_parents” is used, a new/updated object will automatically be embedded into the existing “parent” object.
+
+Imagine the following scenario where posts can be liked by a user, and the posts object embeds favorites under the key “favorites.” Meanwhile, the favorite itself embeds the user who is favorites the post under the key “app-users.”  
+
+To like post "5894af7a-3a5e-4d22-8613-363d018c55cf " for user "a3b93637-e48f-4c9e-a74f-4ea43034a7d1” make the following post to: 
+
+/{you-site}/favorites
+
+```
+{
+    "_children": {
+        "app-users": [
+            "a3b93637-e48f-4c9e-a74f-4ea43034a7d1"
+        ]
+    },
+    "_parents": {
+        "posts": [
+            "5894af7a-3a5e-4d22-8613-363d018c55cf"
+        ]
+   }
+}
+```
+
+This will result in the app-users to be embedded in the likes and the likes to be embedded in the posts.
+
+The return data of the above post is:
+
+```
+{
+    "likes": [
+        {
+            "_id": "5766bf84-065d-4ca2-911f-94cdc9f255d3", 
+            "app-users": {
+                "_id": "a3b93637-e48f-4c9e-a74f-4ea43034a7d1", 
+                "feeds": "52ad2c09-23dc-4740-abd6-267d3cb14a60", 
+  …
+        }
+}
+```
+
+Performing a get on /{you-site}/posts/5894af7a-3a5e-4d22-8613-363d018c55cf
+you should see the like embedded in posts.
+
+```
+{
+    "posts": [
+        {
+            "_id": "5894af7a-3a5e-4d22-8613-363d018c55cf",
+           ….
+            "likes": [
+                {
+                    ….
+                    "_id": "ea6129bd-8d16-47e4-8d36-9bfb688ce5ca", 
+                    "app-users": {
+                        "_id": "a3b93637-e48f-4c9e-a74f-4ea43034a7d1",
+                        …..
+               }
+           ]
+          ….  
+```
