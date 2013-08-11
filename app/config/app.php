@@ -89,6 +89,9 @@ return array(
         'audit',
     ),
 
+    'exempt-routes' => array(
+    ),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Autoloaded Service Providers
