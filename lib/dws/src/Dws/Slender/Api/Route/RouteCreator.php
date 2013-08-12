@@ -9,6 +9,7 @@ use Dws\Slender\Api\Resolver\ClassResolver;
 use Dws\Slender\Api\Resolver\ResourceResolver;
 use Dws\Slender\Api\Support\Query\QueryTranslator;
 use Dws\Slender\Api\Cache\CacheService;
+use Dws\Utils;
 
 /**
  * An object to create REST routes for site-based resources
@@ -228,12 +229,12 @@ class RouteCreator
         $pluralCallback = function() use ($connection, $resource, $creator) {
             
             $cacheService = new CacheService(Request::path(), \Config::get('cache'), \Input::all());
-            $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
+            $modelClass = 'Slender\API\Model\\' . Utils\String::camelize($resource);
             $model = new $modelClass($connection, $cacheService);
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
             $model->setSite(null);
 
-            $controllerClass = 'Slender\\API\\Controller\\' . ucfirst($resource) . 'Controller';
+            $controllerClass = 'Slender\\API\\Controller\\' . Utils\String::camelize($resource) . 'Controller';
             $controller = new $controllerClass($model, new QueryTranslator, $cacheService);
 
             $method = $creator->buildControllerMethod('plural');
@@ -245,11 +246,11 @@ class RouteCreator
         $singularCallback = function($id) use ($connection, $resource, $creator) {
 
             $cacheService = new CacheService(Request::path(), \Config::get('cache'), \Input::all());
-            $modelClass = 'Slender\API\Model\\' . ucfirst($resource);
+            $modelClass = 'Slender\API\Model\\' . Utils\String::camelize($resource);
             $model = new $modelClass($connection, $cacheService);
             $model->setRelations($creator->resourceResolver->buildModelRelations($resource, null));
 
-            $controllerClass = 'Slender\API\Controller\\' . ucfirst($resource) . 'Controller';
+            $controllerClass = 'Slender\API\Controller\\' . Utils\String::camelize($resource) . 'Controller';
             $controller = new $controllerClass($model, new QueryTranslator, $cacheService);
 
             $method = $creator->buildControllerMethod('singular');
