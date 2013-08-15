@@ -45,6 +45,28 @@ class FromArrayBuilder{
 		return $queryBuilder;	
 
 	}
+
+	/**
+	 * Append all Like conditions to the query builder.
+	 * @param  queryBuilder LMongo\Query\Builder
+	 * @param  array  $array
+	 * @return LMongo\Query\Builder
+	 */
+	public static function buildLike($queryBuilder, $array)
+	{
+
+
+		foreach ($array as $data) {
+			$fields = explode(",", $data[0]);
+			foreach ($fields as $field) {
+				$queryBuilder->orWhereRegex($field, "/.*{$data[1]}.*/");	
+			}
+		}
+
+		return $queryBuilder;	
+
+	}
+
 	/**
 	 * Append a single where to the query builder.
 	 * @param  queryBuilder LMongo\Query\Builder
@@ -62,6 +84,7 @@ class FromArrayBuilder{
 			return $builder->where($data[0],$data[1]);	
 		}
 	}
+
 	/**
 	 * Append where order statments to the query builder.
 	 * @param  queryBuilder LMongo\Query\Builder
