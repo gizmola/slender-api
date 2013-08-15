@@ -96,6 +96,20 @@ class QueryTranslator {
 
         }
 
+        /*
+        * the count() function calls get
+        * internally which precludes setting
+        * the "columns" when using get($fields)
+        * 
+        * additionally, the take and skip, will preclude
+        * a count of the true number of documents matching
+        * the criteria
+        *
+        * therefore, where clone the builder to count 
+        */
+        $builderClone = clone($builder);
+        $this->meta['count'] = $builderClone->count();
+
         if ($orders) {
             $builder = FromArrayBuilder::buildOrders($builder,$orders);
         }

@@ -53,6 +53,13 @@ Route::filter('auth-common-permissions', function($route, $request)
      * really no benefit to using Laravel's Auth class
      */
 
+    /*
+    * check if the route is exempt from authentication
+    */
+    $exempt = Config::get('app.exempt-routes');
+    if (in_array($request->path(), $exempt))
+        return;
+
     // $request = Request::instance();
     $key = $request->header('Authentication');
 
