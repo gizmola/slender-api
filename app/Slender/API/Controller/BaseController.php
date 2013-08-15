@@ -30,6 +30,11 @@ abstract class BaseController extends \Controller
     // const HTTP_DELETE_OK = 204;
     const HTTP_OPTIONS_OK = 200;
 
+    /*
+    * Client Error
+    */
+    const METHOD_NOT_ALLOWED = 405;
+
     /**
      * @var BaseModel
      */
@@ -237,6 +242,23 @@ abstract class BaseController extends \Controller
                 $messages,
             ],
         ], 401);
+    }
+
+    /*
+    * method not allowed response for resource
+    * verbs that have been disabled
+    */
+    public function methodNotAllowedResponse($messages)
+    {
+        if ($messages instanceof MessageBag) {
+            $messages->setFormat(':message');
+            $messages = $messages->getMessages();
+        }
+        return Response::json([
+            'messages' => [
+                $messages,
+            ],
+        ], self::METHOD_NOT_ALLOWED);
     }
 
     public function getJsonBodyData()
