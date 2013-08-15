@@ -88,6 +88,14 @@ class Params{
 		//array_walk_recursive($input, array(new Params,'cast'));
 		return $input;
 	}
+
+	public static function getLike(Array $like = null)
+	{
+		$input = ($like) ? $like : Input::get('like');
+		$input =  self::parse($input, ":");
+		return $input;
+	}
+	
 	/**
 	 * Parse the orders query param 
 	 * to an array of arrays containg 2 elements
@@ -158,6 +166,7 @@ class Params{
 	{
 		return [
 			'where' => self::getWhere(),
+			'like' => self::getLike(),
 			'orders' => self::getOrders(),
 			'fields' => self::getFields(),
 			'take' => self::getTake(),

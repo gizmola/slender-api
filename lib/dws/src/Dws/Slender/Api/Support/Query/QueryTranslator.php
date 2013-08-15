@@ -57,6 +57,7 @@ class QueryTranslator {
     public function translate()
     {
         $where = $this->getParam('where');
+        $like = $this->getParam('like');
         $aggregate = $this->getParam('aggregate');
         $orders = $this->getParam('orders');
         $take = $this->getParam('take');
@@ -67,6 +68,10 @@ class QueryTranslator {
 
         if ($where) {
             $builder = FromArrayBuilder::buildWhere($builder, $where);
+        }
+
+        if ($like) {
+            $builder = FromArrayBuilder::buildLike($builder, $like);
         }
 
         if ($aggregate) {
@@ -108,6 +113,7 @@ class QueryTranslator {
         } else {
             $result = $builder->get();
         }
+
 
         /*
         * the count() function calls get
