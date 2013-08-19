@@ -22,6 +22,12 @@ class QueryTranslator {
         return $this;
     }
 
+    public function setParam($name, $value)
+    {
+        $this->params[$name] = $value;
+        return $this;
+    }
+
     public function setBuilder($builder)
     {
         $this->builder = $builder;
