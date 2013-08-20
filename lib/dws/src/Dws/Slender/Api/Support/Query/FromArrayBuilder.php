@@ -79,7 +79,6 @@ class FromArrayBuilder{
 		//data of 2 items are equals conditions
 		if (count($data) == 3) {
 
-			in_array(needle, haystack)
 			$function = (in_array($data[1], ['or', 'nor'])) ?
 				$data[1] . 'Where'
 				: 'where' . ucfirst($data[1]);
