@@ -128,17 +128,6 @@ class QueryTranslator {
             $result = $builder->get();
         }
 
-
-        /*
-        * the count() function calls get
-        * internally which precludes setting
-        * the "columns" when using get($fields)
-        * so we must call count after
-        * alternatively we could add a "setColumns"
-        * function to our MongoModel
-        */
-        $this->meta['count'] = $builder->count();
-
         return $result;
 
     }
