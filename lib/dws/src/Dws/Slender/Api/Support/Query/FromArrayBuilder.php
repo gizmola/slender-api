@@ -78,7 +78,12 @@ class FromArrayBuilder{
 		//data of 3 items are range conditions
 		//data of 2 items are equals conditions
 		if (count($data) == 3) {
-			$function = 'where' . ucfirst($data[1]);
+
+			in_array(needle, haystack)
+			$function = (in_array($data[1], ['or', 'nor'])) ?
+				$data[1] . 'Where'
+				: 'where' . ucfirst($data[1]);
+
 			return $builder->$function($data[0],$data[2]);
 		} elseif (count($data) == 2) {
 			return $builder->where($data[0],$data[1]);	
