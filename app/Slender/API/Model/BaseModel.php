@@ -766,4 +766,64 @@ class BaseModel extends MongoModel
         $this->cacheService = $cacheService;
     }
 
+    /**
+    * run an array modifying on an embedded
+    * array of the document(s) matching the
+    * search criteria
+    *
+    * @param string $fxn the function to run
+    * @param array $wheres the document matching criteria
+    * @param array $data
+    */
+    public function doArrayModifier($fxn, $wheres, $data, $multiple = true)
+    {
+        $update = array($fxn => $data);
+        $builder = $this->getCollection();
+        $collection = $this->getCollectionName();
+        $database = $builder->getConnection();
+
+        foreach ($wheres as $k => $v) {
+
+            $builder->where($k, $v);
+        
+        }
+
+        $criteria = $builder->compileWheres($builder);
+        $result = $database->$collection->update($criteria, $update, ['multiple' => $multiple]);
+
+        if(1 == (int) $result['ok'])
+        {
+            return $result['n'];
+        }
+
+        return 0;
+    }
+
+    /**
+     * add an item to an embedded array
+     * if it doesn't already exists
+     *
+     * @param  array  $wheres the document search criteria
+     * @param array $data to push
+     * @return int
+     */
+    public function addToSet($wheres, array $data, $multiple = true)
+    {
+
+        return $this->doArrayModifier('$addToSet', $wheres, $data, $multiple);
+    }
+
+    /**
+    * remove an item from an embedded array
+    *
+    * @param array $wheres the document search criteria
+    * @param array $data criteria for removal
+    */
+    public function pull($wheres, $data, $multiple = true)
+    {
+    
+        return $this->doArrayModifier('$pull', $wheres, $data, $multiple); 
+    
+    }
+
 }
