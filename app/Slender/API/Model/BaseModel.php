@@ -826,4 +826,91 @@ class BaseModel extends MongoModel
     
     }
 
+    /**
+    * update a document or insert it if it doesn't exist
+    *
+    * @param
+    */
+    public function upsert($wheres, $data, $multiple = true)
+    {
+      
+        /*
+        * get our query builder for searching
+        */
+        $builder = $this->getCollection();
+
+        /*
+        * set the search criteria
+        */
+        foreach ($wheres as $k => $v) {
+
+            $builder->where($k, $v);
+        
+        }
+        
+        /*
+        * if there are any counters in the update portion
+        * pull them out and store them
+        */
+        $inc = ArrayUtil::shiftByKey($data, '$inc');
+
+        /*
+        * search for the existing doc
+        */
+        $entity = $builder->first();
+        
+
+        /*
+        * if no doc exists, set the counters initial values
+        * and save the new document
+        *
+        * else, increment each of the counters, then update
+        * any remaining data
+        */
+        if (!$entity) {
+
+            //set the initials counts
+            if ($inc) {
+
+                foreach ($inc as $k => $v)
+                    $wheres[$k] = $v;
+
+            }
+
+            //save
+            $entity = $this->insert($wheres);
+
+        } else {
+
+            //remove and store the enities uid
+            $_id = ArrayUtil::shiftId($entity);
+
+            //increment each counter
+            if ($inc) {
+
+                foreach ($inc as $k => $v)
+                    $builder->increment($k, $v);
+
+            }
+
+            /*
+            * if there is any data left, update
+            * else, get the entity with the updated counters
+            */
+            if ($data) {
+
+                $entity = $this->update($_id, $data);
+
+            } else {
+
+                $entity = $this->findById($_id, true);
+
+            }
+
+        }
+
+        return $entity;
+    
+    }
+
 }
