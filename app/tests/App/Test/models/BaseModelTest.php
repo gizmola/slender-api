@@ -9,6 +9,7 @@ use Dws\Utils;
 use Dws\Slender\Api\Cache\CacheService;
 use LMongo\Query\Builder;
 use Dws\Slender\Api\Support\Query\QueryTranslator;
+use Lmongo\Database;
 
 class BaseModelTest extends TestCase
 {
