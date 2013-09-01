@@ -74,6 +74,13 @@ class BaseModel extends MongoModel
         $this->setSchema(array_merge($this->schema, $this->extendedSchema));
         $this->resolver = \App::make('resource-resolver');
         $this->cacheService = $cacheService;
+
+        /**
+        * create an auditor
+        */
+        if (!(get_class($this) == 'Slender\API\Model\Audit'))
+            $this->auditor = new Audit;
+
     }
 
     /**
@@ -748,12 +755,15 @@ class BaseModel extends MongoModel
 
 
     private function audit($after, $before = null){
-        $audit = new Audit;
+        
+        $audit = $this->getAuditor();
+
         return $audit->insert([
             'type'      => get_class($this),
             'before'    => $before,
             'after'     => $after,
         ]);
+
     }
 
     public function getCacheService()
@@ -911,6 +921,27 @@ class BaseModel extends MongoModel
 
         return $entity;
     
+    }
+
+    /**
+    * get the auditor class
+    *
+    * @return Slender\API\Model\Audit
+    */
+    public function getAuditor()
+    {
+        return $this->auditor;
+    }
+
+    /**
+    * manually reset the auditor
+    * 
+    * @param Slender\API\Model\Audit $auditor
+    * @return Slender\API\Model
+    */
+    public function setAuditor($auditor)
+    {
+        $this->auditor = $auditor;
     }
 
 }
