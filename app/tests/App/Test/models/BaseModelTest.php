@@ -677,4 +677,101 @@ class BaseModelTest extends TestCase
 
 	}
 
+	public function testCanDoArrayModifier()
+	{
+
+		/*
+		* lets mock the Lmongo database which is required by both models
+		* and the query builder.
+		*
+		* let the mock know that we will be defining a new "collection" method
+		*/
+		$mockConnection = $this->getMock('LMongo\Database',['collection'],['host','port']);
+		
+		/*
+		* our new "collection" method will be returning a
+		* mock object that we can manipulate
+		*/
+		$mockCollection = $this->getMock('stdClass', ['update']);
+		
+		/*
+		* our SUD will be asking for a collection
+		* named "test" so lets give back the mock collections
+		*/
+		$mockConnection->test = $mockCollection;
+		
+		/*
+		* we need a builder inside the doArrayModifier method
+		* to give us back our mock connection
+		*/
+		$builder = new Builder($mockConnection);
+
+		/*
+		* here is where we define the the collection
+		* method, which will just give use the $builder
+		* right back our builder into which we have injected
+		* the mock connection, still with me?
+		*/
+		$mockConnection->expects($this->any())
+			->method('collection')
+			->will($this->returnValue($builder));
+
+		/*
+		* finally we can create the model
+		*/
+		$model = new BaseModel($mockConnection);
+
+		/*
+		* make it respond with "test" when we ask its colection
+		*/
+		$model->setCollectionName('test');
+
+		/*
+		* the params to pass to the SUD
+		*/
+		$fxn = '$inc';
+		$criteria = ['x' => 1];
+		$update = ['y'=> 1];
+
+		/*
+		* this is the criteria we expect to be given to our mock
+		* collection object, after if runs through the builder's
+		* "compileWheres" method
+		*/
+		$expectedCriteria = [
+			'$and' => [
+				['x' => 1],
+			],
+		];
+
+		/*
+		* and this is the expected data to be sent as the update
+		* for an increment of 1
+		*/
+		$expectedUpdate = [
+			'$inc' => [
+				'y' => 1,
+			],
+		];
+
+		/*
+		* now we set up our mock collection to expect
+		* the right data, and return a successful response
+		*/
+		$mockCollection->expects($this->any())
+			->method('update')
+			->with(
+				$this->equalTo($expectedCriteria), 
+				$this->equalTo($expectedUpdate),
+				$this->equalTo(['multiple' => true])
+			)
+			->will($this->returnValue(['ok' => 1, 'n' => 1]));	
+
+		/*
+		* did everything go ok?
+		*/
+		$this->assertSame(1, $model->doArrayModifier($fxn, $criteria, $update));
+
+	}
+
 }
