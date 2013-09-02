@@ -775,4 +775,151 @@ class BaseModelTest extends TestCase
 
 	}
 
+	public function testCanUpsert() 
+	{
+		
+		/*
+		* in the case of upsert, all we care is that the logic routes correctly
+		* if a record does not exist, it should route through "insert". If it exists
+		* it should run through "increment", and than if any data remains, "update", otherwise
+		* through "findById"
+		*/
+
+		/*
+		* lets mock the Lmongo database which is required by both models
+		* and the query builder.
+		*
+		* let the mock know that we will be defining a new "collection" method
+		*/
+		$mockConnection = $this->getMock('LMongo\Database',['collection'],['host','port']);
+
+		/*
+		* we need a builder inside the upsert method
+		* to give us back our mock connection
+		*/
+		$builder = $this->getMock('Lmongo\Query\Builder', ['first', 'increment'], [$mockConnection]);
+
+		/*
+		* here is where we define the the collection
+		* method, which will just give use the $builder
+		* right back
+		*/
+		$mockConnection->expects($this->any())
+			->method('collection')
+			->will($this->returnValue($builder));
+
+		/*
+		* the first time we ask for an existing doc
+		* return false, to trigger insert
+		*/
+		$builder->expects($this->at(0))
+			->method('first')
+			->will($this->returnValue(false));	
+
+		/*
+		* 2nd time, return an entity to trigger
+		* increment
+		*/
+		$builder->expects($this->at(1))
+			->method('first')
+			->will($this->returnValue(['_id' => 1, 'x' => 'y', 'count' => 1]));
+
+
+		/*
+		* when entity exists we always increment
+		*/
+		$builder->expects($this->at(2))
+			->method('increment')
+			->with(
+				$this->equalTo('count'),
+				$this->equalTo(1)
+			)
+			->will($this->returnValue(true));
+
+		/*
+		* 3rd time, return an entity to trigger
+		* increment and update
+		*/
+		$builder->expects($this->at(3))
+			->method('first')
+			->will($this->returnValue(['_id' => 1, 'x' => 'y', 'count' => 1]));
+
+		/*
+		* when entity exists we always increment
+		*/
+		$builder->expects($this->at(4))
+			->method('increment')
+			->with(
+				$this->equalTo('count'),
+				$this->equalTo(1)
+			)
+			->will($this->returnValue(true));
+
+		/*
+		* first time through we do insert, followed by
+		* findById, then by update
+		*/
+		$mockModel = $this->getMock(
+			'Slender\API\Model\BaseModel', 
+			['insert', 'update', 'findById'], 
+			[$mockConnection]
+		);
+
+		/*
+		* first time thru
+		*/
+		$mockModel->expects($this->at(0))
+			->method('insert')
+			->with(
+				$this->equalTo(['x' => 'y', 'count' => 1]) 
+			);
+
+		/*
+		* in the case of findById, all that is left is an id
+		*/
+		$mockModel->expects($this->at(1))
+			->method('findById')
+			->with(
+				$this->equalTo(1)
+			);
+
+		/*
+		* when there is data left we run update
+		*/
+		$mockModel->expects($this->at(2))
+			->method('update')
+			->with(
+				$this->equalTo(1), 
+				$this->equalTo(['a' => 'b']) 
+			);
+
+
+		/*
+		* set the data to be passed to the SUT
+		*/
+		$where = [
+			'x' => 'y',
+		];
+
+		$data = [
+			'$inc' => ['count' => 1],
+		];
+
+		/*
+		* no doc, do insert
+		*/
+		$mockModel->upsert($where, $data);
+
+		/*
+		* doc exists, but only increment
+		*/
+		$mockModel->upsert($where, $data);
+		
+		/*
+		* set some more data to trigger update this time
+		*/
+		$data['a'] = 'b';
+		$mockModel->upsert($where, $data);
+
+	}
 }
