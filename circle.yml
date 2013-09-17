@@ -9,6 +9,7 @@ dependencies:
     - git clone https://github.com/mongodb/mongo-php-driver.git
     - cd mongo-php-driver && git checkout 1.2.10 && phpize && ./configure && make && make install
     - echo "extension=mongo.so" >> ~/.phpenv/versions/$(phpenv global)/etc/php.ini
+    - sudo service apache2 restart
   override:
     - composer install
 test:
