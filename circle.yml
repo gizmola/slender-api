@@ -1,0 +1,15 @@
+machine:
+  timezone:
+    America/Los_Angeles
+  php:
+    version: 5.4.15
+
+dependencies:
+  override:
+    - composer install
+test:
+  override:
+    - ./phpunit
+notify:
+  webhooks:
+    - url: http://54.245.114.208:5000/circle-build-status/88798ae9bf44cbf5db69d47c753c0bcd/Tr5fatre/
