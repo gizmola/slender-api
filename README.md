@@ -6,7 +6,6 @@ Build Status
 | Branch    | Status                                                                                                                                                                                            |
 | --------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | Master    | [![Build Status](https://circleci.com/gh/dwsla/slender-api/tree/master.png?circle-token=a2befce0815c6078a9a7e1cfba74dc61abbc7337)](https://circleci.com/gh/startupdevs/fox-fapi/tree/master)      |
-| Develop   | [![Build Status](https://circleci.com/gh/dwsla/slender-api/tree/develop.png?circle-token=a2befce0815c6078a9a7e1cfba74dc61abbc7337)](https://circleci.com/gh/startupdevs/fox-fapi/tree/develop     |
 
 From your terminal
 ```
