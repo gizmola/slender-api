@@ -887,6 +887,8 @@ class BaseModel extends MongoModel
 
             }
 
+            $wheres = array_merge($wheres, $data);
+
             //save
             $entity = $this->insert($wheres);
 
