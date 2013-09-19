@@ -44,12 +44,14 @@ class Roles extends BaseModel
     public function insert(array $data)
     {
         Permissions::normalize($data['permissions']);
+        unset($data['password_confirmation']);
         return parent::insert($data);
     }
 
     public function update($id, array $data)
     {
         Permissions::normalize($data['permissions']);
+        unset($data['password_confirmation']);
         $entity = parent::update($id, $data);
         if (!$entity) {
             return false;
@@ -103,6 +105,7 @@ class Roles extends BaseModel
         foreach ($userData as $user) {
             $userId = $user['_id'];
             unset($user['_id']);
+            unset($user['password']);
             if (!$usersModel->update($userId, $user)) {
                 return false;
             }
