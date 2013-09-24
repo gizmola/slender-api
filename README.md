@@ -1,11 +1,11 @@
 Slender API
 ===
-Build staus
-=====
+Build Status
+============
 
-Master: [![Build Status](http://potterskolen.dk/buildstatus.php?job=Slender-API)](http://ci.diamondwebservices.com:8080/job/Slender-API/)
-Setup
-=====
+| Branch    | Status                                                                                                                                                                                            |
+| --------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| Master    | [![Build Status](https://circleci.com/gh/dwsla/slender-api/tree/master.png?circle-token=a2befce0815c6078a9a7e1cfba74dc61abbc7337)](https://circleci.com/gh/startupdevs/fox-fapi/tree/master)      |
 
 From your terminal
 ```
