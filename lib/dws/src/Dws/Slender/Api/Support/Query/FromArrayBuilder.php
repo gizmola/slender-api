@@ -55,16 +55,14 @@ class FromArrayBuilder{
 	public static function buildLike($queryBuilder, $array)
 	{
 
-
-		foreach ($array as $data) {
-			$fields = explode(",", $data[0]);
-			foreach ($fields as $field) {
-				$queryBuilder->orWhereRegex($field, "/.*{$data[1]}.*/");	
+		return $queryBuilder->andWhere(function($query) use ($array){
+			foreach ($array as $data) {
+				$fields = explode(",", $data[0]);
+				foreach ($fields as $field) {
+					$query->orWhereRegex($field, "/.*{$data[1]}.*/i");
+				}
 			}
-		}
-
-		return $queryBuilder;	
-
+		});
 	}
 
 	/**
