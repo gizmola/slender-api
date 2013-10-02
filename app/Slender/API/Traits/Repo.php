@@ -1,6 +1,23 @@
 <?php namespace Slender\API\Traits;
 
+use Dws\Slender\Api\Model\Factory as RepoManagerFactory;
+
 trait Repo {
+
+
+    /**
+    * repository manager factory
+    *
+    * @var RepoManagerFactory
+    */
+    protected $repoManagerFactory;
+
+    /**
+    * array of repo managers
+    *
+    * @var array Dws\Slender\Api\Model\BaseModel
+    */
+    protected $repos = [];
     
     /**
     * get a repository manager factory
