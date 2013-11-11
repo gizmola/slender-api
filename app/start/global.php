@@ -52,15 +52,24 @@ use \Slender\API\Model\Users as UserModel;
 /**
  * 500 handler
  */
-App::error(function(\Exception $exception)
+App::error(function(Exception $exception, $code = 500)
 {
-    // Log::error($exception);
-    $message = $exception->getMessage() ?: 'Unknown error: code ' . $exception->getCode();
+
+    $message = $exception->getMessage();
+
+    if (App::environment() == 'local') {
+
+        $message .= sprintf(' File: %s Line: %s Code: %s', $exception->getFile(), $exception->getLine(), $exception->getCode());
+        
+    }
+
     return Response::json(array(
         'messages' => array(
             $message,
         ),
-    ), 500);
+    ), $code);
+
+    //Log::error($exception);
 });
 
 App::error(function(RouteException $exception)
