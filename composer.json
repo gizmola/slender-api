@@ -4,7 +4,8 @@
 		"navruzm/laravel-mongo-auth": "*",
 		"navruzm/lmongo": "dev-master#e0f1090a96757b656f7a7e836eb00d67b27cbb2c",
 		"kevinlebrun/slug.php": "0.*",
-        "dws/utils" : "dev-master"
+        "dws/utils" : "dev-master",
+        "jenssegers/mongodb" : "dev-master"
 	},
 	
 	"autoload": {
