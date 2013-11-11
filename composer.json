@@ -1,0 +1,23 @@
+{
+    "name": "slender/api",
+    "description": "",
+    "authors": [
+        {
+            "name": "Juni Samos",
+            "email": "jsamos@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Slender\\Api\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
