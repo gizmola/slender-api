@@ -6,7 +6,9 @@ Route::get('/mysite/test', function(){
     $env = App::environment();
     print_r($env);
 
-    $db = DB::connection('mongodb');
+    $db = DB::connection('mysite')->collection('users')->insert(array('name'=>'name'));
+
+    print_r($db);
 
     return "OK";
 });

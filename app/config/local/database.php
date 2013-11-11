@@ -1,5 +1,30 @@
 <?php
 
+return array(
+
+	'connections' => array(
+
+		'mongodb' => array(
+		    'driver'   => 'mongodb',
+		    'host'     => 'localhost',
+		    'port'     => 27017,
+		    //'username' => 'username',
+		    //'password' => 'password',
+		    'database' => 'base'
+		),
+
+		'mysite' => array(
+		    'driver'   => 'mongodb',
+		    'host'     => 'localhost',
+		    'port'     => 27017,
+		    //'username' => 'username',
+		    //'password' => 'password',
+		    'database' => 'mysite'
+		),
+	),
+);
+
+/*
 $config = array(		
 	'default' => array(
 	    'driver'   => 'mongodb',
@@ -57,4 +82,5 @@ $config = array('connections' => array('mongodb' => $config[$site]));
 
 
 return $config;
+*/
 

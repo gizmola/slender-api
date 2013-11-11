@@ -46,13 +46,22 @@ return array(
 
 	'connections' => array(
 
-		'mongodb' => array(
+		'test' => array(
 		    'driver'   => 'mongodb',
 		    'host'     => 'localhost',
 		    'port'     => 27017,
 		    //'username' => 'username',
 		    //'password' => 'password',
 		    'database' => 'base'
+		),
+
+		'mysite' => array(
+		    'driver'   => 'mongodb',
+		    'host'     => 'localhost',
+		    'port'     => 27017,
+		    //'username' => 'username',
+		    //'password' => 'password',
+		    'database' => 'mysite'
 		),
 
 		/*
