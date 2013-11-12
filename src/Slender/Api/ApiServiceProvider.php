@@ -1,6 +1,7 @@
 <?php namespace Slender\Api;
 
 use Illuminate\Support\ServiceProvider;
+use Slender\Api\Route\RouteCreator;
 
 class ApiServiceProvider extends ServiceProvider {
 
@@ -18,7 +19,24 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+		
 		$this->package('slender/api');
+		include __DIR__.'/../../bootstrap/start.php';
+		include __DIR__.'/../../app/start/global.php';
+		
+	}
+
+	protected function registerRouteCreator()
+	{
+
+		$this->app['route-creator'] = $this->app->share(function($app)
+		{
+
+
+			return new RouteCreator($this->app, $config);
+
+		});
+
 	}
 
 	/**
@@ -28,7 +46,7 @@ class ApiServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		$this->registerRouteCreator();
 	}
 
 	/**
